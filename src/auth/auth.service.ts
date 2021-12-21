@@ -1,7 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { AuthCredentialsDto } from './dto/auth-credentials-dto';
-import { UsersRepository } from './users.repository';
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JWTTokenPayload } from './jwt-interface';
@@ -9,25 +6,18 @@ import { JWTTokenPayload } from './jwt-interface';
 @Injectable()
 export class AuthService {
     constructor (
-        @InjectRepository(UsersRepository)
-        private usersRepository: UsersRepository,
-        private jwtTokenService: JwtService
+        private readonly jwtTokenService: JwtService
     ) {}
 
-    async signUp(authCredentialsDto : AuthCredentialsDto) : Promise<void> {
-        return this.usersRepository.createUser(authCredentialsDto)
+
+    async createJwtToken(email: string) : Promise<{jwtToken: string}> {
+        const jwtPayload : JWTTokenPayload = {email};
+        const jwtToken : string  = await this.jwtTokenService.sign(jwtPayload)
+        return {jwtToken}
     }
 
-    async login(authCredentialsDto : AuthCredentialsDto) : Promise<{jwtToken: string}> {
-        const {email, password} = authCredentialsDto;
-        const user = await this.usersRepository.findOne({email});
+    async validatePasswordLogin(enteredPassword: string, storedPassword: string) : Promise<Boolean> {
 
-        if (user && await bcrypt.compare(password, user.password)) {
-            const jwtPayload : JWTTokenPayload = {email};
-            const jwtToken : string = await this.jwtTokenService.sign(jwtPayload)
-            return { jwtToken };
-        } else {
-            throw new UnauthorizedException('No existing account found with these credentials')
-        }
+        return bcrypt.compare(enteredPassword, storedPassword)
     }
 }

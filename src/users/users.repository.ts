@@ -1,15 +1,14 @@
 import { EntityRepository, Repository } from "typeorm";
-import { AuthCredentialsDto } from "./dto/auth-credentials-dto";
+import { UserDto } from './dto/user.dto'
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { ConflictException, HttpException, HttpStatus, InternalServerErrorException } from "@nestjs/common";
-import { map, pipe } from "rxjs";
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
-    async createUser(authSignupDto : AuthCredentialsDto) : Promise<void> {
+    async createUser(userDto : UserDto) : Promise<void> {
         const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/;
-        const {email, password} = authSignupDto;
+        const {email, password} = userDto;
 
 
        /*try {
