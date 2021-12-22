@@ -20,4 +20,10 @@ export class AuthService {
 
         return bcrypt.compare(enteredPassword, storedPassword)
     }
+
+    async generateHashedPassword(password : string) : Promise<string> {
+        const generatedPassWordSalt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(password, generatedPassWordSalt);
+        return hashedPassword;
+    }
 }

@@ -6,25 +6,14 @@ import { ConflictException, HttpException, HttpStatus, InternalServerErrorExcept
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
-    async createUser(userDto : UserDto) : Promise<void> {
+    async createUser(userDto : UserDto, hashedPassword: string) : Promise<void> {
         const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/;
         const {email, password} = userDto;
-
-
-       /*try {
-            if (this.findUserByEmail(email)) {
-            throw new HttpException('Account already exists with this email', HttpStatus.CONFLICT)
-        }
-        } catch (error) {
-        
-        }*/
         
 
         if (!password.match(passwordRegex)) {
             throw new HttpException('Password too weak: must include at least 1 lowercase letter, 1 uppercase letter, 1 number and 1 special character', HttpStatus.BAD_REQUEST)
         }
-        const generatedPassWordSalt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash(password, generatedPassWordSalt);
         const user = this.create({email, password: hashedPassword});
 
         try {
