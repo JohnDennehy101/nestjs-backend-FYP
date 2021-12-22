@@ -20,4 +20,35 @@ export class EventsRepository extends Repository<Event> {
         }
         
     }
+
+    async findAllEvents() : Promise<Event[]> {
+        try {
+            const allEvents = await this.find();
+            return allEvents;
+        } catch (error) {
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async findEvent(uuid: string) : Promise<Event> {
+
+         try {
+            const event = await this.findOne({id: uuid});
+            return event;
+        } catch (error) {
+            throw new InternalServerErrorException();
+        }
+
+    }
+
+    async findEventsByType(type: string) : Promise<Event[]> {
+
+         try {
+            const eventsWithType = await this.find({type: type});
+            return eventsWithType;
+        } catch (error) {
+            throw new InternalServerErrorException();
+        }
+
+    }
 }
