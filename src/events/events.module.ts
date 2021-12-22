@@ -5,12 +5,14 @@ import { AuthModule } from 'src/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsRepository } from './events.repository';
 import { PassportModule } from '@nestjs/passport';
+import { ExternalApiRequestsModule } from 'src/external-api-requests/external-api-requests.module';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt'}),
     TypeOrmModule.forFeature([EventsRepository]),
-    AuthModule
+    AuthModule,
+    ExternalApiRequestsModule
   ],
   controllers: [EventsController],
   providers: [EventsService]

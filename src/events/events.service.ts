@@ -4,13 +4,15 @@ import { EventDto } from './dto/event.dto';
 import { EventsRepository } from './events.repository';
 import { AuthService } from 'src/auth/auth.service';
 import { Event } from './events.entity';
+import { ExternalApiRequestsService } from 'src/external-api-requests/external-api-requests.service';
 
 @Injectable()
 export class EventsService {
     constructor (
         @InjectRepository(EventsRepository)
         private eventsRepository: EventsRepository,
-        private authService : AuthService
+        private authService : AuthService,
+        private externalApiRequestsService : ExternalApiRequestsService
     ) {}
 
     async createEvent(eventDto : EventDto) : Promise<void> {
@@ -28,4 +30,8 @@ export class EventsService {
     async findEventsByType(type: string) : Promise<Event[]> {
         return this.eventsRepository.findEventsByType(type);
     }
+
+    /*async findAccommodationInformation() : Promise<any> {
+        return this.externalApiRequestsService.getAccommodationInfo()
+    }*/
 }

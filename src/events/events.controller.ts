@@ -30,6 +30,11 @@ export class EventsController {
         return this.eventsService.findEventsByType(id)
     }
 
+    /*@Get('/accommodation/test')
+     testing(@Req() req) {
+         return this.eventsService.findAccommodationInformation()
+     }*/
+
     @Post('/test')
      @UseGuards(AuthGuard())
      test(@Req() req) {
