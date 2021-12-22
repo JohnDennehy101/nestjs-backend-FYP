@@ -31,7 +31,10 @@ export class EventsService {
         return this.eventsRepository.findEventsByType(type);
     }
 
-    /*async findAccommodationInformation() : Promise<any> {
-        return this.externalApiRequestsService.getAccommodationInfo()
-    }*/
+    async findAccommodationInformation() : Promise<any> {
+        /*return this.externalApiRequestsService.getAccommodationInfo('Dublin', new Date, new Date,5,1,'')*/
+
+        /*return this.externalApiRequestsService.getFlightInfo('Dublin', 'London', new Date, new Date, 3, '')*/
+        /*return this.externalApiRequestsService.getThirdPartyJwt()*/
+    }
 }

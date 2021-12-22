@@ -14,14 +14,38 @@ export class ExternalApiRequestsService {
         "username": process.env.WEBSCRAPE_SERVER_ACCESS_USERNAME,
         "password": process.env.WEBSCRAPE_SERVER_ACCESS_PASSWORD
     }).pipe(map(response => response.data));
-  }
+    }
 
 
-    getAccommodationInfo(accessToken : string): Observable<AxiosResponse<any>> {
+    getAccommodationInfo(destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, numberOfRooms: number, accessToken : string): Observable<AxiosResponse<any>> {
         const headersRequest = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
         }
-    return this.httpService.get(`${process.env.WEBSCRAPE_SERVER_URL}/accommodation`, {headers: headersRequest}).pipe(map(response => response.data));
-  }
+        const paramsRequest = {
+            'destinationCity': destinationCity,
+            'startDate': startDate,
+            'endDate': endDate,
+            'numberOfPeople': numberOfPeople,
+            'numberOfRooms': numberOfRooms,
+        }
+    return this.httpService.get(`${process.env.WEBSCRAPE_SERVER_URL}/accommodation`, {headers: headersRequest, params: paramsRequest}).pipe(map(response => response.data));
+    }
+
+     
+
+    getFlightInfo(fromCity : string, destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, accessToken : string): Observable<AxiosResponse<any>> {
+         const paramsRequest = {
+            'fromCity': fromCity,
+            'destinationCity': destinationCity,
+            'startDate': startDate,
+            'endDate': endDate,
+            'numberOfPeople': numberOfPeople,
+        }
+        const headersRequest = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+        }
+    return this.httpService.get(`${process.env.WEBSCRAPE_SERVER_URL}/flights`, {headers: headersRequest, params: paramsRequest}).pipe(map(response => response.data));
+    }
 }
