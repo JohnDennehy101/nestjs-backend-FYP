@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Post, Req, UseGuards, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { PayloadValidationPipe } from 'src/common/pipes/payload-validation.pipe';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 
@@ -7,13 +8,13 @@ import { UsersService } from './users.service';
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService : UsersService) {}
-     @Post('/signup')
-    signUp(@Body() userDto : UserDto): Promise<void> {
+     @Post('/')
+    signUp(@Body(new PayloadValidationPipe()) userDto : UserDto): Promise<void> {
         return this.usersService.signUp(userDto)
     }
 
     @Post('/login')
-    login(@Body() userDto : UserDto): Promise<{jwtToken: string}> {
+    login(@Body(new PayloadValidationPipe()) userDto : UserDto): Promise<{jwtToken: string}> {
         return this.usersService.login(userDto)
     }
 
