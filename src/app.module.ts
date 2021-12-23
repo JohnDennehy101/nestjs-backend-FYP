@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
 import { ExternalApiRequestsModule } from './external-api-requests/external-api-requests.module';
+import { EmailsModule } from './emails/emails.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ExternalApiRequestsModule } from './external-api-requests/external-api-
   AuthModule,
   EventsModule,
   ExternalApiRequestsModule,
+  EmailsModule,
 ],
   controllers: [],
   providers: [],

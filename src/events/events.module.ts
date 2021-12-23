@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsRepository } from './events.repository';
 import { PassportModule } from '@nestjs/passport';
 import { ExternalApiRequestsModule } from 'src/external-api-requests/external-api-requests.module';
+import { EmailsModule } from 'src/emails/emails.module';
 
 @Module({
   imports: [

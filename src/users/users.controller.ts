@@ -1,15 +1,17 @@
-import { Body, Controller, Get, Post, Req, UseGuards, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards, Param, ClassSerializerInterceptor, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PayloadValidationPipe } from 'src/common/pipes/payload-validation.pipe';
 import { UserDto } from './dto/user.dto';
+import { User } from './user.entity';
 import { UsersService } from './users.service';
 
 
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService : UsersService) {}
-     @Post('/')
-    signUp(@Body(new PayloadValidationPipe()) userDto : UserDto): Promise<void> {
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Post('/')
+    signUp(@Body(new PayloadValidationPipe()) userDto : UserDto): Promise<User> {
         return this.usersService.signUp(userDto)
     }
 

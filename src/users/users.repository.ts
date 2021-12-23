@@ -5,7 +5,7 @@ import { ConflictException, HttpException, HttpStatus, InternalServerErrorExcept
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
-    async createUser(userDto : UserDto, hashedPassword: string) : Promise<void> {
+    async createUser(userDto : UserDto, hashedPassword: string) : Promise<User> {
         const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/;
         const {email, password} = userDto;
         
@@ -17,6 +17,7 @@ export class UsersRepository extends Repository<User> {
 
         try {
             await this.save(user);
+            return user;
         } catch (error) {
             if (error.code === '23505') {
                 throw new ConflictException('Account already exists with this email');
