@@ -21,13 +21,9 @@ export class UsersService {
         console.log(email);
         const hashedPassword = await this.authService.generateHashedPassword(password);
         const user = await this.usersRepository.createUser(userDto, hashedPassword);
-        console.log("CREATING")
-        console.log(user);
-        if (user.email === email) {
-            console.log("HITTING EMAIL BITY")
-            const test = await this.emailsService.sendEmailConfirmationEmail(user.email);
-            console.log(test);
-        }
+        /*if (user.email === email) {
+            const userConfirmationEmail = await this.emailsService.sendEmailConfirmationEmail(user.email);
+        }*/
         return user;
     }
 

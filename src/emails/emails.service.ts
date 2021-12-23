@@ -14,8 +14,33 @@ export class EmailsService {
             to: `${email}`,
             subject: `Confirmation Email`,
             template: 'confirm-email-template',
-            'h:X-Mailgun-Variables': JSON.stringify({ // be sure to stringify your payload
+            'h:X-Mailgun-Variables': JSON.stringify({
             validationUrl
+    }),
+
+    };
+
+    try {
+    const response = await this.mailgunService.createEmail('mg.groupactivityplanning.software',mailgunData);
+
+ 
+    return response;
+    } catch (error) {
+        console.log(error)
+    }
+  
+    }
+
+    async sendPollLinkEmail(email: string, eventName: string, pollCreatedBy: string, pollLink: string) : Promise<any> {
+        const mailgunData = {
+            from: 'contact@mg.groupactivityplanning.software',
+            to: `${email}`,
+            subject: `Poll Invite - ${eventName}`,
+            template: 'poll-invite-email',
+            'h:X-Mailgun-Variables': JSON.stringify({
+            eventName,
+            pollCreatedBy,
+            pollLink
     }),
 
     };
