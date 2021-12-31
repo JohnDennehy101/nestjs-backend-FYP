@@ -15,16 +15,19 @@ export class UsersService {
         private emailsService: EmailsService
     ) {}
 
-    async signUp(userDto : UserDto) : Promise<User> {
+    async signUp(userDto : UserDto) : Promise<{jwtToken: string}> {
         const {password, email} = userDto;
         console.log(password);
         console.log(email);
         const hashedPassword = await this.authService.generateHashedPassword(password);
         const user = await this.usersRepository.createUser(userDto, hashedPassword);
+
+        const jwtToken = await this.authService.createJwtToken(email);
+        return jwtToken;
         /*if (user.email === email) {
             const userConfirmationEmail = await this.emailsService.sendEmailConfirmationEmail(user.email);
         }*/
-        return user;
+        //return user;
     }
 
     async login(userDto : UserDto) : Promise<{jwtToken: string}> {

@@ -11,7 +11,7 @@ export class UsersController {
     constructor(private readonly usersService : UsersService) {}
     @UseInterceptors(ClassSerializerInterceptor)
     @Post('/')
-    signUp(@Body(new PayloadValidationPipe()) userDto : UserDto): Promise<User> {
+    signUp(@Body(new PayloadValidationPipe()) userDto : UserDto): Promise<{jwtToken: string}> {
         return this.usersService.signUp(userDto)
     }
 
