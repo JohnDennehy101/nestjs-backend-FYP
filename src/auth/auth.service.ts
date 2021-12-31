@@ -16,6 +16,11 @@ export class AuthService {
         return {jwtToken}
     }
 
+    async decodeJwtToken(jwtToken: string) : Promise<any> {
+     const userInfo = await this.jwtTokenService.decode(jwtToken);
+     return userInfo;
+    }
+
     async validatePasswordLogin(enteredPassword: string, storedPassword: string) : Promise<Boolean> {
 
         return bcrypt.compare(enteredPassword, storedPassword)

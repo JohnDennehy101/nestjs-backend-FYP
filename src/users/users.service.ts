@@ -4,7 +4,6 @@ import { UserDto } from './dto/user.dto';
 import { UsersRepository } from './users.repository';
 import { AuthService } from 'src/auth/auth.service';
 import { EmailsService } from 'src/emails/emails.service';
-import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
@@ -38,6 +37,17 @@ export class UsersService {
             const jwtToken = await this.authService.createJwtToken(email);
             return jwtToken;
         } else {
+            throw new UnauthorizedException('No existing account found with these credentials');
+        }
+    }
+
+    async findOne(jwtToken : string) : Promise<string> {
+        const userInfo = await this.authService.decodeJwtToken(jwtToken);
+        const user = await this.usersRepository.findOne({email: userInfo.email});
+        if (user) {
+            return user.id
+        }
+        else {
             throw new UnauthorizedException('No existing account found with these credentials');
         }
     }

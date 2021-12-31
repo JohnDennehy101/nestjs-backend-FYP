@@ -2,7 +2,6 @@ import { Body, Controller, Get, Post, Req, UseGuards, Param, ClassSerializerInte
 import { AuthGuard } from '@nestjs/passport';
 import { PayloadValidationPipe } from 'src/common/pipes/payload-validation.pipe';
 import { UserDto } from './dto/user.dto';
-import { User } from './user.entity';
 import { UsersService } from './users.service';
 
 
@@ -18,6 +17,11 @@ export class UsersController {
     @Post('/login')
     login(@Body(new PayloadValidationPipe()) userDto : UserDto): Promise<{jwtToken: string}> {
         return this.usersService.login(userDto)
+    }
+
+    @Get('/findOne/:jwt')
+    findOne(@Param('jwt') jwt) : Promise<string> {
+        return this.usersService.findOne(jwt);
     }
 
     @Post('/test')
