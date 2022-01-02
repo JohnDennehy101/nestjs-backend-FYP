@@ -2,13 +2,16 @@ import { EntityRepository, Repository } from "typeorm";
 import { EventDto } from './dto/event.dto'
 import { Event } from './events.entity';
 import { ConflictException, HttpException, HttpStatus, InternalServerErrorException } from "@nestjs/common";
+import { User } from "src/users/user.entity";
 
 @EntityRepository(Event)
 export class EventsRepository extends Repository<Event> {
-    async createEvent(eventDto : EventDto) : Promise<void> {
+    async createEvent(eventDto : EventDto, user: User) : Promise<void> {
 
         try {
-            await this.save(eventDto);
+            //return this.eventsRepository.createEvent({...eventDto, user: userId});
+            const newEvent = await this.create({...eventDto, user: user});
+            await this.save(newEvent);
         } catch (error) {
             if (error.code === '23505') {
                 throw new ConflictException('Event already exists with this title');
@@ -21,10 +24,10 @@ export class EventsRepository extends Repository<Event> {
         
     }
 
-    async findAllEvents() : Promise<Event[]> {
+    async findAllUserEvents(user : User) : Promise<Event[]> {
         try {
-            const allEvents = await this.find();
-            return allEvents;
+            const allUserEvents = await this.find({user : user});
+            return allUserEvents;
         } catch (error) {
             throw new InternalServerErrorException();
         }

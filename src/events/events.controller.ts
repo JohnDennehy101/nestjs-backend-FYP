@@ -10,14 +10,14 @@ import { EventsType } from './events-type.enums';
 export class EventsController {
     constructor(private readonly eventsService : EventsService) {}
     
-    @Post('/')
-    createEvent(@Body(new PayloadValidationPipe()) eventDto : EventDto): Promise<void> {
-        return this.eventsService.createEvent(eventDto)
+    @Post('/:userId')
+    createEvent(@Body(new PayloadValidationPipe()) eventDto : EventDto, @Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
+        return this.eventsService.createEvent(eventDto, userId);
     }
 
-    @Get('/')
-    findAllEvents(): Promise<Event[]> {
-        return this.eventsService.findAllEvents()
+    @Get('/user/:userId')
+    findAllUserEvents(@Param('userId', new ParseUUIDPipe()) userId: string) : Promise<Event[]> {
+        return this.eventsService.findAllUserEvents(userId);
     }
 
     @Get('/:id')
