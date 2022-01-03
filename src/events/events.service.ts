@@ -37,6 +37,13 @@ export class EventsService {
         return this.eventsRepository.findEventsByType(type);
     }
 
+    async updateEvent(eventDto : EventDto, eventId : string) : Promise<any> {
+        return this.eventsRepository.update(eventId, {
+            ...(eventDto.title && {title: eventDto.title}),
+            ...(eventDto.type && {type: eventDto.type})
+        })
+    }
+
     async findAccommodationInformation() : Promise<any> {
         /*return this.externalApiRequestsService.getAccommodationInfo('Dublin', new Date, new Date,5,1,'')*/
 

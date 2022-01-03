@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards, Param, ParseUUIDPipe, ParseEnumPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards, Param, ParseUUIDPipe, ParseEnumPipe, Patch } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { EventDto } from './dto/event.dto'
 import { PayloadValidationPipe } from '../common/pipes/payload-validation.pipe';
@@ -28,6 +28,11 @@ export class EventsController {
     @Get('/type/:id')
     findEventsByType(@Param('id', new ParseEnumPipe(EventsType)) id: string): Promise<Event[]> {
         return this.eventsService.findEventsByType(id)
+    }
+
+    @Patch('/:id')
+    updatedEvent(@Body(new PayloadValidationPipe()) eventDto : EventDto, @Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
+        return this.eventsService.updateEvent(eventDto, eventId);
     }
 
     @Get('/accommodation/test')
