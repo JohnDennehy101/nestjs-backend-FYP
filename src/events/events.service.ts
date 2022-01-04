@@ -8,6 +8,9 @@ import { ExternalApiRequestsService } from 'src/external-api-requests/external-a
 import { User } from 'src/users/user.entity';
 import { UsersRepository } from 'src/users/users.repository';
 import { title } from 'process';
+import { PollsRepository } from 'src/polls/polls.repository';
+import { PollOptionDto } from 'src/polls/dto/polls-option.dto';
+import { PollsDto } from 'src/polls/dto/polls.dto';
 
 @Injectable()
 export class EventsService {
@@ -15,6 +18,7 @@ export class EventsService {
         @InjectRepository(EventsRepository)
         private eventsRepository: EventsRepository,
         private usersRepository: UsersRepository,
+        private pollsRepository: PollsRepository,
         private authService : AuthService,
         private externalApiRequestsService : ExternalApiRequestsService
     ) {}
@@ -22,6 +26,14 @@ export class EventsService {
     async createEvent(eventDto : EventDto, userId : string) : Promise<void> {
         const user = await this.usersRepository.findOne({id: userId});
         return this.eventsRepository.createEvent(eventDto, user);
+    }
+
+    async createEventPoll(pollsDto : PollsDto, eventId : string) : Promise<void> {
+
+        const event = await this.eventsRepository.findOne({id: eventId});
+  
+        return this.pollsRepository.createEventPoll(pollsDto, event);
+
     }
 
     async findAllUserEvents(userId : string) : Promise<Event[]> {

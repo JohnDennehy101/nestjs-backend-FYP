@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
 import { ExternalApiRequestsModule } from './external-api-requests/external-api-requests.module';
 import { EmailsModule } from './emails/emails.module';
+import { PollsModule } from './polls/polls.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { EmailsModule } from './emails/emails.module';
   EventsModule,
   ExternalApiRequestsModule,
   EmailsModule,
+  PollsModule,
 ],
   controllers: [],
   providers: [],

@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards, Param, ParseUUIDPipe, ParseEnumPipe, Patch, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards, Param, ParseUUIDPipe, ParseEnumPipe, Patch, Delete, ParseArrayPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { EventDto } from './dto/event.dto'
 import { PayloadValidationPipe } from '../common/pipes/payload-validation.pipe';
 import { EventsService } from './events.service';
 import { Event } from './events.entity';
 import { EventsType } from './events-type.enums';
+import { PollOptionDto } from 'src/polls/dto/polls-option.dto';
+import { PollsDto } from 'src/polls/dto/polls.dto';
 
 @Controller('events')
 export class EventsController {
@@ -13,6 +15,11 @@ export class EventsController {
     @Post('/:userId')
     createEvent(@Body(new PayloadValidationPipe()) eventDto : EventDto, @Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
         return this.eventsService.createEvent(eventDto, userId);
+    }
+
+    @Post('/:id/poll')
+    createEventPoll(@Body() pollsDto : PollsDto, @Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
+        return this.eventsService.createEventPoll(pollsDto, eventId);
     }
 
     @Get('/user/:userId')
