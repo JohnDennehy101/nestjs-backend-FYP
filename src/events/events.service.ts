@@ -44,6 +44,10 @@ export class EventsService {
         })
     }
 
+    async deleteEvent(uuid: string) : Promise<any> {
+        return this.eventsRepository.delete({id: uuid})
+    }
+
     async findAccommodationInformation() : Promise<any> {
         /*return this.externalApiRequestsService.getAccommodationInfo('Dublin', new Date, new Date,5,1,'')*/
 
