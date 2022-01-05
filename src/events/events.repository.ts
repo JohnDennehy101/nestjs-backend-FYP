@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from "typeorm";
+import { createQueryBuilder, EntityRepository, Repository } from "typeorm";
 import { EventDto } from './dto/event.dto'
 import { Event } from './events.entity';
 import { ConflictException, HttpException, HttpStatus, InternalServerErrorException } from "@nestjs/common";
@@ -33,10 +33,10 @@ export class EventsRepository extends Repository<Event> {
         }
     }
 
-    async findEvent(uuid: string) : Promise<Event> {
+    async findEvent(uuid: string) : Promise<any> {
 
          try {
-            const event = await this.findOne({id: uuid});
+            const event = await this.createQueryBuilder("event").leftJoinAndSelect("event.polls", "poll").where("event.id = :id", {id: uuid}).getMany() 
             return event;
         } catch (error) {
             throw new InternalServerErrorException();
