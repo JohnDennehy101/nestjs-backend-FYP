@@ -11,6 +11,7 @@ import { title } from 'process';
 import { PollsRepository } from 'src/polls/polls.repository';
 import { PollOptionDto } from 'src/polls/dto/polls-option.dto';
 import { PollsDto } from 'src/polls/dto/polls.dto';
+import { PollsService } from 'src/polls/polls.service';
 
 @Injectable()
 export class EventsService {
@@ -19,6 +20,7 @@ export class EventsService {
         private eventsRepository: EventsRepository,
         private usersRepository: UsersRepository,
         private pollsRepository: PollsRepository,
+        private pollsService: PollsService,
         private authService : AuthService,
         private externalApiRequestsService : ExternalApiRequestsService
     ) {}
@@ -54,6 +56,10 @@ export class EventsService {
             ...(eventDto.title && {title: eventDto.title}),
             ...(eventDto.type && {type: eventDto.type})
         })
+    }
+
+    async updateEventPoll(pollDto : PollsDto, pollId : string) : Promise<any> {
+        return this.pollsService.updateEventPoll(pollDto, pollId)
     }
 
     async deleteEvent(uuid: string) : Promise<any> {
