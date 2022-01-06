@@ -17,6 +17,10 @@ export class PollsService {
             ...(pollDto.options && {options: pollDto.options})
         })
     }
+
+    async deleteEventPoll(uuid: string) : Promise<any> {
+        return this.pollsRepository.delete({id: uuid})
+    }
     
 
 }

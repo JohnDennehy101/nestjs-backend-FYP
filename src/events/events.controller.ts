@@ -27,6 +27,11 @@ export class EventsController {
         return this.eventsService.updateEventPoll(pollsDto, pollId);
     }
 
+    @Delete('/:id/poll/:pollId')
+    deleteEventPoll(@Param('pollId', new ParseUUIDPipe()) pollId: string): Promise<void> {
+        return this.eventsService.deleteEventPoll(pollId);
+    }
+
     @Get('/user/:userId')
     findAllUserEvents(@Param('userId', new ParseUUIDPipe()) userId: string) : Promise<Event[]> {
         return this.eventsService.findAllUserEvents(userId);
