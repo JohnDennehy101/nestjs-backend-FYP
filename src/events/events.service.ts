@@ -62,6 +62,10 @@ export class EventsService {
         return this.pollsService.updateEventPoll(pollDto, pollId)
     }
 
+    async getEventPoll(pollId : string) : Promise<any> {
+        return this.pollsService.getEventPoll(pollId)
+    }
+
     async deleteEventPoll(pollId : string) : Promise<any> {
         return this.pollsService.deleteEventPoll(pollId)
     }

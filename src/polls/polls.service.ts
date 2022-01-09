@@ -21,6 +21,10 @@ export class PollsService {
     async deleteEventPoll(uuid: string) : Promise<any> {
         return this.pollsRepository.delete({id: uuid})
     }
+
+    async getEventPoll(uuid: string) : Promise<any> {
+        return this.pollsRepository.findOne({id: uuid})
+    }
     
 
 }
