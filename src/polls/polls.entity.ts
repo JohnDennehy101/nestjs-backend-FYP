@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Event } from 'src/events/events.entity';
+import { PollOption } from "src/polls-options/polls-options.entity";
 
 
 @Entity()
@@ -9,8 +10,8 @@ export class Poll {
     @Column({unique: true})
     title: string;
 
-    @Column('jsonb', {nullable: true})
-    options?: object[];
+    @OneToMany(() => PollOption, (pollOption: PollOption) => pollOption.poll, {cascade: true,})
+    pollOptions: PollOption[];
 
     @ManyToOne(() => Event, (event: Event) => event.polls)
     event: Event;

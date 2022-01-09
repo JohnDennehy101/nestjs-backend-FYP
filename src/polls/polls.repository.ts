@@ -8,22 +8,15 @@ import { Poll } from "./polls.entity";
 
 @EntityRepository(Poll)
 export class PollsRepository extends Repository<Poll> {
-    async createEventPoll(pollsDto : PollsDto, event: Event) : Promise<void> {
+   async findPoll(uuid: string) : Promise<any> {
 
-        try {
-            //return this.eventsRepository.createEvent({...eventDto, user: userId});
-            const newPoll = await this.create({...pollsDto, event: event});
-            await this.save(newPoll);
+         try {
+            const poll = await this.createQueryBuilder("poll").leftJoinAndSelect("poll.pollOptions", "poll_option").where("poll.id = :id", {id: uuid}).getMany() 
+            return poll;
         } catch (error) {
-            if (error.code === '23505') {
-                throw new ConflictException('Poll already exists with this title');
-            }
-            else {
-                console.log(error.code)
-                throw new InternalServerErrorException();
-            }
+            throw new InternalServerErrorException();
         }
-        
+
     }
 
 }

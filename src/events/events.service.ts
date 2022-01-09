@@ -34,7 +34,9 @@ export class EventsService {
 
         const event = await this.eventsRepository.findOne({id: eventId});
   
-        return this.pollsRepository.createEventPoll(pollsDto, event);
+        return this.pollsService.createEventPoll(pollsDto, event);
+
+        //console.log(poll)
 
     }
 
