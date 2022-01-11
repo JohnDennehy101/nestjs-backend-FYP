@@ -5,6 +5,7 @@ import { UsersRepository } from './users.repository';
 import { AuthService } from 'src/auth/auth.service';
 import { EmailsService } from 'src/emails/emails.service';
 import { UserResponseDto } from './dto/user.response.dto';
+import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +29,25 @@ export class UsersService {
             const userConfirmationEmail = await this.emailsService.sendEmailConfirmationEmail(user.email);
         }*/
         //return user;
+    }
+
+    async createAccountsForInvitedUsers(userEmails : string[]) : Promise<User[]> {
+        let invitedUsers = [];
+        for (let email in userEmails) {
+            let existingUserCheck = await this.usersRepository.findUserByEmail(userEmails[email])
+
+            if (!existingUserCheck) {
+                let newUser = await this.usersRepository.createInvitedUser(userEmails[email]);
+
+                if (newUser) {
+                    invitedUsers.push(newUser);
+                }
+            }
+            else {
+                invitedUsers.push(existingUserCheck);
+            }
+        }
+        return invitedUsers;
     }
 
     async login(userDto : UserDto) : Promise<UserResponseDto> {

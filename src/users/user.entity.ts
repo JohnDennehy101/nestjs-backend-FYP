@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from 'typeorm'
 import { Exclude } from 'class-transformer';
 import { Event } from 'src/events/events.entity';
 
@@ -9,9 +9,15 @@ export class User {
     @Column({unique: true})
     email: string;
     @Exclude()
-    @Column()
+    @Column({nullable: true})
     password: string;
 
-    @OneToMany(() => Event, (event: Event) => event.user)
-    events: Event[];
+    @OneToMany(() => Event, (event: Event) => event.createdByUser)
+    createdEvents: Event[];
+    
+    @ManyToMany(() => Event, (event: Event) => event.invitedUsers)
+    invitedEvents: Event[];
+
+    @Column({default: false})
+    emailConfirmed: boolean
 }

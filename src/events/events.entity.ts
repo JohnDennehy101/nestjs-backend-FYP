@@ -1,6 +1,6 @@
 import { Poll } from 'src/polls/polls.entity';
 import { User } from 'src/users/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm'
 import { EventsType } from './events-type.enums';
 
 @Entity()
@@ -14,8 +14,13 @@ export class Event {
         enum: EventsType
     })
     type: string;
-    @ManyToOne(() => User, (user: User) => user.events)
-    user: User;
+    @ManyToOne(() => User, (user: User) => user.createdEvents)
+    createdByUser: User;
+
+
+    @JoinTable({name: 'event_invited_users'})
+    @ManyToMany(() => User, (user: User) => user.invitedEvents)
+    invitedUsers: User[];
 
     @OneToMany(() => Poll, (polls: Poll) => polls.event)
     polls: Poll[];

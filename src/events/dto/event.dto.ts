@@ -1,4 +1,4 @@
-import { IsString } from "class-validator";
+import { IsArray, IsEmail, IsString } from "class-validator";
 
 export class EventDto {
     @IsString()
@@ -6,4 +6,7 @@ export class EventDto {
 
     @IsString()
     type: string;
+
+    @IsEmail({}, {each: true})
+    userEmails: string[];
 }

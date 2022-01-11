@@ -12,6 +12,7 @@ import { PollsRepository } from 'src/polls/polls.repository';
 import { PollOptionDto } from 'src/polls/dto/polls-option.dto';
 import { PollsDto } from 'src/polls/dto/polls.dto';
 import { PollsService } from 'src/polls/polls.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class EventsService {
@@ -19,6 +20,7 @@ export class EventsService {
         @InjectRepository(EventsRepository)
         private eventsRepository: EventsRepository,
         private usersRepository: UsersRepository,
+        private usersService: UsersService,
         private pollsRepository: PollsRepository,
         private pollsService: PollsService,
         private authService : AuthService,
@@ -26,8 +28,9 @@ export class EventsService {
     ) {}
 
     async createEvent(eventDto : EventDto, userId : string) : Promise<void> {
-        const user = await this.usersRepository.findOne({id: userId});
-        return this.eventsRepository.createEvent(eventDto, user);
+        const createEventUser = await this.usersRepository.findOne({id: userId});
+        const invitedUsers = await this.usersService.createAccountsForInvitedUsers(eventDto.userEmails);
+        return this.eventsRepository.createEvent(eventDto, createEventUser, invitedUsers);
     }
 
     async createEventPoll(pollsDto : PollsDto, eventId : string) : Promise<void> {
@@ -35,8 +38,6 @@ export class EventsService {
         const event = await this.eventsRepository.findOne({id: eventId});
   
         return this.pollsService.createEventPoll(pollsDto, event);
-
-        //console.log(poll)
 
     }
 

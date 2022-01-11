@@ -19,6 +19,7 @@ export class UsersRepository extends Repository<User> {
             await this.save(user);
             return user;
         } catch (error) {
+            console.log(error);
             if (error.code === '23505') {
                 throw new ConflictException('Account already exists with this email');
             }
@@ -27,6 +28,18 @@ export class UsersRepository extends Repository<User> {
             }
         }
         
+    }
+
+    async createInvitedUser (email : string) : Promise<User> {
+        const user = this.create({email: email});
+
+        try {
+            await this.save(user);
+            return user;
+        } catch (error) {
+            console.log(error)
+            throw new InternalServerErrorException();
+        }
     }
     findUserByEmail(email: string): Promise<User> {
         return this.findOne({email: email}) 

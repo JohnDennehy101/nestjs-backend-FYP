@@ -6,11 +6,11 @@ import { User } from "src/users/user.entity";
 
 @EntityRepository(Event)
 export class EventsRepository extends Repository<Event> {
-    async createEvent(eventDto : EventDto, user: User) : Promise<void> {
+    async createEvent(eventDto : EventDto, user: User, invitedUsers: User[]) : Promise<void> {
 
         try {
             //return this.eventsRepository.createEvent({...eventDto, user: userId});
-            const newEvent = await this.create({...eventDto, user: user});
+            const newEvent = await this.create({...eventDto, createdByUser: user, invitedUsers: invitedUsers});
             await this.save(newEvent);
         } catch (error) {
             if (error.code === '23505') {
@@ -18,6 +18,7 @@ export class EventsRepository extends Repository<Event> {
             }
             else {
                 console.log(error.code)
+                console.log(error)
                 throw new InternalServerErrorException();
             }
         }
@@ -26,7 +27,7 @@ export class EventsRepository extends Repository<Event> {
 
     async findAllUserEvents(user : User) : Promise<Event[]> {
         try {
-            const allUserEvents = await this.find({user : user});
+            const allUserEvents = await this.find({createdByUser : user});
             return allUserEvents;
         } catch (error) {
             throw new InternalServerErrorException();
