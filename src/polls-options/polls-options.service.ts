@@ -14,12 +14,24 @@ export class PollsOptionsService {
 
         async createPollOptions(pollsOptionDto : PollsOptionDto, poll: Poll) {
             const pollOption = await this.pollsOptionsRepository.create({...pollsOptionDto, poll: poll})
-            await this.pollsOptionsRepository.save(pollOption)
+            let result = await this.pollsOptionsRepository.save(pollOption);
+            return result;
+        }
+
+        async getPollOptions(poll: Poll) {
+         
+                try {
+                    let pollOptions = await this.pollsOptionsRepository.find({poll: poll })
+                    return pollOptions;
+                }
+                catch (error) {
+                    console.log(error)
+                }
         }
 
         async updatePollOptions(pollsOptionDtoArray : PollsOptionDto[], poll: Poll, priorOptions : PollsOptionDto[]) {
             
-
+            let listOfPollOptions = []
             for (let option in pollsOptionDtoArray) {
                 const individualOption = pollsOptionDtoArray[option]
              
@@ -28,12 +40,16 @@ export class PollsOptionsService {
                     await this.pollsOptionsRepository.update(pollOption.id, {  
                         ...(individualOption.endDate && {endDate: individualOption.endDate}),
                         ...(individualOption.startDate && {startDate: individualOption.startDate}),
-                        ...(individualOption.votes && {votes: individualOption.votes})
+                        //...(individualOption.votes && {votes: individualOption.votes})
                     })
+                    let updatedOption = await this.pollsOptionsRepository.findOne({id: pollOption.id})
+                    listOfPollOptions.push(updatedOption);
                 }
                 else {
 
-                    await this.createPollOptions(individualOption, poll);
+                    let newOption = await this.createPollOptions(individualOption, poll);
+               
+                    listOfPollOptions.push(newOption);
                 }
             }
 
@@ -47,6 +63,8 @@ export class PollsOptionsService {
                         }
                     }
                 }
+
+                return listOfPollOptions;
 
         }
 

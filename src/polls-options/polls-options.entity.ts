@@ -1,12 +1,14 @@
+import { PollVote } from "src/polls-votes/polls-votes.entity";
 import { Poll } from "src/polls/polls.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class PollOption {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-    @Column('text', {array: true})
-    votes: string[];
+    @OneToMany(() => PollVote, (pollVote: PollVote) => pollVote.pollOption)
+    votes: PollVote[];
+    
     @Column()
     endDate: Date;
     @Column()

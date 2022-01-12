@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from 'typeorm'
 import { Exclude } from 'class-transformer';
 import { Event } from 'src/events/events.entity';
+import { PollVote } from 'src/polls-votes/polls-votes.entity';
 
 @Entity()
 export class User {
@@ -14,6 +15,9 @@ export class User {
 
     @OneToMany(() => Event, (event: Event) => event.createdByUser)
     createdEvents: Event[];
+
+    @OneToMany(() => PollVote, (pollVote: PollVote) => pollVote.user)
+    pollVotes: PollVote[];
     
     @ManyToMany(() => Event, (event: Event) => event.invitedUsers)
     invitedEvents: Event[];

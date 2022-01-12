@@ -13,6 +13,7 @@ import { UsersRepository } from 'src/users/users.repository';
 import { PollsModule } from 'src/polls/polls.module';
 import { PollsService } from 'src/polls/polls.service';
 import { PollsOptionsModule } from 'src/polls-options/polls-options.module';
+import { PollsVotesModule } from 'src/polls-votes/polls-votes.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { PollsOptionsModule } from 'src/polls-options/polls-options.module';
     ExternalApiRequestsModule,
     EmailsModule,
     PollsModule,
-    PollsOptionsModule
+    PollsOptionsModule,
+    PollsVotesModule
   ],
   controllers: [EventsController],
   providers: [EventsService, UsersService, PollsService]

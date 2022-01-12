@@ -11,9 +11,10 @@ export class PollsRepository extends Repository<Poll> {
    async findPoll(uuid: string) : Promise<any> {
 
          try {
-            const poll = await this.createQueryBuilder("poll").leftJoinAndSelect("poll.pollOptions", "poll_option").where("poll.id = :id", {id: uuid}).getMany() 
+            const poll = await this.findOne(uuid, { relations: ['event', 'pollOptions', 'pollVote', 'pollVote.user', 'pollVote.pollOption'] });
             return poll;
         } catch (error) {
+            console.log(error);
             throw new InternalServerErrorException();
         }
 

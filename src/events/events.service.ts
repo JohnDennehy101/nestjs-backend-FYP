@@ -13,6 +13,7 @@ import { PollOptionDto } from 'src/polls/dto/polls-option.dto';
 import { PollsDto } from 'src/polls/dto/polls.dto';
 import { PollsService } from 'src/polls/polls.service';
 import { UsersService } from 'src/users/users.service';
+import { PollsOptionsService } from 'src/polls-options/polls-options.service';
 
 @Injectable()
 export class EventsService {
@@ -23,6 +24,7 @@ export class EventsService {
         private usersService: UsersService,
         private pollsRepository: PollsRepository,
         private pollsService: PollsService,
+        private pollsOptionsService: PollsOptionsService,
         private authService : AuthService,
         private externalApiRequestsService : ExternalApiRequestsService
     ) {}
@@ -61,8 +63,14 @@ export class EventsService {
         })
     }
 
-    async updateEventPoll(pollDto : PollsDto, pollId : string) : Promise<any> {
+    async updateEventPoll(pollDto : PollsDto, pollId) : Promise<any> {
         return this.pollsService.updateEventPoll(pollDto, pollId)
+    }
+
+    async voteEventPoll(pollDto : PollsDto, pollId : string, userId: string) : Promise<any> {
+        let user = await this.usersRepository.findOne({id: userId})
+        let poll = await this.pollsService.returnIndividualPoll(pollId);
+        return this.pollsService.voteEventPoll(poll, pollDto.options, user)
     }
 
     async getEventPoll(pollId : string) : Promise<any> {

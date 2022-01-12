@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PollsOptionsModule } from 'src/polls-options/polls-options.module';
+import { PollsVotesModule } from 'src/polls-votes/polls-votes.module';
 import { PollsRepository } from './polls.repository';
 import { PollsService } from './polls.service';
 
@@ -9,7 +10,8 @@ import { PollsService } from './polls.service';
   imports: [  
     PassportModule.register({ defaultStrategy: 'jwt'}),
     TypeOrmModule.forFeature([PollsRepository]),
-    PollsOptionsModule
+    PollsOptionsModule,
+    PollsVotesModule
   ],
   providers: [PollsService],
   exports: [PollsService, TypeOrmModule]

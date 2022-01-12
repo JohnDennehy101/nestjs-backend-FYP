@@ -8,6 +8,7 @@ import { ExternalApiRequestsModule } from './external-api-requests/external-api-
 import { EmailsModule } from './emails/emails.module';
 import { PollsModule } from './polls/polls.module';
 import { PollsOptionsModule } from './polls-options/polls-options.module';
+import { PollsVotesModule } from './polls-votes/polls-votes.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { PollsOptionsModule } from './polls-options/polls-options.module';
   EmailsModule,
   PollsModule,
   PollsOptionsModule,
+  PollsVotesModule,
 ],
   controllers: [],
   providers: [],
