@@ -67,10 +67,12 @@ export class EventsService {
         return this.pollsService.updateEventPoll(pollDto, pollId)
     }
 
-    async voteEventPoll(pollDto : PollsDto, pollId : string, userId: string) : Promise<any> {
+    async voteEventPoll(pollDto : PollsDto, eventId: string, pollId : string, userId: string) : Promise<any> {
         let user = await this.usersRepository.findOne({id: userId})
         let poll = await this.pollsService.returnIndividualPoll(pollId);
-        return this.pollsService.voteEventPoll(poll, pollDto.options, user)
+        let event = await this.eventsRepository.findEventUsers(eventId);
+        let pollCompletionAfterSubmission = await this.pollsService.voteEventPoll(poll, event, pollDto.options, user)
+        console.log(pollCompletionAfterSubmission);
     }
 
     async getEventPoll(pollId : string) : Promise<any> {

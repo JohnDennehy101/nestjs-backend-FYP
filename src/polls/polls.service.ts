@@ -56,9 +56,20 @@ export class PollsService {
         await this.pollsOptionsService.updatePollOptions(pollDto.options, poll, priorPollOptions[0].pollOptions)
     }
 
-    async voteEventPoll(poll: Poll, pollVoteOptions : any[], user : User) : Promise<any> {
+    async voteEventPoll(poll: Poll,  event: Event, pollVoteOptions : any[], user : User) : Promise<any> {
 
         await this.pollsVotesSerivce.updatePollVotes(poll, pollVoteOptions, user);
+
+        let eventUsers = []
+
+        for (let user in event[0].invitedUsers) {
+            eventUsers.push(event[0].invitedUsers[user])
+       }
+
+       let pollCompletionCheck =  await this.pollsVotesSerivce.pollCompletionCheck(poll, eventUsers);
+
+       //Update here if pollCompletionCheck is true to set isCompleted on Poll to true
+       return pollCompletionCheck;
     }
 
     async deleteEventPoll(uuid: string) : Promise<any> {
@@ -68,8 +79,6 @@ export class PollsService {
     async getEventPoll(uuid: string) : Promise<any> {
         //Update query to only return user votes and hide certain fields like passworde
         let poll = await this.pollsRepository.findPoll(uuid);
-
-        console.log(poll);
 
         for (let vote in poll.pollVote) {
             poll.pollVote[vote] = {

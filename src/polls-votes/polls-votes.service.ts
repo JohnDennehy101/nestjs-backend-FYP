@@ -65,6 +65,21 @@ export class PollsVotesService {
 
         }
 
+        async pollCompletionCheck (poll: Poll, eventUsers: User[]) {
+            let allUserSubmissions = true;
+
+            for (let user in eventUsers) {
+                     let userSubmissionCheck = await this.pollsVotesRepository.find({poll: poll, user: eventUsers[user]})
+
+                     if (userSubmissionCheck.length === 0) {
+                         allUserSubmissions = false;
+                         break;
+                     }
+            }
+
+            return allUserSubmissions;
+        }
+
         /* async findPollVote(uuid: string) {
              return this.pollsVotesRepository.findPollVote(uuid);
          } */

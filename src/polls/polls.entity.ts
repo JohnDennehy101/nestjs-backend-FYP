@@ -19,4 +19,7 @@ export class Poll {
 
     @ManyToOne(() => Event, (event: Event) => event.polls)
     event: Event;
+
+    @Column({default: false})
+    completed: boolean
 }

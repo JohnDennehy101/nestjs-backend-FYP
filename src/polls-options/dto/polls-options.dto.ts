@@ -8,6 +8,4 @@ export class PollsOptionDto {
     @IsDate()
     endDate: string;
 
-    votes: []
-
 }

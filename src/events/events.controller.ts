@@ -28,8 +28,8 @@ export class EventsController {
     }
 
     @Patch('/:userId/:id/poll/:pollId/vote')
-    voteEventPoll(@Body() pollsDto : PollsDto, @Param('pollId', new ParseUUIDPipe()) pollId: string, @Param('userId', new ParseUUIDPipe()) userId : string): Promise<void> {
-        return this.eventsService.voteEventPoll(pollsDto, pollId, userId);
+    voteEventPoll(@Body() pollsDto : PollsDto, @Param('pollId', new ParseUUIDPipe()) pollId: string, @Param('id', new ParseUUIDPipe()) eventId: string, @Param('userId', new ParseUUIDPipe()) userId : string): Promise<void> {
+        return this.eventsService.voteEventPoll(pollsDto, eventId, pollId, userId);
     }
 
     @Get('/:id/poll/:pollId')

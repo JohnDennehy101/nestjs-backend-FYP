@@ -7,10 +7,11 @@ import { User } from "src/users/user.entity";
 @EntityRepository(Event)
 export class EventsRepository extends Repository<Event> {
     async createEvent(eventDto : EventDto, user: User, invitedUsers: User[]) : Promise<void> {
+        let allUsers = [...invitedUsers, user]
 
         try {
             //return this.eventsRepository.createEvent({...eventDto, user: userId});
-            const newEvent = await this.create({...eventDto, createdByUser: user, invitedUsers: invitedUsers});
+            const newEvent = await this.create({...eventDto, createdByUser: user, invitedUsers: allUsers});
             await this.save(newEvent);
         } catch (error) {
             if (error.code === '23505') {
@@ -44,6 +45,16 @@ export class EventsRepository extends Repository<Event> {
             throw new InternalServerErrorException();
         }
 
+    }
+
+    async findEventUsers(uuid: string) : Promise<any> {
+        try {
+            const event = await this.createQueryBuilder("event").leftJoinAndSelect("event.polls", "poll").where("event.id = :id", {id: uuid}).leftJoinAndSelect("event.invitedUsers", "event_invited_users").select(['event', 'poll','event_invited_users']).where("event.id = :id").getMany();
+            return event;
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException();
+        }
     }
 
     async findEventsByType(type: string) : Promise<Event[]> {
