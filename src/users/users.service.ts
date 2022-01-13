@@ -65,9 +65,9 @@ export class UsersService {
             }
             return {
                 emailConfirmed: true,
-                passwordProvided: passwordProvided
-                //Maybe shouldn't send back email for security
-                //email: tokenCheckUserInfo.email
+                passwordProvided: passwordProvided,
+                email: tokenCheckUserInfo.email,
+                id: updatedUser.id
             };
         }
         else {
@@ -94,6 +94,22 @@ export class UsersService {
         } else {
             throw new UnauthorizedException('No existing account found with these credentials');
         }
+    }
+
+     async updateUser(userDto : UserDto, userId: string) : Promise<UserResponseDto> {
+        const {email, password} = userDto;
+
+        const hashedPassword = await this.authService.generateHashedPassword(password);
+    
+
+        await this.usersRepository.update(userId, {
+            ...(email && {email: email}),
+            ...(password && {password: hashedPassword})
+        })
+        
+        const jwtTokenResponse = await this.authService.createJwtToken(email);
+        return { jwtToken: jwtTokenResponse.jwtToken, userId :  userId};
+        
     }
 
     async findOne(jwtToken : string) : Promise<string> {
