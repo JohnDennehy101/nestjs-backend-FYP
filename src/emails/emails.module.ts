@@ -3,6 +3,7 @@ import { EmailsService } from './emails.service';
 import { EmailsController } from './emails.controller';
 import { MailgunModule } from '@nextnm/nestjs-mailgun';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       username: process.env.MAILGUN_USERNAME,
       key: process.env.MAILGUN_API_KEY,
     }),
+    AuthModule
   ],
   providers: [EmailsService],
   controllers: [EmailsController],

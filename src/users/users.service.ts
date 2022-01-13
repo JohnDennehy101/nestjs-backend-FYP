@@ -41,6 +41,9 @@ export class UsersService {
 
                 if (newUser) {
                     invitedUsers.push(newUser);
+
+                    //User confirmation email is sent here, commenting out to save on email calls
+                     //const userConfirmationEmail = await this.emailsService.sendEmailConfirmationEmail(newUser.email);
                 }
             }
             else {
@@ -49,6 +52,30 @@ export class UsersService {
         }
         return invitedUsers;
     }
+
+    async confirmUserEmail(token: string) {
+        let tokenCheckUserInfo = await this.authService.decodeJwtToken(token);
+
+        if (tokenCheckUserInfo) {
+            await this.setConfirmedUser(tokenCheckUserInfo.email);
+            return {
+                emailConfirmed: true,
+                email: tokenCheckUserInfo.email
+            };
+        }
+        else {
+            return {
+                emailConfirmed: false}
+            };
+        }
+    
+
+
+    async setConfirmedUser(email: string) {
+    return this.usersRepository.update({ email }, {
+      emailConfirmed: true
+    });
+}
 
     async login(userDto : UserDto) : Promise<UserResponseDto> {
         const {email, password} = userDto;

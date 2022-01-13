@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards, Param, ClassSerializerInterceptor, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PayloadValidationPipe } from 'src/common/pipes/payload-validation.pipe';
+import { ConfirmUserDto } from './dto/confirm-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UserResponseDto } from './dto/user.response.dto';
 import { UsersService } from './users.service';
@@ -18,6 +19,11 @@ export class UsersController {
     @Post('/login')
     login(@Body(new PayloadValidationPipe()) userDto : UserDto): Promise<UserResponseDto> {
         return this.usersService.login(userDto)
+    }
+
+    @Post('/confirm-email')
+    confirmEmail(@Body() confirmUserDto: ConfirmUserDto): Promise<any> {
+        return this.usersService.confirmUserEmail(confirmUserDto.token)
     }
 
     @Get('/findOne/:jwt')

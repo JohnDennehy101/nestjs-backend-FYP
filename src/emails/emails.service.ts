@@ -1,14 +1,23 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 const formData = require('form-data');
 import { EmailOptions, MailgunService } from '@nextnm/nestjs-mailgun';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class EmailsService {
+   
 
-    constructor(private mailgunService: MailgunService) {}
+    constructor(
+        private mailgunService: MailgunService,
+        private  authService: AuthService,
+        private configService: ConfigService
+        ) {}
 
     async sendEmailConfirmationEmail(email: string) : Promise<any> {
-        const validationUrl = 'https://www.google.ie'
+       const jwtToken = await this.authService.createJwtToken(email);
+       const validationUrl = `${this.configService.get('EMAIL_CONFIRMATION_URL')}?token=${jwtToken.jwtToken}`
+
         const mailgunData = {
             from: 'contact@mg.groupactivityplanning.software',
             to: `${email}`,
@@ -21,10 +30,8 @@ export class EmailsService {
     };
 
     try {
-    const response = await this.mailgunService.createEmail('mg.groupactivityplanning.software',mailgunData);
-
- 
-    return response;
+        const response = await this.mailgunService.createEmail('mg.groupactivityplanning.software',mailgunData);
+        return response;
     } catch (error) {
         console.log(error)
     }
