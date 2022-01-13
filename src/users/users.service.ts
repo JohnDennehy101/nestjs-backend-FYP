@@ -57,10 +57,17 @@ export class UsersService {
         let tokenCheckUserInfo = await this.authService.decodeJwtToken(token);
 
         if (tokenCheckUserInfo) {
+            let passwordProvided = true;
             await this.setConfirmedUser(tokenCheckUserInfo.email);
+            let updatedUser = await this.usersRepository.findUserByEmail(tokenCheckUserInfo.email)
+            if (updatedUser.password === null) {
+                passwordProvided = false;
+            }
             return {
                 emailConfirmed: true,
-                email: tokenCheckUserInfo.email
+                passwordProvided: passwordProvided
+                //Maybe shouldn't send back email for security
+                //email: tokenCheckUserInfo.email
             };
         }
         else {
