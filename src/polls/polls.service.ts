@@ -53,7 +53,7 @@ export class PollsService {
             ...(pollDto.title && {title: pollDto.title}),
         })
          }
-        await this.pollsOptionsService.updatePollOptions(pollDto.options, poll, priorPollOptions[0].pollOptions)
+        await this.pollsOptionsService.updatePollOptions(pollDto.options, poll, priorPollOptions.pollOptions)
     }
 
     async voteEventPoll(poll: Poll,  event: Event, pollVoteOptions : any[], user : User) : Promise<any> {
