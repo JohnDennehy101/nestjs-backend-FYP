@@ -26,11 +26,21 @@ export class EventsRepository extends Repository<Event> {
         
     }
 
-    async findAllUserEvents(user : User) : Promise<Event[]> {
+    async findAllUserCreatedEvents(user : User) : Promise<Event[]> {
         try {
-            const allUserEvents = await this.find({createdByUser : user});
-            return allUserEvents;
+            const events = await this.find({createdByUser : user});
+            return events;
         } catch (error) {
+            throw new InternalServerErrorException();
+        }
+    }
+
+     async findAllUserInvitedEvents(user : User) : Promise<Event[]> {
+        try {
+            const events = await this.createQueryBuilder("event").leftJoin("event.invitedUsers", "event_invited_users").select(['event']).where("event_invited_users.id = :id", {id: user.id}).getMany()
+            return events;
+        } catch (error) {
+            console.log(error);
             throw new InternalServerErrorException();
         }
     }

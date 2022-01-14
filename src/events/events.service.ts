@@ -43,9 +43,23 @@ export class EventsService {
 
     }
 
-    async findAllUserEvents(userId : string) : Promise<Event[]> {
+    async findAllUserEvents(userId : string) : Promise<any> {
         const user = await this.usersRepository.findOne({id: userId});
-        return this.eventsRepository.findAllUserEvents(user);
+        let userCreatedEvents = await this.eventsRepository.findAllUserCreatedEvents(user);
+        let userInvitedEvents = await this.eventsRepository.findAllUserInvitedEvents(user);
+    
+
+        for (let item in userInvitedEvents) {
+            if (userCreatedEvents.filter((event) => event.title === userInvitedEvents[item].title).length > 0) {
+                userInvitedEvents.splice(Number(item), 1);
+            }
+        }
+
+        return {
+            "created": userCreatedEvents,
+            "invited": userInvitedEvents
+        }
+
     }
 
     async findEvent(uuid: string) : Promise<Event> {

@@ -18,6 +18,8 @@ export class EmailsService {
        const jwtToken = await this.authService.createJwtToken(email);
        const validationUrl = `${this.configService.get('EMAIL_CONFIRMATION_URL')}?token=${jwtToken.jwtToken}`
 
+       console.log(validationUrl);
+
         const mailgunData = {
             from: 'contact@mg.groupactivityplanning.software',
             to: `${email}`,
@@ -30,8 +32,8 @@ export class EmailsService {
     };
 
     try {
-        const response = await this.mailgunService.createEmail('mg.groupactivityplanning.software',mailgunData);
-        return response;
+        //const response = await this.mailgunService.createEmail('mg.groupactivityplanning.software',mailgunData);
+       // return response;
     } catch (error) {
         console.log(error)
     }

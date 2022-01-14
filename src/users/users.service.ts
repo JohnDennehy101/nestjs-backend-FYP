@@ -43,7 +43,7 @@ export class UsersService {
                     invitedUsers.push(newUser);
 
                     //User confirmation email is sent here, commenting out to save on email calls
-                     //const userConfirmationEmail = await this.emailsService.sendEmailConfirmationEmail(newUser.email);
+                     const userConfirmationEmail = await this.emailsService.sendEmailConfirmationEmail(newUser.email);
                 }
             }
             else {
