@@ -4,6 +4,7 @@ import { PayloadValidationPipe } from 'src/common/pipes/payload-validation.pipe'
 import { ConfirmUserDto } from './dto/confirm-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UserResponseDto } from './dto/user.response.dto';
+import { IsActivatedGuard } from './guards/is-activated.guard';
 import { UsersService } from './users.service';
 
 
@@ -16,6 +17,7 @@ export class UsersController {
         return this.usersService.signUp(userDto)
     }
 
+    @UseGuards(IsActivatedGuard)
     @Post('/login')
     login(@Body(new PayloadValidationPipe()) userDto : UserDto): Promise<UserResponseDto> {
         return this.usersService.login(userDto)
