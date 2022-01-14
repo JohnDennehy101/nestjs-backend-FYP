@@ -28,6 +28,7 @@ export class UsersController {
         return this.usersService.confirmUserEmail(confirmUserDto.token)
     }
 
+    @UseGuards(IsActivatedGuard)
     @Patch('/:userId')
     updateUser(@Body(new PayloadValidationPipe()) userDto : UserDto, @Param('userId', new ParseUUIDPipe()) userId: string): Promise<UserResponseDto> {
         return this.usersService.updateUser(userDto, userId);

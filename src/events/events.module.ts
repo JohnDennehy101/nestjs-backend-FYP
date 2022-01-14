@@ -19,7 +19,6 @@ import { PollsVotesModule } from 'src/polls-votes/polls-votes.module';
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt'}),
     TypeOrmModule.forFeature([EventsRepository, UsersRepository]),
-    //TypeOrmModule.forFeature([UsersRepository]),
     AuthModule,
     UsersModule,
     ExternalApiRequestsModule,
