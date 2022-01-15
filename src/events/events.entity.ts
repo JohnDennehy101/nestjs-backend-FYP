@@ -14,6 +14,10 @@ export class Event {
         enum: EventsType
     })
     type: string;
+
+    @Column()
+    city: string;
+
     @ManyToOne(() => User, (user: User) => user.createdEvents)
     createdByUser: User;
 
