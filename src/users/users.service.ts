@@ -24,10 +24,12 @@ export class UsersService {
         const user = await this.usersRepository.createUser(userDto, hashedPassword);
 
         const jwtTokenResponse = await this.authService.createJwtToken(email);
-        return { jwtToken: jwtTokenResponse.jwtToken, userId :  user.id};
-        /*if (user.email === email) {
+       
+        if (user.email === email) {
             const userConfirmationEmail = await this.emailsService.sendEmailConfirmationEmail(user.email);
-        }*/
+        }
+
+        return { jwtToken: jwtTokenResponse.jwtToken, userId :  user.id};
         //return user;
     }
 
