@@ -68,7 +68,13 @@ export class PollsService {
 
        let pollCompletionCheck =  await this.pollsVotesSerivce.pollCompletionCheck(poll, eventUsers);
 
-       //Update here if pollCompletionCheck is true to set isCompleted on Poll to true
+       if (pollCompletionCheck) {
+           await this.pollsRepository.update(poll.id, {
+               completed: true
+           })
+           //Trigger next call to get web scraping info
+       }
+
        return pollCompletionCheck;
     }
 

@@ -22,6 +22,6 @@ export class Event {
     @ManyToMany(() => User, (user: User) => user.invitedEvents)
     invitedUsers: User[];
 
-    @OneToMany(() => Poll, (polls: Poll) => polls.event)
+    @OneToMany(() => Poll, (polls: Poll) => polls.event, {onDelete: "CASCADE"})
     polls: Poll[];
 }

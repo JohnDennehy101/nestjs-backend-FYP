@@ -17,7 +17,7 @@ export class Poll {
     @OneToMany(() => PollVote, (pollVote: PollVote) => pollVote.poll, {cascade: true,})
     pollVote: PollVote[];
 
-    @ManyToOne(() => Event, (event: Event) => event.polls)
+    @ManyToOne(() => Event, (event: Event) => event.polls, {onDelete: "CASCADE"})
     event: Event;
 
     @Column({default: false})
