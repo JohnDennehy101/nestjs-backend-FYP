@@ -78,6 +78,10 @@ export class PollsService {
        return pollCompletionCheck;
     }
 
+    async getHighestVotedPollOptions(poll) {
+        return this.pollsOptionsService.getPollOptionsWithMostVotes(poll)
+    }
+
     async deleteEventPoll(uuid: string) : Promise<any> {
         return this.pollsRepository.delete({id: uuid})
     }

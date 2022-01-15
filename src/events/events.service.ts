@@ -86,7 +86,12 @@ export class EventsService {
         let poll = await this.pollsService.returnIndividualPoll(pollId);
         let event = await this.eventsRepository.findEventUsers(eventId);
         let pollCompletionAfterSubmission = await this.pollsService.voteEventPoll(poll, event, pollDto.options, user)
-        console.log(pollCompletionAfterSubmission);
+
+        if (pollCompletionAfterSubmission) {
+            let highestPollVoteOptions = await this.pollsService.getHighestVotedPollOptions(poll);
+
+            //Use the highestPollVoteOptionsArray to query web scraping infp
+        }
     }
 
     async getEventPoll(pollId : string) : Promise<any> {

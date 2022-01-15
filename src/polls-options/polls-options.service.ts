@@ -68,6 +68,10 @@ export class PollsOptionsService {
 
         }
 
+        async getPollOptionsWithMostVotes(poll: Poll) {
+            return this.pollsOptionsRepository.getPollOptionsWithMostVotes(poll.id)
+        } 
+
 
 
 }
