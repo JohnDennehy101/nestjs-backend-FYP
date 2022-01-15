@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Event } from 'src/events/events.entity';
 import { PollOption } from "src/polls-options/polls-options.entity";
 import { PollVote } from "src/polls-votes/polls-votes.entity";
@@ -22,4 +22,10 @@ export class Poll {
 
     @Column({default: false})
     completed: boolean
+
+    @CreateDateColumn()
+    created_at: Date;
+
+    @UpdateDateColumn()
+    updated_at: Date;
 }
