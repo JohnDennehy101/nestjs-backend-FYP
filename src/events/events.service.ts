@@ -5,15 +5,13 @@ import { EventsRepository } from './events.repository';
 import { AuthService } from 'src/auth/auth.service';
 import { Event } from './events.entity';
 import { ExternalApiRequestsService } from 'src/external-api-requests/external-api-requests.service';
-import { User } from 'src/users/user.entity';
 import { UsersRepository } from 'src/users/users.repository';
-import { title } from 'process';
 import { PollsRepository } from 'src/polls/polls.repository';
-import { PollOptionDto } from 'src/polls/dto/polls-option.dto';
 import { PollsDto } from 'src/polls/dto/polls.dto';
 import { PollsService } from 'src/polls/polls.service';
 import { UsersService } from 'src/users/users.service';
 import { PollsOptionsService } from 'src/polls-options/polls-options.service';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class EventsService {
@@ -90,7 +88,26 @@ export class EventsService {
         if (pollCompletionAfterSubmission) {
             let highestPollVoteOptions = await this.pollsService.getHighestVotedPollOptions(poll);
 
-            //Use the highestPollVoteOptionsArray to query web scraping infp
+            const externalWebScrapingJwtResponse = await lastValueFrom(this.externalApiRequestsService.getThirdPartyJwt())
+            
+            for (let pollOption in highestPollVoteOptions) {
+                let scrapedAccommodationInfoResponse = await lastValueFrom(this.externalApiRequestsService.getAccommodationInfo('Dublin', highestPollVoteOptions[pollOption].startDate, highestPollVoteOptions[pollOption].endDate,event[0].invitedUsers.length,1, await externalWebScrapingJwtResponse.access_token))
+
+                let accommodationInfo = await scrapedAccommodationInfoResponse.resultPages
+
+                let pages = Object.keys(accommodationInfo);
+                
+                for (let page in pages) {
+                    //Array of objects with accommodation info
+                    //console.log(accommodationInfo[pages[page]])
+            
+                } 
+            }
+
+            
+
+            
+
         }
     }
 
@@ -111,5 +128,9 @@ export class EventsService {
 
         /*return this.externalApiRequestsService.getFlightInfo('Dublin', 'London', new Date, new Date, 3, '')*/
         /*return this.externalApiRequestsService.getThirdPartyJwt()*/
+    }
+
+    getExternalWebScrapingJwt() {
+        return this.externalApiRequestsService.getThirdPartyJwt();
     }
 }

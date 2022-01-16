@@ -9,7 +9,7 @@ export class ExternalApiRequestsService {
         private httpService: HttpService
     ) {}
 
-    getThirdPartyJwt(): Observable<AxiosResponse<any>> {
+    getThirdPartyJwt(): Observable<any> {
     return this.httpService.post(`${process.env.WEBSCRAPE_SERVER_URL}/login`, {
         "username": process.env.WEBSCRAPE_SERVER_ACCESS_USERNAME,
         "password": process.env.WEBSCRAPE_SERVER_ACCESS_PASSWORD
@@ -17,7 +17,7 @@ export class ExternalApiRequestsService {
     }
 
 
-    getAccommodationInfo(destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, numberOfRooms: number, accessToken : string): Observable<AxiosResponse<any>> {
+    getAccommodationInfo(destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, numberOfRooms: number, accessToken: string): Observable<any> {
         const headersRequest = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
@@ -34,7 +34,7 @@ export class ExternalApiRequestsService {
 
      
 
-    getFlightInfo(fromCity : string, destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, accessToken : string): Observable<AxiosResponse<any>> {
+    getFlightInfo(fromCity : string, destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, accessToken : string): Observable<any> {
          const paramsRequest = {
             'fromCity': fromCity,
             'destinationCity': destinationCity,
