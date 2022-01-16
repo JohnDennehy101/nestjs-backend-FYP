@@ -71,7 +71,8 @@ export class EventsService {
     async updateEvent(eventDto : EventDto, eventId : string) : Promise<any> {
         return this.eventsRepository.update(eventId, {
             ...(eventDto.title && {title: eventDto.title}),
-            ...(eventDto.type && {type: eventDto.type})
+            ...(eventDto.type && {type: eventDto.type}),
+            ...(eventDto.city && {city: eventDto.city})
         })
     }
 
@@ -82,7 +83,7 @@ export class EventsService {
     async voteEventPoll(pollDto : PollsDto, eventId: string, pollId : string, userId: string) : Promise<any> {
         let user = await this.usersRepository.findOne({id: userId})
         let poll = await this.pollsService.returnIndividualPoll(pollId);
-        let event = await this.eventsRepository.findEventUsers(eventId);
+        let event = await this.eventsRepository.findEventUsers(eventId)
         let pollCompletionAfterSubmission = await this.pollsService.voteEventPoll(poll, event, pollDto.options, user)
 
         if (pollCompletionAfterSubmission) {
@@ -91,17 +92,10 @@ export class EventsService {
             const externalWebScrapingJwtResponse = await lastValueFrom(this.externalApiRequestsService.getThirdPartyJwt())
             
             for (let pollOption in highestPollVoteOptions) {
-                let scrapedAccommodationInfoResponse = await lastValueFrom(this.externalApiRequestsService.getAccommodationInfo('Dublin', highestPollVoteOptions[pollOption].startDate, highestPollVoteOptions[pollOption].endDate,event[0].invitedUsers.length,1, await externalWebScrapingJwtResponse.access_token))
+                //Check db for existing info before scraping
+                let scrapedAccommodationInfoResponse = await lastValueFrom(this.externalApiRequestsService.getAccommodationInfo(event[0].city, highestPollVoteOptions[pollOption].startDate, highestPollVoteOptions[pollOption].endDate,event[0].invitedUsers.length,1, await externalWebScrapingJwtResponse.access_token))
 
                 let accommodationInfo = await scrapedAccommodationInfoResponse.resultPages
-
-                let pages = Object.keys(accommodationInfo);
-                
-                for (let page in pages) {
-                    //Array of objects with accommodation info
-                    //console.log(accommodationInfo[pages[page]])
-            
-                } 
             }
 
             

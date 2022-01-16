@@ -9,4 +9,7 @@ export class EventDto {
 
     @IsEmail({}, {each: true})
     userEmails: string[];
+
+    @IsString()
+    city: string;
 }
