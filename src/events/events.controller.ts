@@ -61,6 +61,11 @@ export class EventsController {
         return this.eventsService.findEvent(id)
     }
 
+    @Get('/:id/accommodation')
+    returnScrapedAccommodationInformation(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
+        return this.eventsService.returnScrapedAccommodationInformation(id)
+    }
+
     //@UseGuards(IsActivatedGuard)
     @Get('/type/:id')
     findEventsByType(@Param('id', new ParseEnumPipe(EventsType)) id: string): Promise<Event[]> {
@@ -79,10 +84,6 @@ export class EventsController {
         return this.eventsService.deleteEvent(eventId);
     }
 
-    @Get('/accommodation/test')
-     testing(@Req() req) {
-         return this.eventsService.findAccommodationInformation()
-     }
 
     @Post('/test')
      @UseGuards(AuthGuard())

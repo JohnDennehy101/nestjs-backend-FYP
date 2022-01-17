@@ -17,17 +17,30 @@ export class ExternalApiRequestsService {
     }
 
 
-    getAccommodationInfo(destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, numberOfRooms: number, accessToken: string): Observable<any> {
+    postAccommodationInfo(destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, numberOfRooms: number, accessToken: string, eventId: string): Observable<any> {
+        const headersRequest = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+        }
+        const data = {
+            'destinationCity': destinationCity,
+            'startDate': startDate,
+            'endDate': endDate,
+            'numberOfPeople': numberOfPeople,
+            'numberOfRooms': numberOfRooms,
+            'eventId': eventId
+        }
+    return this.httpService.post(`${process.env.WEBSCRAPE_SERVER_URL}/accommodation`, data, {headers: headersRequest}).pipe(map(response => response.data));
+    }
+
+    getAccommodationInfo(destinationCity: string, accessToken: string, eventId: string): Observable<any> {
         const headersRequest = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
         }
         const paramsRequest = {
             'destinationCity': destinationCity,
-            'startDate': startDate,
-            'endDate': endDate,
-            'numberOfPeople': numberOfPeople,
-            'numberOfRooms': numberOfRooms,
+            'eventId': eventId
         }
     return this.httpService.get(`${process.env.WEBSCRAPE_SERVER_URL}/accommodation`, {headers: headersRequest, params: paramsRequest}).pipe(map(response => response.data));
     }

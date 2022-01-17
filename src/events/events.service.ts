@@ -93,15 +93,14 @@ export class EventsService {
             
             for (let pollOption in highestPollVoteOptions) {
                 //Check db for existing info before scraping
-                let scrapedAccommodationInfoResponse = await lastValueFrom(this.externalApiRequestsService.getAccommodationInfo(event[0].city, highestPollVoteOptions[pollOption].startDate, highestPollVoteOptions[pollOption].endDate,event[0].invitedUsers.length,1, await externalWebScrapingJwtResponse.access_token))
+                let scrapedAccommodationInfoResponse = await lastValueFrom(this.externalApiRequestsService.postAccommodationInfo(event[0].city, highestPollVoteOptions[pollOption].startDate, highestPollVoteOptions[pollOption].endDate,event[0].invitedUsers.length,1, await externalWebScrapingJwtResponse.access_token, event[0].id))
 
                 let accommodationInfo = await scrapedAccommodationInfoResponse.resultPages
+
+           
             }
 
-            
-
-            
-
+        
         }
     }
 
@@ -117,14 +116,13 @@ export class EventsService {
         return this.eventsRepository.delete({id: uuid})
     }
 
-    async findAccommodationInformation() : Promise<any> {
-        /*return this.externalApiRequestsService.getAccommodationInfo('Dublin', new Date, new Date,5,1,'')*/
+    async returnScrapedAccommodationInformation(eventId: string) : Promise<any> {
+         let event = await this.eventsRepository.findEventUsers(eventId)
+        const externalWebScrapingJwtResponse = await lastValueFrom(this.externalApiRequestsService.getThirdPartyJwt())
 
-        /*return this.externalApiRequestsService.getFlightInfo('Dublin', 'London', new Date, new Date, 3, '')*/
-        /*return this.externalApiRequestsService.getThirdPartyJwt()*/
+        let scrapedAccommodationInfoResponse = await lastValueFrom(this.externalApiRequestsService.getAccommodationInfo(event[0].city, await externalWebScrapingJwtResponse.access_token, event[0].id))
+
+        return scrapedAccommodationInfoResponse
     }
 
-    getExternalWebScrapingJwt() {
-        return this.externalApiRequestsService.getThirdPartyJwt();
-    }
 }
