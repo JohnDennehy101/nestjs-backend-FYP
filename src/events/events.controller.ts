@@ -66,6 +66,11 @@ export class EventsController {
         return this.eventsService.returnScrapedAccommodationInformation(id)
     }
 
+    @Get('/:id/flights')
+    returnScrapedFlightsInformation(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
+        return this.eventsService.returnScrapedFlightInformation(id)
+    }
+
     //@UseGuards(IsActivatedGuard)
     @Get('/type/:id')
     findEventsByType(@Param('id', new ParseEnumPipe(EventsType)) id: string): Promise<Event[]> {

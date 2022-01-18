@@ -12,4 +12,7 @@ export class EventDto {
 
     @IsString()
     city: string;
+
+    @IsString()
+    departureCity: string;
 }

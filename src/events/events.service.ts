@@ -72,7 +72,8 @@ export class EventsService {
         return this.eventsRepository.update(eventId, {
             ...(eventDto.title && {title: eventDto.title}),
             ...(eventDto.type && {type: eventDto.type}),
-            ...(eventDto.city && {city: eventDto.city})
+            ...(eventDto.city && {city: eventDto.city}),
+            ...(eventDto.departureCity && {departureCity: eventDto.departureCity})
         })
     }
 
@@ -96,6 +97,11 @@ export class EventsService {
                 let scrapedAccommodationInfoResponse = await lastValueFrom(this.externalApiRequestsService.postAccommodationInfo(event[0].city, highestPollVoteOptions[pollOption].startDate, highestPollVoteOptions[pollOption].endDate,event[0].invitedUsers.length,1, await externalWebScrapingJwtResponse.access_token, event[0].id))
 
                 let accommodationInfo = await scrapedAccommodationInfoResponse.resultPages
+
+                if (event[0].type === 'FOREIGN_OVERNIGHT') {
+
+                let scrapedFlightInfoResponse = await lastValueFrom(this.externalApiRequestsService.postFlightInfo(event[0].departureCity, event[0].city, highestPollVoteOptions[pollOption].startDate, highestPollVoteOptions[pollOption].endDate,event[0].invitedUsers.length, await externalWebScrapingJwtResponse.access_token, event[0].id))
+                }
 
            
             }
@@ -121,6 +127,15 @@ export class EventsService {
         const externalWebScrapingJwtResponse = await lastValueFrom(this.externalApiRequestsService.getThirdPartyJwt())
 
         let scrapedAccommodationInfoResponse = await lastValueFrom(this.externalApiRequestsService.getAccommodationInfo(event[0].city, await externalWebScrapingJwtResponse.access_token, event[0].id))
+
+        return scrapedAccommodationInfoResponse
+    }
+
+    async returnScrapedFlightInformation(eventId: string) : Promise<any> {
+         let event = await this.eventsRepository.findEventUsers(eventId)
+        const externalWebScrapingJwtResponse = await lastValueFrom(this.externalApiRequestsService.getThirdPartyJwt())
+
+        let scrapedAccommodationInfoResponse = await lastValueFrom(this.externalApiRequestsService.getFlightInfo(event[0].departureCity, event[0].city, await externalWebScrapingJwtResponse.access_token, event[0].id))
 
         return scrapedAccommodationInfoResponse
     }

@@ -18,6 +18,9 @@ export class Event {
     @Column()
     city: string;
 
+    @Column({nullable: true})
+    departureCity: string;
+
     @ManyToOne(() => User, (user: User) => user.createdEvents)
     createdByUser: User;
 
