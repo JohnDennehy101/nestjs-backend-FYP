@@ -48,7 +48,7 @@ export class EventsRepository extends Repository<Event> {
     async findEvent(uuid: string) : Promise<any> {
 
          try {
-            const event = await this.createQueryBuilder("event").leftJoinAndSelect("event.polls", "poll").where("event.id = :id", {id: uuid}).leftJoinAndSelect("event.createdByUser", "user").where("event.id = :id", {id: uuid}).leftJoinAndSelect("event.invitedUsers", "event_invited_users").select(['event', 'poll', 'user.id', 'event_invited_users.email', 'event_invited_users.id']).where("event.id = :id").getMany();
+            const event = await this.createQueryBuilder("event").leftJoinAndSelect("event.polls", "poll").where("event.id = :id", {id: uuid}).leftJoinAndSelect("poll.pollOptions", "poll_option").leftJoinAndSelect("poll_option.votes", "poll_vote").leftJoinAndSelect("event.createdByUser", "user").where("event.id = :id", {id: uuid}).leftJoinAndSelect("event.invitedUsers", "event_invited_users").select(['event', 'poll', 'user.id', 'poll_option', 'poll_vote', 'event_invited_users.email', 'event_invited_users.id']).where("event.id = :id").getMany();
             return event;
         } catch (error) {
             console.log(error);

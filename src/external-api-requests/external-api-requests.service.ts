@@ -16,59 +16,30 @@ export class ExternalApiRequestsService {
     }).pipe(map(response => response.data));
     }
 
-
-    postAccommodationInfo(destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, numberOfRooms: number, accessToken: string, eventId: string): Observable<any> {
-        const headersRequest = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-        }
-        const data = {
-            'destinationCity': destinationCity,
-            'startDate': startDate,
-            'endDate': endDate,
-            'numberOfPeople': numberOfPeople,
-            'numberOfRooms': numberOfRooms,
-            'eventId': eventId
-        }
-    return this.httpService.post(`${process.env.WEBSCRAPE_SERVER_URL}/accommodation`, data, {headers: headersRequest}).pipe(map(response => response.data));
-    }
-
-    getAccommodationInfo(destinationCity: string, accessToken: string, eventId: string): Observable<any> {
+    getAccommodationInfo(destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, numberOfRooms: number, accessToken: string): Observable<any> {
         const headersRequest = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
         }
         const paramsRequest = {
             'destinationCity': destinationCity,
-            'eventId': eventId
+            'startDate': startDate,
+            'endDate': endDate,
+            'numberOfPeople': numberOfPeople,
+            'numberOfRooms': numberOfRooms
         }
     return this.httpService.get(`${process.env.WEBSCRAPE_SERVER_URL}/accommodation`, {headers: headersRequest, params: paramsRequest}).pipe(map(response => response.data));
     }
 
+     
 
-    postFlightInfo(fromCity: string, destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, accessToken: string, eventId: string): Observable<any> {
-        const headersRequest = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-        }
-        const data = {
+    getFlightInfo(fromCity: string, destinationCity: string, startDate: Date, endDate: Date, numberOfPeople: number, accessToken: string): Observable<any> {
+         const paramsRequest = {
             'fromCity': fromCity,
             'destinationCity': destinationCity,
             'startDate': startDate,
             'endDate': endDate,
             'numberOfPeople': numberOfPeople,
-            'eventId': eventId
-        }
-    return this.httpService.post(`${process.env.WEBSCRAPE_SERVER_URL}/flights`, data, {headers: headersRequest}).pipe(map(response => response.data));
-    }
-
-     
-
-    getFlightInfo(fromCity : string, destinationCity: string, accessToken : string, eventId: string): Observable<any> {
-         const paramsRequest = {
-            'fromCity': fromCity,
-            'destinationCity': destinationCity,
-            'eventId': eventId
         }
         const headersRequest = {
             'Content-Type': 'application/json',

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards, Param, ParseUUIDPipe, ParseEnumPipe, Patch, Delete, ParseArrayPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards, Param, ParseUUIDPipe, ParseEnumPipe, Patch, Delete, ParseArrayPipe, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { EventDto } from './dto/event.dto'
 import { PayloadValidationPipe } from '../common/pipes/payload-validation.pipe';
@@ -62,13 +62,13 @@ export class EventsController {
     }
 
     @Get('/:id/accommodation')
-    returnScrapedAccommodationInformation(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
-        return this.eventsService.returnScrapedAccommodationInformation(id)
+    returnScrapedAccommodationInformation(@Param('id', new ParseUUIDPipe()) id: string, @Query('startDate') startDate: Date, @Query('endDate') endDate: Date): Promise<any> {
+        return this.eventsService.returnScrapedAccommodationInformation(id, startDate, endDate)
     }
 
     @Get('/:id/flights')
-    returnScrapedFlightsInformation(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
-        return this.eventsService.returnScrapedFlightInformation(id)
+    returnScrapedFlightsInformation(@Param('id', new ParseUUIDPipe()) id: string, @Query('startDate') startDate: Date, @Query('endDate') endDate: Date): Promise<any> {
+        return this.eventsService.returnScrapedFlightInformation(id, startDate, endDate)
     }
 
     //@UseGuards(IsActivatedGuard)
