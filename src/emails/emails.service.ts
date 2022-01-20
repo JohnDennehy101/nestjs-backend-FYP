@@ -3,6 +3,10 @@ import { ConfigService } from '@nestjs/config';
 const formData = require('form-data');
 import { EmailOptions, MailgunService } from '@nextnm/nestjs-mailgun';
 import { AuthService } from 'src/auth/auth.service';
+import { Event } from 'src/events/events.entity';
+import { PollOption } from 'src/polls-options/polls-options.entity';
+import { Poll } from 'src/polls/polls.entity';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class EmailsService {
@@ -34,6 +38,35 @@ export class EmailsService {
     try {
         //const response = await this.mailgunService.createEmail('mg.groupactivityplanning.software',mailgunData);
        // return response;
+    } catch (error) {
+        console.log(error)
+    }
+  
+    }
+
+    async sendPollCompletionEmail(user: User, poll: Poll, pollOption: PollOption, fullEvent: Event, votes: number) : Promise<any> {
+       const pollLink  = `http://localhost:8080/event/${user.id}/${fullEvent.id}/poll/${poll.id}`
+       const mostVotedPollOption = `${pollOption.startDate} - ${pollOption.endDate}`;
+       const event = fullEvent.title;
+       const numberOfVotes = votes;
+
+       const mailgunData = {
+            from: 'contact@mg.groupactivityplanning.software',
+            to: `${user.email}`,
+            subject: `Poll Completion Email`,
+            template: 'poll-completed-email',
+            'h:X-Mailgun-Variables': JSON.stringify({
+            pollLink,
+            mostVotedPollOption,
+            event,
+            numberOfVotes
+    }),
+
+    };
+
+    try {
+        const response = await this.mailgunService.createEmail('mg.groupactivityplanning.software',mailgunData);
+        return response;
     } catch (error) {
         console.log(error)
     }

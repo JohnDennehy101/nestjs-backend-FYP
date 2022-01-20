@@ -12,6 +12,7 @@ import { PollsService } from 'src/polls/polls.service';
 import { UsersService } from 'src/users/users.service';
 import { PollsOptionsService } from 'src/polls-options/polls-options.service';
 import { lastValueFrom } from 'rxjs';
+import { EmailsService } from 'src/emails/emails.service';
 
 @Injectable()
 export class EventsService {
@@ -24,7 +25,8 @@ export class EventsService {
         private pollsService: PollsService,
         private pollsOptionsService: PollsOptionsService,
         private authService : AuthService,
-        private externalApiRequestsService : ExternalApiRequestsService
+        private externalApiRequestsService : ExternalApiRequestsService,
+         private emailsService: EmailsService
     ) {}
 
     async createEvent(eventDto : EventDto, userId : string) : Promise<void> {
@@ -89,6 +91,12 @@ export class EventsService {
 
         if (pollCompletionAfterSubmission) {
             let highestPollVoteOptions = await this.pollsService.getHighestVotedPollOptions(poll);
+
+            //Commenting out to save on Email API calls
+            //for (let user in event[0].invitedUsers) {
+            ////    await this.emailsService.sendPollCompletionEmail(event[0].invitedUsers[user], poll,highestPollVoteOptions[0], event[0],highestPollVoteOptions[0].votes.length)
+           // }
+        
 
             const externalWebScrapingJwtResponse = await lastValueFrom(this.externalApiRequestsService.getThirdPartyJwt())
             
