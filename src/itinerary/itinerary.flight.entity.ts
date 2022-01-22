@@ -1,0 +1,51 @@
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Event } from 'src/events/events.entity';
+import { Itinerary } from "./itinerary.entity";
+
+@Entity()
+export class ItineraryFlight {
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
+
+    @ManyToOne(() => Itinerary, (itinerary: Itinerary) => itinerary.flight)
+    itinerary: Itinerary;
+
+    @Column()
+    departureTime: String
+
+    @Column()
+    arrivalTime: String
+
+    @Column()
+    departureCity: String
+
+    @Column()
+    arrivalCity: String
+
+    @Column()
+    airport: String
+
+    @Column()
+    duration: String
+
+    @Column()
+    directFlight: String
+
+    @Column()
+    carrier: String
+
+    @Column()
+    pricePerPerson: String
+    
+    @Column()
+    priceTotal: String
+
+    @Column()
+    flightUrl: String
+
+    @CreateDateColumn()
+    created_at: Date;
+
+    @UpdateDateColumn()
+    updated_at: Date;
+}

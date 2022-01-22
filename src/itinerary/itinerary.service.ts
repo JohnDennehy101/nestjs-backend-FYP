@@ -4,16 +4,17 @@ import { ItineraryDto } from './dto/itinerary.dto';
 import { ItineraryRepository } from './itinerary.repository';
 import { Event } from 'src/events/events.entity';
 import { ItineraryAccommodationRepository } from './itinerary.accommodation.repository';
+import { ItineraryFlightRepository } from './itinerary.flight.repository';
 
 @Injectable()
 export class ItineraryService {
-    constructor(@InjectRepository(ItineraryRepository) private itineraryRepository: ItineraryRepository, @InjectRepository(ItineraryAccommodationRepository) private itineraryAccommodationRepository: ItineraryAccommodationRepository) {}
+    constructor(@InjectRepository(ItineraryRepository) private itineraryRepository: ItineraryRepository, @InjectRepository(ItineraryAccommodationRepository) private itineraryAccommodationRepository: ItineraryAccommodationRepository, @InjectRepository(ItineraryFlightRepository) private itineraryFlightRepository: ItineraryFlightRepository) {}
 
 
         async createEventItinerary(itineraryDto : ItineraryDto, event: Event) : Promise<void> {
 
         try {
-            const {accommodation } = itineraryDto
+            const {accommodation, flight } = itineraryDto
 
             const newItinerary = await this.itineraryRepository.create({event: event});
 
@@ -36,6 +37,24 @@ export class ItineraryService {
             })
 
             await this.itineraryAccommodationRepository.save(accommodationDbEntry);
+
+
+            const flightDbEntry = await this.itineraryFlightRepository.create({
+                departureTime: flight[0].departureTime,
+                arrivalTime: flight[0].arrivalTime,
+                departureCity: flight[0].departureCity,
+                arrivalCity: flight[0].arrivalCity,
+                airport: flight[0].airport,
+                duration: flight[0].duration,
+                directFlight: flight[0].directFlight,
+                carrier: flight[0].carrier,
+                pricePerPerson: flight[0].pricePerPerson,
+                priceTotal: flight[0].priceTotal,
+                flightUrl: flight[0].flightUrl,
+                itinerary: newItinerary
+            })
+
+            await this.itineraryFlightRepository.save(flightDbEntry);
           
             
     
