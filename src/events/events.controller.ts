@@ -75,7 +75,6 @@ export class EventsController {
     //@UseGuards(IsActivatedGuard)
     @Post('/:id/itinerary')
     createEventItinerary(@Body() itineraryDto : ItineraryDto, @Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
-        console.log("HITTING")
         return this.eventsService.createEventItinerary(itineraryDto, eventId);
     }
 

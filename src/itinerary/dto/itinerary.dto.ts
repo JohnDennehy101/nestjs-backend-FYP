@@ -1,4 +1,5 @@
 import { IsArray } from "class-validator";
+import { ItineraryAccommodationDto } from "./itinerary.accommodation.dto";
 
 export class ItineraryDto {
 
@@ -6,7 +7,7 @@ export class ItineraryDto {
     flight: [];
 
     @IsArray()
-    accommodation: [];
+    accommodation: ItineraryAccommodationDto[];
 
     @IsArray()
     activities: [];

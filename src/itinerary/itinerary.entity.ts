@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Event } from 'src/events/events.entity';
+import { ItineraryAccommodation } from "./itinerary.accommodation.entity";
 
 @Entity()
 export class Itinerary {
@@ -10,9 +11,8 @@ export class Itinerary {
     //@OneToMany(() => PollOption, (pollOption: PollOption) => pollOption.poll, {cascade: true,})
     //pollOptions: PollOption[];
 
-    //Accommodation
-    //@OneToMany(() => PollVote, (pollVote: PollVote) => pollVote.poll, {cascade: true,})
-    //pollVote: PollVote[];
+    @OneToMany(() => ItineraryAccommodation, (accommodation: ItineraryAccommodation) => accommodation.itinerary, {onDelete: "CASCADE"})
+    accommodation: ItineraryAccommodation[];
 
     @OneToOne(() => Event)
     @JoinColumn()
