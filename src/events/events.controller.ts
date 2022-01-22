@@ -8,6 +8,7 @@ import { EventsType } from './events-type.enums';
 import { PollOptionDto } from 'src/polls/dto/polls-option.dto';
 import { PollsDto } from 'src/polls/dto/polls.dto';
 import { IsActivatedGuard } from 'src/users/guards/is-activated.guard';
+import { ItineraryDto } from 'src/itinerary/dto/itinerary.dto';
 
 @Controller('events')
 export class EventsController {
@@ -69,6 +70,13 @@ export class EventsController {
     @Get('/:id/flights')
     returnScrapedFlightsInformation(@Param('id', new ParseUUIDPipe()) id: string, @Query('startDate') startDate: Date, @Query('endDate') endDate: Date): Promise<any> {
         return this.eventsService.returnScrapedFlightInformation(id, startDate, endDate)
+    }
+
+    //@UseGuards(IsActivatedGuard)
+    @Post('/:id/itinerary')
+    createEventItinerary(@Body() itineraryDto : ItineraryDto, @Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
+        console.log("HITTING")
+        return this.eventsService.createEventItinerary(itineraryDto, eventId);
     }
 
     //@UseGuards(IsActivatedGuard)

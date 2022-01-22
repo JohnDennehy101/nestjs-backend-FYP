@@ -9,6 +9,7 @@ import { EmailsModule } from './emails/emails.module';
 import { PollsModule } from './polls/polls.module';
 import { PollsOptionsModule } from './polls-options/polls-options.module';
 import { PollsVotesModule } from './polls-votes/polls-votes.module';
+import { ItineraryModule } from './itinerary/itinerary.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { PollsVotesModule } from './polls-votes/polls-votes.module';
   PollsModule,
   PollsOptionsModule,
   PollsVotesModule,
+  ItineraryModule,
 ],
   controllers: [],
   providers: [],

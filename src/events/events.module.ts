@@ -14,6 +14,8 @@ import { PollsModule } from 'src/polls/polls.module';
 import { PollsService } from 'src/polls/polls.service';
 import { PollsOptionsModule } from 'src/polls-options/polls-options.module';
 import { PollsVotesModule } from 'src/polls-votes/polls-votes.module';
+import { ItineraryModule } from 'src/itinerary/itinerary.module';
+import { ItineraryRepository } from 'src/itinerary/itinerary.repository';
 
 @Module({
   imports: [
@@ -25,7 +27,8 @@ import { PollsVotesModule } from 'src/polls-votes/polls-votes.module';
     EmailsModule,
     PollsModule,
     PollsOptionsModule,
-    PollsVotesModule
+    PollsVotesModule,
+    ItineraryModule
   ],
   controllers: [EventsController],
   providers: [EventsService, UsersService, PollsService]
