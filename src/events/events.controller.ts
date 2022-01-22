@@ -79,6 +79,12 @@ export class EventsController {
     }
 
     //@UseGuards(IsActivatedGuard)
+    @Delete('/:id/itinerary')
+    deleteEventItinerary(@Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
+        return this.eventsService.deleteEventItinerary(eventId);
+    }
+
+    //@UseGuards(IsActivatedGuard)
     @Get('/type/:id')
     findEventsByType(@Param('id', new ParseEnumPipe(EventsType)) id: string): Promise<Event[]> {
         return this.eventsService.findEventsByType(id)

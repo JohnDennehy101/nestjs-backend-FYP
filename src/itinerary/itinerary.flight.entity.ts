@@ -7,7 +7,7 @@ export class ItineraryFlight {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(() => Itinerary, (itinerary: Itinerary) => itinerary.flight)
+    @ManyToOne(() => Itinerary, (itinerary: Itinerary) => itinerary.flight, {onDelete: "CASCADE"})
     itinerary: Itinerary;
 
     @Column()

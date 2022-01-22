@@ -54,6 +54,14 @@ export class EventsService {
 
     }
 
+    async deleteEventItinerary(eventId : string) : Promise<void> {
+
+        const event = await this.eventsRepository.findOne({id: eventId});
+  
+        return this.itineraryService.deleteEventItinerary(event);
+
+    }
+
     async findAllUserEvents(userId : string) : Promise<any> {
         const user = await this.usersRepository.findOne({id: userId});
         let userCreatedEvents = await this.eventsRepository.findAllUserCreatedEvents(user);

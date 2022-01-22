@@ -65,4 +65,8 @@ export class ItineraryService {
         }
         
     }
+
+    async deleteEventItinerary (event: Event) : Promise<any> {
+        return this.itineraryRepository.delete({event: event})
+    }
 }
