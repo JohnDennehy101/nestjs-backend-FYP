@@ -54,6 +54,14 @@ export class EventsService {
 
     }
 
+    async updateEventItinerary(itineraryDto : ItineraryDto, eventId : string) : Promise<void> {
+
+        const event = await this.eventsRepository.findOne({id: eventId});
+  
+        return this.itineraryService.updateEventItinerary(itineraryDto, event);
+
+    }
+
     async deleteEventItinerary(eventId : string) : Promise<void> {
 
         const event = await this.eventsRepository.findOne({id: eventId});

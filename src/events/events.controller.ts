@@ -85,6 +85,12 @@ export class EventsController {
     }
 
     //@UseGuards(IsActivatedGuard)
+    @Patch('/:id/itinerary')
+    updateEventItinerary(@Body() itineraryDto : ItineraryDto, @Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
+        return this.eventsService.updateEventItinerary(itineraryDto, eventId);
+    }
+
+    //@UseGuards(IsActivatedGuard)
     @Get('/type/:id')
     findEventsByType(@Param('id', new ParseEnumPipe(EventsType)) id: string): Promise<Event[]> {
         return this.eventsService.findEventsByType(id)

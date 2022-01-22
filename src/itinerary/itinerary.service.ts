@@ -20,41 +20,47 @@ export class ItineraryService {
 
             await this.itineraryRepository.save(newItinerary);
 
-            const accommodationDbEntry = await this.itineraryAccommodationRepository.create({
-                title: accommodation[0].title,
-                bookingPreviewLink: accommodation[0].bookingPreviewLink,
-                bookingSiteDisplayLocationMapLink: accommodation[0].bookingSiteDisplayLocationMapLink,
-                bookingSiteLink: accommodation[0].bookingSiteLink,
-                freeCancellationText: accommodation[0].freeCancellationText,
-                locationDistance: accommodation[0].locationDistance,
-                numberOfBedsRecommendedBooking: accommodation[0].numberOfBedsRecommendedBooking,
-                price: accommodation[0].price,
-                ratingScore: accommodation[0].ratingScore,
-                ratingScoreCategory: accommodation[0].ratingScoreCategory,
-                reviewQuantity: accommodation[0].reviewQuantity,
-                roomTypeRecommendedBooking: accommodation[0].roomTypeRecommendedBooking,
+            for (let item in accommodation) {
+                const accommodationDbEntry = await this.itineraryAccommodationRepository.create({
+                title: accommodation[item].title,
+                bookingPreviewLink: accommodation[item].bookingPreviewLink,
+                bookingSiteDisplayLocationMapLink: accommodation[item].bookingSiteDisplayLocationMapLink,
+                bookingSiteLink: accommodation[item].bookingSiteLink,
+                freeCancellationText: accommodation[item].freeCancellationText,
+                locationDistance: accommodation[item].locationDistance,
+                numberOfBedsRecommendedBooking: accommodation[item].numberOfBedsRecommendedBooking,
+                price: accommodation[item].price,
+                ratingScore: accommodation[item].ratingScore,
+                ratingScoreCategory: accommodation[item].ratingScoreCategory,
+                reviewQuantity: accommodation[item].reviewQuantity,
+                roomTypeRecommendedBooking: accommodation[item].roomTypeRecommendedBooking,
                 itinerary: newItinerary
             })
 
             await this.itineraryAccommodationRepository.save(accommodationDbEntry);
+            }
 
+            
 
-            const flightDbEntry = await this.itineraryFlightRepository.create({
-                departureTime: flight[0].departureTime,
-                arrivalTime: flight[0].arrivalTime,
-                departureCity: flight[0].departureCity,
-                arrivalCity: flight[0].arrivalCity,
-                airport: flight[0].airport,
-                duration: flight[0].duration,
-                directFlight: flight[0].directFlight,
-                carrier: flight[0].carrier,
-                pricePerPerson: flight[0].pricePerPerson,
-                priceTotal: flight[0].priceTotal,
-                flightUrl: flight[0].flightUrl,
+            for (let item in flight) {
+                const flightDbEntry = await this.itineraryFlightRepository.create({
+                departureTime: flight[item].departureTime,
+                arrivalTime: flight[item].arrivalTime,
+                departureCity: flight[item].departureCity,
+                arrivalCity: flight[item].arrivalCity,
+                airport: flight[item].airport,
+                duration: flight[item].duration,
+                directFlight: flight[item].directFlight,
+                carrier: flight[item].carrier,
+                pricePerPerson: flight[item].pricePerPerson,
+                priceTotal: flight[item].priceTotal,
+                flightUrl: flight[item].flightUrl,
                 itinerary: newItinerary
             })
 
-            await this.itineraryFlightRepository.save(flightDbEntry);
+                await this.itineraryFlightRepository.save(flightDbEntry);
+            }
+            
           
             
     
@@ -68,5 +74,19 @@ export class ItineraryService {
 
     async deleteEventItinerary (event: Event) : Promise<any> {
         return this.itineraryRepository.delete({event: event})
+    }
+
+    async updateEventItinerary(itineraryDto : ItineraryDto, event: Event) : Promise<any> {
+        const itinerary = await this.itineraryRepository.findOne({event: event})
+        await this.itineraryRepository.update(itinerary.id, {
+            ...(itineraryDto.completed && {completed: itineraryDto.completed}),
+        })
+        if (itineraryDto.accommodation.length > 0) {
+            await this.itineraryAccommodationRepository.updateItineraryAccommodation(itineraryDto.accommodation, itinerary)
+        }
+        if (itineraryDto.flight.length > 0) {
+            await this.itineraryFlightRepository.updateItineraryFlights(itineraryDto.flight, itinerary)
+        }
+        
     }
 }
