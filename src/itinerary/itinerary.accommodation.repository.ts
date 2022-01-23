@@ -34,7 +34,12 @@ async updateItineraryAccommodation (accommodation: ItineraryAccommodationDto[], 
             ...(accommodation[item].ratingScore && {ratingScore: accommodation[item].ratingScore}),
             ...(accommodation[item].ratingScoreCategory && {ratingScoreCategory: accommodation[item].ratingScoreCategory}),
             ...(accommodation[item].reviewQuantity && {reviewQuantity: accommodation[item].reviewQuantity}),
-            ...(accommodation[item].roomTypeRecommendedBooking && {roomTypeRecommendedBooking: accommodation[item].roomTypeRecommendedBooking})
+            ...(accommodation[item].roomTypeRecommendedBooking && {roomTypeRecommendedBooking: accommodation[item].roomTypeRecommendedBooking}),
+            ...(accommodation[item].startDate && {startDate: accommodation[item].startDate}),
+            ...(accommodation[item].endDate && {endDate: accommodation[item].endDate}),
+            ...(accommodation[item].locationTitle && {locationTitle: accommodation[item].locationTitle}),
+            ...(accommodation[item].numberOfNightsAndGuests && {numberOfNightsAndGuests: accommodation[item].numberOfNightsAndGuests}),
+            ...(accommodation[item].numberOfRoomsRecommendedBooking && {numberOfRoomsRecommendedBooking: accommodation[item].numberOfRoomsRecommendedBooking})
         })
 
         }
@@ -53,7 +58,12 @@ async updateItineraryAccommodation (accommodation: ItineraryAccommodationDto[], 
                 ratingScoreCategory: accommodation[item].ratingScoreCategory,
                 reviewQuantity: accommodation[item].reviewQuantity,
                 roomTypeRecommendedBooking: accommodation[item].roomTypeRecommendedBooking,
-                itinerary: itinerary
+                itinerary: itinerary,
+                startDate: accommodation[item].startDate,
+                endDate: accommodation[item].endDate,
+                locationTitle: accommodation[item].locationTitle,
+                numberOfNightsAndGuests: accommodation[item].numberOfNightsAndGuests,
+                numberOfRoomsRecommendedBooking: accommodation[item].numberOfRoomsRecommendedBooking
             })
 
             await this.save(accommodationDbEntry);

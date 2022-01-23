@@ -35,7 +35,12 @@ export class ItineraryService {
                 ratingScoreCategory: accommodation[item].ratingScoreCategory,
                 reviewQuantity: accommodation[item].reviewQuantity,
                 roomTypeRecommendedBooking: accommodation[item].roomTypeRecommendedBooking,
-                itinerary: newItinerary
+                itinerary: newItinerary,
+                startDate: accommodation[item].startDate,
+                endDate: accommodation[item].endDate,
+                locationTitle: accommodation[item].locationTitle,
+                numberOfNightsAndGuests: accommodation[item].numberOfNightsAndGuests,
+                numberOfRoomsRecommendedBooking: accommodation[item].numberOfRoomsRecommendedBooking
             })
 
             await this.itineraryAccommodationRepository.save(accommodationDbEntry);

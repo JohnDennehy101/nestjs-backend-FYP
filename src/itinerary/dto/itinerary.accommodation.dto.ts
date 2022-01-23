@@ -36,4 +36,19 @@ export class ItineraryAccommodationDto {
 
     @IsString()
     roomTypeRecommendedBooking: String
+
+    @IsString()
+    startDate: String
+
+    @IsString()
+    endDate: String
+
+    @IsString()
+    locationTitle: String
+
+    @IsString()
+    numberOfNightsAndGuests: String
+
+    @IsString()
+    numberOfRoomsRecommendedBooking
 }

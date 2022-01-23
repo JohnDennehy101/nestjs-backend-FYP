@@ -14,6 +14,21 @@ export class ItineraryAccommodation {
     title: String
 
     @Column()
+    startDate: String
+
+    @Column()
+    endDate: String
+
+    @Column()
+    locationTitle: String
+
+    @Column()
+    numberOfNightsAndGuests: String
+
+    @Column()
+    numberOfRoomsRecommendedBooking: String
+
+    @Column()
     bookingPreviewLink: String
 
     @Column()
