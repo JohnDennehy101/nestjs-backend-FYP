@@ -9,6 +9,7 @@ import { PollOptionDto } from 'src/polls/dto/polls-option.dto';
 import { PollsDto } from 'src/polls/dto/polls.dto';
 import { IsActivatedGuard } from 'src/users/guards/is-activated.guard';
 import { ItineraryDto } from 'src/itinerary/dto/itinerary.dto';
+import { Itinerary } from 'src/itinerary/itinerary.entity';
 
 @Controller('events')
 export class EventsController {
@@ -76,6 +77,12 @@ export class EventsController {
     @Post('/:id/itinerary')
     createEventItinerary(@Body() itineraryDto : ItineraryDto, @Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
         return this.eventsService.createEventItinerary(itineraryDto, eventId);
+    }
+
+    //@UseGuards(IsActivatedGuard)
+    @Get('/:id/itinerary')
+    getEventItinerary(@Param('id', new ParseUUIDPipe()) eventId: string): Promise<Itinerary> {
+        return this.eventsService.getEventItinerary(eventId);
     }
 
     //@UseGuards(IsActivatedGuard)

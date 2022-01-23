@@ -15,6 +15,7 @@ import { lastValueFrom } from 'rxjs';
 import { EmailsService } from 'src/emails/emails.service';
 import { ItineraryService } from 'src/itinerary/itinerary.service';
 import { ItineraryDto } from 'src/itinerary/dto/itinerary.dto';
+import { Itinerary } from 'src/itinerary/itinerary.entity';
 
 @Injectable()
 export class EventsService {
@@ -51,6 +52,14 @@ export class EventsService {
         const event = await this.eventsRepository.findOne({id: eventId});
   
         return this.itineraryService.createEventItinerary(itineraryDto, event);
+
+    }
+
+    async getEventItinerary(eventId : string) : Promise<Itinerary> {
+
+        const event = await this.eventsRepository.findOne({id: eventId});
+  
+        return this.itineraryService.getEventItinerary(event);
 
     }
 

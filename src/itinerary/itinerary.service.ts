@@ -5,6 +5,7 @@ import { ItineraryRepository } from './itinerary.repository';
 import { Event } from 'src/events/events.entity';
 import { ItineraryAccommodationRepository } from './itinerary.accommodation.repository';
 import { ItineraryFlightRepository } from './itinerary.flight.repository';
+import { Itinerary } from './itinerary.entity';
 
 @Injectable()
 export class ItineraryService {
@@ -70,6 +71,16 @@ export class ItineraryService {
                 throw new InternalServerErrorException()
         }
         
+    }
+
+    async getEventItinerary(event: Event) : Promise<Itinerary> {
+           try {
+            const itinerary = await this.itineraryRepository.findOne({event: event}, { relations: ['accommodation', 'flight'] });
+            return itinerary;
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException();
+        }
     }
 
     async deleteEventItinerary (event: Event) : Promise<any> {
