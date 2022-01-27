@@ -4,6 +4,9 @@ const formData = require('form-data');
 import { EmailOptions, MailgunService } from '@nextnm/nestjs-mailgun';
 import { AuthService } from 'src/auth/auth.service';
 import { Event } from 'src/events/events.entity';
+import { ItineraryAccommodationDto } from 'src/itinerary/dto/itinerary.accommodation.dto';
+import { ItineraryFlightDto } from 'src/itinerary/dto/itinerary.flight.dto';
+import { Itinerary } from 'src/itinerary/itinerary.entity';
 import { PollOption } from 'src/polls-options/polls-options.entity';
 import { Poll } from 'src/polls/polls.entity';
 import { User } from 'src/users/user.entity';
@@ -86,6 +89,37 @@ export class EmailsService {
     }),
 
     };
+
+    try {
+    const response = await this.mailgunService.createEmail('mg.groupactivityplanning.software',mailgunData);
+
+ 
+    return response;
+    } catch (error) {
+        console.log(error)
+    }
+  
+    }
+
+     async sendCompletedItineraryEmail(eventName: string, email: string, accommodation: ItineraryAccommodationDto[],  flights: ItineraryFlightDto[]) : Promise<any> {
+         let flightBookingLink;
+
+        if (flights.length > 0) {
+            flightBookingLink = flights[0].flightUrl
+        }
+     
+        const mailgunData = {
+            from: 'contact@mg.groupactivityplanning.software',
+            to: `${email}`,
+            subject: `Event Itinerary - ${eventName}`,
+            template: 'event-itinerary-email',
+            'h:X-Mailgun-Variables': JSON.stringify({
+            accommodation,
+            flights,
+            flightBookingLink
+    }),
+    };
+
 
     try {
     const response = await this.mailgunService.createEmail('mg.groupactivityplanning.software',mailgunData);

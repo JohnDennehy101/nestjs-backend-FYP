@@ -6,16 +6,17 @@ import { Event } from 'src/events/events.entity';
 import { ItineraryAccommodationRepository } from './itinerary.accommodation.repository';
 import { ItineraryFlightRepository } from './itinerary.flight.repository';
 import { Itinerary } from './itinerary.entity';
+import { EmailsService } from 'src/emails/emails.service';
 
 @Injectable()
 export class ItineraryService {
-    constructor(@InjectRepository(ItineraryRepository) private itineraryRepository: ItineraryRepository, @InjectRepository(ItineraryAccommodationRepository) private itineraryAccommodationRepository: ItineraryAccommodationRepository, @InjectRepository(ItineraryFlightRepository) private itineraryFlightRepository: ItineraryFlightRepository) {}
+    constructor(@InjectRepository(ItineraryRepository) private itineraryRepository: ItineraryRepository, @InjectRepository(ItineraryAccommodationRepository) private itineraryAccommodationRepository: ItineraryAccommodationRepository, @InjectRepository(ItineraryFlightRepository) private itineraryFlightRepository: ItineraryFlightRepository, private emailsService: EmailsService) {}
 
 
         async createEventItinerary(itineraryDto : ItineraryDto, event: Event) : Promise<void> {
 
         try {
-            const {accommodation, flight } = itineraryDto
+            const {accommodation, flight} = itineraryDto
 
             const newItinerary = await this.itineraryRepository.create({event: event});
 
@@ -67,8 +68,6 @@ export class ItineraryService {
                 await this.itineraryFlightRepository.save(flightDbEntry);
             }
             
-          
-            
     
           
         } catch (error) {
@@ -102,6 +101,15 @@ export class ItineraryService {
         }
         if (itineraryDto.flight.length > 0) {
             await this.itineraryFlightRepository.updateItineraryFlights(itineraryDto.flight, itinerary)
+        }
+
+        if (itineraryDto.completed) {
+            //Commenting out to save on email API calls
+            /*for (let user in event.invitedUsers) {
+                await this.emailsService.sendCompletedItineraryEmail(event.title, event.invitedUsers[user].email, itineraryDto.accommodation, itineraryDto.flight);
+            }*/
+
+            
         }
         
     }

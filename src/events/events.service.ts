@@ -65,7 +65,7 @@ export class EventsService {
 
     async updateEventItinerary(itineraryDto : ItineraryDto, eventId : string) : Promise<void> {
 
-        const event = await this.eventsRepository.findOne({id: eventId});
+        const event = await this.eventsRepository.findOne({id: eventId}, {relations: ["invitedUsers"]});
   
         return this.itineraryService.updateEventItinerary(itineraryDto, event);
 
