@@ -1,8 +1,5 @@
-import { ConflictException, InternalServerErrorException } from "@nestjs/common";
-import { Event } from "src/events/events.entity";
+import { InternalServerErrorException } from "@nestjs/common";
 import { EntityRepository, Repository } from "typeorm";
-import { PollOptionDto } from "./dto/polls-option.dto";
-import { PollsDto } from "./dto/polls.dto";
 import { Poll } from "./polls.entity";
 
 

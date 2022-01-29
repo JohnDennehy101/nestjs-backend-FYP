@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventDto } from './dto/event.dto';
 import { EventsRepository } from './events.repository';
@@ -128,10 +128,10 @@ export class EventsService {
         if (pollCompletionAfterSubmission) {
             let highestPollVoteOptions = await this.pollsService.getHighestVotedPollOptions(poll);
 
-            //Commenting out to save on Email API calls
-            //for (let user in event[0].invitedUsers) {
-            ////    await this.emailsService.sendPollCompletionEmail(event[0].invitedUsers[user], poll,highestPollVoteOptions[0], event[0],highestPollVoteOptions[0].votes.length)
-           // }
+    
+            for (let user in event[0].invitedUsers) {
+                await this.emailsService.sendPollCompletionEmail(event[0].invitedUsers[user], poll,highestPollVoteOptions[0], event[0],highestPollVoteOptions[0].votes.length)
+            }
         
 
             const externalWebScrapingJwtResponse = await lastValueFrom(this.externalApiRequestsService.getThirdPartyJwt())

@@ -15,110 +15,123 @@ import { Itinerary } from 'src/itinerary/itinerary.entity';
 export class EventsController {
     constructor(private readonly eventsService : EventsService) {}
     
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Post('/:userId')
     createEvent(@Body(new PayloadValidationPipe()) eventDto : EventDto, @Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
         return this.eventsService.createEvent(eventDto, userId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Post('/:id/poll')
     createEventPoll(@Body() pollsDto : PollsDto, @Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
         return this.eventsService.createEventPoll(pollsDto, eventId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Patch('/:id/poll/:pollId')
     updateEventPoll(@Body() pollsDto : PollsDto, @Param('pollId', new ParseUUIDPipe()) pollId: string): Promise<void> {
         return this.eventsService.updateEventPoll(pollsDto, pollId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Patch('/:userId/:id/poll/:pollId/vote')
     voteEventPoll(@Body() pollsDto : PollsDto, @Param('pollId', new ParseUUIDPipe()) pollId: string, @Param('id', new ParseUUIDPipe()) eventId: string, @Param('userId', new ParseUUIDPipe()) userId : string): Promise<void> {
         return this.eventsService.voteEventPoll(pollsDto, eventId, pollId, userId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Get('/:id/poll/:pollId')
     getEventPoll(@Param('pollId', new ParseUUIDPipe()) pollId: string): Promise<void> {
         return this.eventsService.getEventPoll(pollId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Delete('/:id/poll/:pollId')
     deleteEventPoll(@Param('pollId', new ParseUUIDPipe()) pollId: string): Promise<void> {
         return this.eventsService.deleteEventPoll(pollId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Get('/user/:userId')
     findAllUserEvents(@Param('userId', new ParseUUIDPipe()) userId: string) : Promise<Event[]> {
         return this.eventsService.findAllUserEvents(userId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Get('/:id')
     findEvent(@Param('id', new ParseUUIDPipe()) id: string): Promise<Event> {
         return this.eventsService.findEvent(id)
     }
 
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Get('/:id/accommodation')
     returnScrapedAccommodationInformation(@Param('id', new ParseUUIDPipe()) id: string, @Query('startDate') startDate: Date, @Query('endDate') endDate: Date): Promise<any> {
         return this.eventsService.returnScrapedAccommodationInformation(id, startDate, endDate)
     }
 
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Get('/:id/flights')
     returnScrapedFlightsInformation(@Param('id', new ParseUUIDPipe()) id: string, @Query('startDate') startDate: Date, @Query('endDate') endDate: Date): Promise<any> {
         return this.eventsService.returnScrapedFlightInformation(id, startDate, endDate)
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Post('/:id/itinerary')
     createEventItinerary(@Body() itineraryDto : ItineraryDto, @Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
         return this.eventsService.createEventItinerary(itineraryDto, eventId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Get('/:id/itinerary')
     getEventItinerary(@Param('id', new ParseUUIDPipe()) eventId: string): Promise<Itinerary> {
         return this.eventsService.getEventItinerary(eventId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Delete('/:id/itinerary')
     deleteEventItinerary(@Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
         return this.eventsService.deleteEventItinerary(eventId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Patch('/:id/itinerary')
     updateEventItinerary(@Body() itineraryDto : ItineraryDto, @Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
         return this.eventsService.updateEventItinerary(itineraryDto, eventId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Get('/type/:id')
     findEventsByType(@Param('id', new ParseEnumPipe(EventsType)) id: string): Promise<Event[]> {
         return this.eventsService.findEventsByType(id)
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Patch('/:id')
     updatedEvent(@Body(new PayloadValidationPipe()) eventDto : EventDto, @Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
         return this.eventsService.updateEvent(eventDto, eventId);
     }
 
-    //@UseGuards(IsActivatedGuard)
+    @UseGuards(IsActivatedGuard)
+    @UseGuards(AuthGuard())
     @Delete('/:id')
     deleteEvent(@Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
         return this.eventsService.deleteEvent(eventId);
     }
 
-
-    @Post('/test')
-     @UseGuards(AuthGuard())
-     test(@Req() req) {
-         console.log(req)
-     }
 }

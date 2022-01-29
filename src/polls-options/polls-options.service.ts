@@ -39,8 +39,7 @@ export class PollsOptionsService {
                 if (pollOption) {
                     await this.pollsOptionsRepository.update(pollOption.id, {  
                         ...(individualOption.endDate && {endDate: individualOption.endDate}),
-                        ...(individualOption.startDate && {startDate: individualOption.startDate}),
-                        //...(individualOption.votes && {votes: individualOption.votes})
+                        ...(individualOption.startDate && {startDate: individualOption.startDate})
                     })
                     let updatedOption = await this.pollsOptionsRepository.findOne({id: pollOption.id})
                     listOfPollOptions.push(updatedOption);

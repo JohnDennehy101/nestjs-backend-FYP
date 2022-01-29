@@ -80,10 +80,6 @@ export class PollsVotesService {
             return allUserSubmissions;
         }
 
-        /* async findPollVote(uuid: string) {
-             return this.pollsVotesRepository.findPollVote(uuid);
-         } */
-
     
     
 

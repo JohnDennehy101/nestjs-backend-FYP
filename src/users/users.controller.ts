@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards, Param, ClassSerializerInterceptor, UseInterceptors, Patch, ParseUUIDPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Param, ClassSerializerInterceptor, UseInterceptors, Patch, ParseUUIDPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PayloadValidationPipe } from 'src/common/pipes/payload-validation.pipe';
 import { ConfirmUserDto } from './dto/confirm-user.dto';
@@ -23,11 +23,13 @@ export class UsersController {
         return this.usersService.login(userDto)
     }
 
+    @UseGuards(AuthGuard())
     @Post('/confirm-email')
     confirmEmail(@Body() confirmUserDto: ConfirmUserDto): Promise<any> {
         return this.usersService.confirmUserEmail(confirmUserDto.token)
     }
 
+    @UseGuards(AuthGuard())
     @UseGuards(IsActivatedGuard)
     @Patch('/:userId')
     updateUser(@Body(new PayloadValidationPipe()) userDto : UserDto, @Param('userId', new ParseUUIDPipe()) userId: string): Promise<UserResponseDto> {
@@ -38,12 +40,6 @@ export class UsersController {
     findOne(@Param('jwt') jwt) : Promise<string> {
         return this.usersService.findOne(jwt);
     }
-
-    @Post('/test')
-     @UseGuards(AuthGuard())
-     test(@Req() req) {
-         console.log(req)
-     }
 }
 
  

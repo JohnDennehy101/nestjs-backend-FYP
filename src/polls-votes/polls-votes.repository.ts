@@ -1,4 +1,3 @@
-import { InternalServerErrorException } from "@nestjs/common";
 import { EntityRepository, Repository } from "typeorm";
 import { PollVote } from "./polls-votes.entity";
 

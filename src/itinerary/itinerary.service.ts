@@ -104,12 +104,10 @@ export class ItineraryService {
         }
 
         if (itineraryDto.completed) {
-            //Commenting out to save on email API calls
-            /*for (let user in event.invitedUsers) {
+            for (let user in event.invitedUsers) {
                 await this.emailsService.sendCompletedItineraryEmail(event.title, event.invitedUsers[user].email, itineraryDto.accommodation, itineraryDto.flight);
-            }*/
-
-            
+            }
+ 
         }
         
     }

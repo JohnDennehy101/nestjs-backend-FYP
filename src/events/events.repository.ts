@@ -1,7 +1,7 @@
-import { createQueryBuilder, EntityRepository, Repository } from "typeorm";
+import { EntityRepository, Repository } from "typeorm";
 import { EventDto } from './dto/event.dto'
 import { Event } from './events.entity';
-import { ConflictException, HttpException, HttpStatus, InternalServerErrorException } from "@nestjs/common";
+import { ConflictException, InternalServerErrorException } from "@nestjs/common";
 import { User } from "src/users/user.entity";
 
 @EntityRepository(Event)
@@ -10,7 +10,6 @@ export class EventsRepository extends Repository<Event> {
         let allUsers = [...invitedUsers, user]
 
         try {
-            //return this.eventsRepository.createEvent({...eventDto, user: userId});
             const newEvent = await this.create({...eventDto, createdByUser: user, invitedUsers: allUsers});
             await this.save(newEvent);
         } catch (error) {

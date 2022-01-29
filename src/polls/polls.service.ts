@@ -6,8 +6,6 @@ import { PollsRepository } from './polls.repository';
 import { Event } from "src/events/events.entity";
 import { PollsVotesService } from 'src/polls-votes/polls-votes.service';
 import { User } from 'src/users/user.entity';
-import { PollOptionDto } from './dto/polls-option.dto';
-import { PollOption } from 'src/polls-options/polls-options.entity';
 import { Poll } from './polls.entity';
 
 @Injectable()
@@ -24,7 +22,6 @@ export class PollsService {
      async createEventPoll(pollsDto : PollsDto, event: Event) : Promise<void> {
 
         try {
-            //return this.eventsRepository.createEvent({...eventDto, user: userId});
             const newPoll = await this.pollsRepository.create({...pollsDto, event: event});
           
             await this.pollsRepository.save(newPoll);

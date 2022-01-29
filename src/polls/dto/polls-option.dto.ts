@@ -1,4 +1,4 @@
-import { IsDate, IsString } from "class-validator";
+import { IsDate } from "class-validator";
 
 
 export class PollOptionDto {
