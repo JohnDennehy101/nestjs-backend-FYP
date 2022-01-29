@@ -19,7 +19,7 @@ import { ItineraryModule } from './itinerary/itinerary.module';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
-        const isProduction = configService.get('NODE_ENV') === 'prod';
+        const isProduction = configService.get('NODE_ENV') === 'production';
         return {
           ssl: isProduction,
           extra: {
