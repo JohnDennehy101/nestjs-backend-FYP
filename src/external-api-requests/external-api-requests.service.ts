@@ -46,4 +46,11 @@ export class ExternalApiRequestsService {
         }
     return this.httpService.get(`${process.env.WEBSCRAPE_SERVER_URL}/flights`, {headers: headersRequest, params: paramsRequest}).pipe(map(response => response.data));
     }
+
+    //types - bar, restaurant, museum, night_club, tourist_attraction
+    getGooglePlacesInfo(latitude: number, longitude: number, type: string): Observable<any> {
+        
+    return this.httpService.get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude}%2C${longitude}&radius=1500&type=${type}&key=${process.env.GOOGLE_PLACES_API_KEY}`).pipe(map(response => response.data));
+    }
+
 }

@@ -18,12 +18,17 @@ export class Event {
     @Column()
     city: string;
 
+    @Column({type: 'float'})
+    cityLatitude: number
+
+    @Column({type: 'float'})
+    cityLongitude: number
+
     @Column({nullable: true})
     departureCity: string;
 
     @ManyToOne(() => User, (user: User) => user.createdEvents)
     createdByUser: User;
-
 
     @JoinTable({name: 'event_invited_users'})
     @ManyToMany(() => User, (user: User) => user.invitedEvents)

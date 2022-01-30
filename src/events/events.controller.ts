@@ -88,6 +88,13 @@ export class EventsController {
 
     @UseGuards(IsActivatedEventRequestsGuard)
     @UseGuards(AuthGuard())
+    @Get('/:id/places')
+    returnGooglePlacesInformation(@Param('id', new ParseUUIDPipe()) id: string, @Query('latitude') latitude: number, @Query('longitude') longitude: number): Promise<any> {
+        return this.eventsService.returnGooglePlacesInfo(id, latitude, longitude);
+    }
+
+    @UseGuards(IsActivatedEventRequestsGuard)
+    @UseGuards(AuthGuard())
     @Post('/:id/itinerary')
     createEventItinerary(@Body() itineraryDto : ItineraryDto, @Param('id', new ParseUUIDPipe()) eventId: string): Promise<void> {
         return this.eventsService.createEventItinerary(itineraryDto, eventId);

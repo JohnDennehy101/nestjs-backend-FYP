@@ -16,6 +16,7 @@ import { EmailsService } from 'src/emails/emails.service';
 import { ItineraryService } from 'src/itinerary/itinerary.service';
 import { ItineraryDto } from 'src/itinerary/dto/itinerary.dto';
 import { Itinerary } from 'src/itinerary/itinerary.entity';
+import returnCityCoordinates from 'src/common/utils/locationData'
 
 @Injectable()
 export class EventsService {
@@ -34,9 +35,10 @@ export class EventsService {
     ) {}
 
     async createEvent(eventDto : EventDto, userId : string) : Promise<void> {
+        const cityCoordinates = await returnCityCoordinates(eventDto.city);
         const createEventUser = await this.usersRepository.findOne({id: userId});
         const invitedUsers = await this.usersService.createAccountsForInvitedUsers(eventDto.userEmails);
-        return this.eventsRepository.createEvent(eventDto, createEventUser, invitedUsers);
+        return this.eventsRepository.createEvent(eventDto, createEventUser, invitedUsers, cityCoordinates);
     }
 
     async createEventPoll(pollsDto : PollsDto, eventId : string) : Promise<void> {
@@ -107,11 +109,14 @@ export class EventsService {
     }
 
     async updateEvent(eventDto : EventDto, eventId : string) : Promise<any> {
+        const cityCoordinates = await returnCityCoordinates(eventDto.city);
         return this.eventsRepository.update(eventId, {
             ...(eventDto.title && {title: eventDto.title}),
             ...(eventDto.type && {type: eventDto.type}),
             ...(eventDto.city && {city: eventDto.city}),
-            ...(eventDto.departureCity && {departureCity: eventDto.departureCity})
+            ...(eventDto.departureCity && {departureCity: eventDto.departureCity}),
+            ...(eventDto.city && {cityLatitude: cityCoordinates[0]}),
+            ...(eventDto.city && {cityLongitude: cityCoordinates[1]}),
         })
     }
 
@@ -183,6 +188,11 @@ export class EventsService {
         let scrapedAccommodationInfoResponse = await lastValueFrom(this.externalApiRequestsService.getFlightInfo(event[0].departureCity, event[0].city, startDate, endDate, event[0].invitedUsers.length, await externalWebScrapingJwtResponse.access_token))
 
         return scrapedAccommodationInfoResponse
+    }
+
+    async returnGooglePlacesInfo(eventId: string, latitude: number, longitude: number) : Promise<any> {
+        let googlePlacesResponse = await lastValueFrom(this.externalApiRequestsService.getGooglePlacesInfo(latitude, longitude, 'tourist_attraction'))
+        return googlePlacesResponse
     }
 
 }

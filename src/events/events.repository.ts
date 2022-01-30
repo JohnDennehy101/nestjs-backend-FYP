@@ -6,11 +6,11 @@ import { User } from "src/users/user.entity";
 
 @EntityRepository(Event)
 export class EventsRepository extends Repository<Event> {
-    async createEvent(eventDto : EventDto, user: User, invitedUsers: User[]) : Promise<void> {
+    async createEvent(eventDto : EventDto, user: User, invitedUsers: User[], cityCoordinates: number[]) : Promise<void> {
         let allUsers = [...invitedUsers, user]
 
         try {
-            const newEvent = await this.create({...eventDto, createdByUser: user, invitedUsers: allUsers});
+            const newEvent = await this.create({...eventDto, cityLatitude: cityCoordinates[0], cityLongitude: cityCoordinates[1], createdByUser: user, invitedUsers: allUsers});
             await this.save(newEvent);
         } catch (error) {
             if (error.code === '23505') {
