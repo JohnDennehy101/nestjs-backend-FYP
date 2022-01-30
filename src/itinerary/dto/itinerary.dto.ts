@@ -1,5 +1,6 @@
 import { IsArray, IsBoolean } from "class-validator";
 import { ItineraryAccommodationDto } from "./itinerary.accommodation.dto";
+import { ItineraryActivityDto } from "./itinerary.activity.dto";
 import { ItineraryFlightDto } from "./itinerary.flight.dto";
 
 export class ItineraryDto {
@@ -11,7 +12,7 @@ export class ItineraryDto {
     accommodation: ItineraryAccommodationDto[];
 
     @IsArray()
-    activities: [];
+    activities: ItineraryActivityDto[];
 
     @IsBoolean()
     completed: boolean

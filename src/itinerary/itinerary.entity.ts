@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, Prim
 import { Event } from 'src/events/events.entity';
 import { ItineraryAccommodation } from "./itinerary.accommodation.entity";
 import { ItineraryFlight } from "./itinerary.flight.entity";
+import { ItineraryActivity } from "./itinerary.activity.entity";
 
 @Entity()
 export class Itinerary {
@@ -13,6 +14,9 @@ export class Itinerary {
 
     @OneToMany(() => ItineraryAccommodation, (accommodation: ItineraryAccommodation) => accommodation.itinerary, {onDelete: "CASCADE"})
     accommodation: ItineraryAccommodation[];
+
+    @OneToMany(() => ItineraryActivity, (activities: ItineraryActivity) => activities.itinerary, {onDelete: "CASCADE"})
+    activities: ItineraryActivity[];
 
     @OneToOne(() => Event)
     @JoinColumn()
