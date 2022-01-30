@@ -105,7 +105,8 @@ export class ItineraryService {
 
         if (itineraryDto.completed) {
             for (let user in event.invitedUsers) {
-                await this.emailsService.sendCompletedItineraryEmail(event.title, event.invitedUsers[user].email, itineraryDto.accommodation, itineraryDto.flight);
+                //commenting out to save on email API calls
+                //await this.emailsService.sendCompletedItineraryEmail(event.title, event.invitedUsers[user].email, itineraryDto.accommodation, itineraryDto.flight);
             }
  
         }

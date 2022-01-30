@@ -130,7 +130,8 @@ export class EventsService {
 
     
             for (let user in event[0].invitedUsers) {
-                await this.emailsService.sendPollCompletionEmail(event[0].invitedUsers[user], poll,highestPollVoteOptions[0], event[0],highestPollVoteOptions[0].votes.length)
+                //Commenting out to save on email API calls
+                //await this.emailsService.sendPollCompletionEmail(event[0].invitedUsers[user], poll,highestPollVoteOptions[0], event[0],highestPollVoteOptions[0].votes.length)
             }
         
 
