@@ -142,6 +142,12 @@ export class ItineraryService {
         itinerary,
       );
     }
+    if (itineraryDto.activities.length > 0) {
+      await this.itineraryActivityRepository.updateItineraryActivities(
+          itineraryDto.activities,
+          itinerary
+      )
+    }
     if (itineraryDto.flight.length > 0) {
       await this.itineraryFlightRepository.updateItineraryFlights(
         itineraryDto.flight,
