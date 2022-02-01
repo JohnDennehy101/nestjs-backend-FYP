@@ -52,7 +52,10 @@ export class ItineraryActivityRepository extends Repository<ItineraryActivity> {
           user_ratings_total: activities[item].user_ratings_total,
           mapLink: activities[item].mapLink,
           placesId: activities[item].placesId,
+          itinerary: itinerary,
         });
+
+    
 
         await this.save(activitiesDbEntry);
       }

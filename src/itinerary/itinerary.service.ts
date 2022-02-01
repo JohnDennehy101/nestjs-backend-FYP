@@ -115,7 +115,7 @@ export class ItineraryService {
     try {
       const itinerary = await this.itineraryRepository.findOne(
         { event: event },
-        { relations: ['accommodation', 'flight'] },
+        { relations: ['accommodation', 'flight', 'activities'] },
       );
       return itinerary;
     } catch (error) {
