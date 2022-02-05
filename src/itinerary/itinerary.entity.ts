@@ -18,7 +18,7 @@ export class Itinerary {
     @OneToMany(() => ItineraryActivity, (activities: ItineraryActivity) => activities.itinerary, {onDelete: "CASCADE"})
     activities: ItineraryActivity[];
 
-    @OneToOne(() => Event)
+    @OneToOne(() => Event, {onDelete: "CASCADE"})
     @JoinColumn()
     event: Event;
 
