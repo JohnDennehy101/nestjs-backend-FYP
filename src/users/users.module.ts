@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersRepository } from './users.repository';
 import { PassportModule } from '@nestjs/passport';
 import { EmailsModule } from 'src/emails/emails.module';
+import { ImagesModule } from 'src/images/images.module';
 
 
 @Module({
@@ -13,7 +14,8 @@ import { EmailsModule } from 'src/emails/emails.module';
     PassportModule.register({ defaultStrategy: 'jwt'}),
     TypeOrmModule.forFeature([UsersRepository]),
     AuthModule,
-    EmailsModule
+    EmailsModule,
+    ImagesModule
   ],
   controllers: [UsersController],
   providers: [UsersService],

@@ -10,6 +10,7 @@ import { PollsModule } from './polls/polls.module';
 import { PollsOptionsModule } from './polls-options/polls-options.module';
 import { PollsVotesModule } from './polls-votes/polls-votes.module';
 import { ItineraryModule } from './itinerary/itinerary.module';
+import { ImagesModule } from './images/images.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { ItineraryModule } from './itinerary/itinerary.module';
     PollsOptionsModule,
     PollsVotesModule,
     ItineraryModule,
+    ImagesModule,
   ],
   controllers: [],
   providers: [],

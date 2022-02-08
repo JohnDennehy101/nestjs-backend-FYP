@@ -16,11 +16,13 @@ import { PollsOptionsModule } from 'src/polls-options/polls-options.module';
 import { PollsVotesModule } from 'src/polls-votes/polls-votes.module';
 import { ItineraryModule } from 'src/itinerary/itinerary.module';
 import { ItineraryRepository } from 'src/itinerary/itinerary.repository';
+import { ImagesModule } from 'src/images/images.module';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt'}),
     TypeOrmModule.forFeature([EventsRepository, UsersRepository]),
+    ImagesModule,
     AuthModule,
     UsersModule,
     ExternalApiRequestsModule,

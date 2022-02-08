@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post, UseGuards, Param, ClassSerializerInterceptor, UseInterceptors, Patch, ParseUUIDPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Param, ClassSerializerInterceptor, UseInterceptors, Patch, ParseUUIDPipe, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { PayloadValidationPipe } from 'src/common/pipes/payload-validation.pipe';
 import { ConfirmUserDto } from './dto/confirm-user.dto';
@@ -40,6 +41,12 @@ export class UsersController {
     findOne(@Param('jwt') jwt) : Promise<string> {
         return this.usersService.findOne(jwt);
     }
+
+    @Post('/:userId/image')
+    @UseInterceptors(FileInterceptor('file'))
+    uploadProfileImage(@UploadedFile() file: Express.Multer.File) {
+    return this.usersService.uploadImageToCloudinary(file);
+  }
 }
 
  
