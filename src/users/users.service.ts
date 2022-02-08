@@ -149,13 +149,14 @@ export class UsersService {
       );
     }
   }
-  async uploadImageToCloudinary(file: Express.Multer.File) {
+  async uploadImageToCloudinary(file: Express.Multer.File, userId: string) {
     let response = await this.imagesService.uploadImage(file).catch(() => {
       throw new BadRequestException('Invalid file type.');
     });
 
-    //Update user profile image url property here with url returned from cloudinary
-    //console.log(response);
+    if (response) {
+      await this.usersRepository.setProfileImage(response.secure_url, userId);
+    }
 
     return response;
   }

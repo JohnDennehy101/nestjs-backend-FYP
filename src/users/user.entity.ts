@@ -24,4 +24,7 @@ export class User {
 
     @Column({default: false})
     emailConfirmed: boolean
+
+    @Column({default: null})
+    profileImageUrl: string;
 }

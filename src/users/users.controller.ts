@@ -44,8 +44,8 @@ export class UsersController {
 
     @Post('/:userId/image')
     @UseInterceptors(FileInterceptor('file'))
-    uploadProfileImage(@UploadedFile() file: Express.Multer.File) {
-    return this.usersService.uploadImageToCloudinary(file);
+    uploadProfileImage(@UploadedFile() file: Express.Multer.File, @Param('userId') userId) {
+    return this.usersService.uploadImageToCloudinary(file, userId);
   }
 }
 

@@ -44,4 +44,14 @@ export class UsersRepository extends Repository<User> {
     findUserByEmail(email: string): Promise<User> {
         return this.findOne({email: email}) 
     }
+
+    async setProfileImage(imageUrl: string, userId: string) {
+        try {
+            await this.update(userId, {
+      ...(imageUrl && {profileImageUrl : imageUrl }),
+    })
+        } catch (error) {
+            throw new InternalServerErrorException();
+        }
+    }
 }
