@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards, Param, ClassSerializerInterceptor, UseInterceptors, Patch, ParseUUIDPipe, UploadedFile } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Param, ClassSerializerInterceptor, UseInterceptors, Patch, ParseUUIDPipe, UploadedFile, Req } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { PayloadValidationPipe } from 'src/common/pipes/payload-validation.pipe';
@@ -7,6 +7,7 @@ import { UserDto } from './dto/user.dto';
 import { UserResponseDto } from './dto/user.response.dto';
 import { IsActivatedGuard } from './guards/is-activated.guard';
 import { UsersService } from './users.service';
+import { User } from './user.entity';
 
 
 @Controller('users')
@@ -37,8 +38,14 @@ export class UsersController {
         return this.usersService.updateUser(userDto, userId);
     }
 
+    @UseGuards(AuthGuard())
+    @Get('/:userId')
+    findOneUserById(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<User> {
+        return this.usersService.findOneUserById(userId);
+    }
+
     @Get('/findOne/:jwt')
-    findOne(@Param('jwt') jwt) : Promise<string> {
+    findOneUserByJwt(@Param('jwt') jwt) : Promise<string> {
         return this.usersService.findOne(jwt);
     }
 

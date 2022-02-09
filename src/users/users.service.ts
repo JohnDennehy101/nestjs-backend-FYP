@@ -24,8 +24,6 @@ export class UsersService {
 
   async signUp(userDto: UserDto): Promise<UserResponseDto> {
     const { password, email } = userDto;
-    console.log(password);
-    console.log(email);
     const hashedPassword = await this.authService.generateHashedPassword(
       password,
     );
@@ -39,7 +37,6 @@ export class UsersService {
     }
 
     return { jwtToken: jwtTokenResponse.jwtToken, userId: user.id };
-    //return user;
   }
 
   async createAccountsForInvitedUsers(userEmails: string[]): Promise<User[]> {
@@ -107,7 +104,7 @@ export class UsersService {
   }
   async login(userDto: UserDto): Promise<UserResponseDto> {
     const { email, password } = userDto;
-    const user = await this.usersRepository.findOne({ email });
+    const user = await this.usersRepository.findOne({ email }, {select: ['id','password', 'email']});
 
     if (
       user &&
@@ -146,6 +143,18 @@ export class UsersService {
     } else {
       throw new UnauthorizedException(
         'No existing account found with these credentials',
+      );
+    }
+  }
+
+  async findOneUserById (userId: string) : Promise<User> {
+    const user = await this.usersRepository.findOne({ id: userId });
+    if (user) {
+      return user;
+    }
+    else {
+      throw new UnauthorizedException(
+        'No existing account found for that userId',
       );
     }
   }

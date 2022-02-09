@@ -10,7 +10,7 @@ export class User {
     @Column({unique: true})
     email: string;
     @Exclude()
-    @Column({nullable: true})
+    @Column({nullable: true, select: false})
     password: string;
 
     @OneToMany(() => Event, (event: Event) => event.createdByUser)
