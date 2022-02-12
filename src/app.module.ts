@@ -11,6 +11,7 @@ import { PollsOptionsModule } from './polls-options/polls-options.module';
 import { PollsVotesModule } from './polls-votes/polls-votes.module';
 import { ItineraryModule } from './itinerary/itinerary.module';
 import { ImagesModule } from './images/images.module';
+import { AppGateway } from './app.gateway';
 
 @Module({
   imports: [
@@ -49,6 +50,6 @@ import { ImagesModule } from './images/images.module';
     ImagesModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [AppGateway],
 })
 export class AppModule {}
