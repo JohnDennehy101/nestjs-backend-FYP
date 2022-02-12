@@ -17,6 +17,7 @@ import { ItineraryService } from 'src/itinerary/itinerary.service';
 import { ItineraryDto } from 'src/itinerary/dto/itinerary.dto';
 import { Itinerary } from 'src/itinerary/itinerary.entity';
 import returnCityCoordinates from 'src/common/utils/locationData'
+import { ChatService } from 'src/chat/chat.service';
 
 @Injectable()
 export class EventsService {
@@ -31,7 +32,8 @@ export class EventsService {
         private authService : AuthService,
         private externalApiRequestsService : ExternalApiRequestsService,
         private emailsService: EmailsService,
-        private itineraryService: ItineraryService
+        private itineraryService: ItineraryService,
+        private chatService: ChatService,
     ) {}
 
     async createEvent(eventDto : EventDto, userId : string) : Promise<void> {
@@ -194,5 +196,12 @@ export class EventsService {
         let googlePlacesResponse = await lastValueFrom(this.externalApiRequestsService.getGooglePlacesInfo(latitude, longitude, 'tourist_attraction'))
         return googlePlacesResponse
     }
+
+     async addEventChatMessage(content: string, userEmail: string, eventId: string) {
+       const event = await this.findEvent(eventId);
+
+       const user = await this.usersService.findOneUserByEmail(userEmail);
+       return this.chatService.saveChatMessage(content, user, event[0]);
+  }
 
 }

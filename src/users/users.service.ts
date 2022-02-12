@@ -158,6 +158,18 @@ export class UsersService {
       );
     }
   }
+
+  async findOneUserByEmail (email: string) : Promise<User> {
+    const user = await this.usersRepository.findOne({ email: email });
+    if (user) {
+      return user;
+    }
+    else {
+      throw new UnauthorizedException(
+        'No existing account found for that email',
+      );
+    }
+  }
   async uploadImageToCloudinary(file: Express.Multer.File, userId: string) {
     let response = await this.imagesService.uploadImage(file).catch(() => {
       throw new BadRequestException('Invalid file type.');

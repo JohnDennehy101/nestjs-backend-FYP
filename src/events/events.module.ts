@@ -17,6 +17,7 @@ import { PollsVotesModule } from 'src/polls-votes/polls-votes.module';
 import { ItineraryModule } from 'src/itinerary/itinerary.module';
 import { ItineraryRepository } from 'src/itinerary/itinerary.repository';
 import { ImagesModule } from 'src/images/images.module';
+import { ChatModule } from 'src/chat/chat.module';
 
 @Module({
   imports: [
@@ -30,9 +31,11 @@ import { ImagesModule } from 'src/images/images.module';
     PollsModule,
     PollsOptionsModule,
     PollsVotesModule,
-    ItineraryModule
+    ItineraryModule,
+    ChatModule
   ],
   controllers: [EventsController],
-  providers: [EventsService, UsersService, PollsService]
+  providers: [EventsService, UsersService, PollsService],
+  exports: [EventsService, TypeOrmModule]
 })
 export class EventsModule {}

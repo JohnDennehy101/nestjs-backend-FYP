@@ -12,6 +12,7 @@ import { PollsVotesModule } from './polls-votes/polls-votes.module';
 import { ItineraryModule } from './itinerary/itinerary.module';
 import { ImagesModule } from './images/images.module';
 import { AppGateway } from './app.gateway';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { AppGateway } from './app.gateway';
     PollsVotesModule,
     ItineraryModule,
     ImagesModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [AppGateway],

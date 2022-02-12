@@ -1,9 +1,14 @@
 import { Logger } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
+import { EventsService } from './events/events.service';
 
 @WebSocketGateway({cors: true})
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+
+  constructor(
+    private eventsService: EventsService
+  ) {}
   
   @WebSocketServer() wss: Server;
   private logger: Logger = new Logger("AppGateway");
@@ -18,9 +23,9 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   }
 
   @SubscribeMessage("messageToServer")
-  joinEventChat(client: Socket, message: {sender: string, room: string, message: string}) : void {
-    console.log(message)
+  async joinEventChat(client: Socket, message: {sender: string, room: string, message: string}) {
     this.wss.to(message.room).emit("messageToClient", message)
+    await this.eventsService.addEventChatMessage(message.message, message.sender, message.room)
   }
 
   @SubscribeMessage("joinChatRoom")
