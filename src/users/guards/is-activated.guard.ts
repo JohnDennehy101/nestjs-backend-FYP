@@ -9,9 +9,9 @@ export class IsActivatedGuard implements CanActivate {
     constructor(private usersService: UsersService) {}
     async canActivate(context: ExecutionContext) {
         const request = context.switchToHttp().getRequest();
-        const { email, password} = request.body;
+        const { email } = request.body;
 
-        if (!email || !password) {
+        if (!email) {
             return false;
         }
         let confirmedUserCheck = await this.usersService.checkConfirmedUser(email);

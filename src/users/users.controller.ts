@@ -32,7 +32,6 @@ export class UsersController {
     }
 
     @UseGuards(AuthGuard())
-    @UseGuards(IsActivatedGuard)
     @Patch('/:userId')
     updateUser(@Body(new PayloadValidationPipe()) userDto : UserDto, @Param('userId', new ParseUUIDPipe()) userId: string): Promise<UserResponseDto> {
         return this.usersService.updateUser(userDto, userId);
@@ -49,6 +48,7 @@ export class UsersController {
         return this.usersService.findOne(jwt);
     }
 
+    @UseGuards(AuthGuard())
     @Post('/:userId/image')
     @UseInterceptors(FileInterceptor('file'))
     uploadProfileImage(@UploadedFile() file: Express.Multer.File, @Param('userId') userId) {
