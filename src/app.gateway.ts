@@ -16,8 +16,17 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`Client connected: ${client.id}`)
   }
-  @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, text: string): void {
-  this.wss.emit("msgToClient", text)
+
+  @SubscribeMessage("messageToServer")
+  joinEventChat(client: Socket, message: {sender: string, room: string, message: string}) : void {
+    console.log(message)
+    this.wss.to(message.room).emit("messageToClient", message)
+  }
+
+  @SubscribeMessage("joinChatRoom")
+  handleRoomJoin(client: Socket, room: string ) {
+    console.log(room);
+    client.join(room);
+    client.emit("joinedRoom", room);
   }
 }

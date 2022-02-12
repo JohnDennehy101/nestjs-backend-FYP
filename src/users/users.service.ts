@@ -36,7 +36,7 @@ export class UsersService {
         await this.emailsService.sendEmailConfirmationEmail(user.email);
     }
 
-    return { jwtToken: jwtTokenResponse.jwtToken, userId: user.id };
+    return { jwtToken: jwtTokenResponse.jwtToken, userId: user.id, userEmail: email };
   }
 
   async createAccountsForInvitedUsers(userEmails: string[]): Promise<User[]> {
@@ -111,7 +111,7 @@ export class UsersService {
       (await this.authService.validatePasswordLogin(password, user.password))
     ) {
       const jwtTokenResponse = await this.authService.createJwtToken(email);
-      return { jwtToken: jwtTokenResponse.jwtToken, userId: user.id };
+      return { jwtToken: jwtTokenResponse.jwtToken, userId: user.id, userEmail: user.email };
     } else {
       throw new UnauthorizedException(
         'No existing account found with these credentials',
@@ -132,7 +132,7 @@ export class UsersService {
     });
 
     const jwtTokenResponse = await this.authService.createJwtToken(email);
-    return { jwtToken: jwtTokenResponse.jwtToken, userId: userId };
+    return { jwtToken: jwtTokenResponse.jwtToken, userId: userId, userEmail: email };
   }
 
   async findOne(jwtToken: string): Promise<string> {
