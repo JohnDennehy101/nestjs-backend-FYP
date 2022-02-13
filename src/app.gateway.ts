@@ -44,6 +44,7 @@ export class AppGateway
       room: message.room,
       content: message.content,
       author: {
+        id: messageDb.author.id,
         email: messageDb.author.email,
         profileImageUrl: messageDb.author.profileImageUrl,
       },
