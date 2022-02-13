@@ -20,4 +20,11 @@ export class ChatService {
     await this.messageRepository.save(newMessage);
     return newMessage;
   }
+
+  async getEventChatMessages(event: Event) {
+    //const chatMessages = await this.messageRepository.getEventChatMessages(event)
+    const chatMessages = await this.messageRepository.find({ relations: ["author"], where: {event: event}, select: ["content", "author", "created_at"], order: {"created_at": "ASC"} });
+
+    return chatMessages;
+  }
 }

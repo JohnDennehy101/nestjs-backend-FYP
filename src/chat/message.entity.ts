@@ -1,6 +1,6 @@
 import { Event } from "src/events/events.entity";
 import { User } from "src/users/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Message {
@@ -14,4 +14,7 @@ export class Message {
 
     @ManyToOne(() => Event)
     event: Event;
+
+    @CreateDateColumn()
+    created_at: Date;
 }
