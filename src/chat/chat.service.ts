@@ -21,9 +21,13 @@ export class ChatService {
     return newMessage;
   }
 
+  async deleteChatMessage(messageId: string) {
+     return this.messageRepository.delete({ id: messageId });
+  }
+
   async getEventChatMessages(event: Event) {
     //const chatMessages = await this.messageRepository.getEventChatMessages(event)
-    const chatMessages = await this.messageRepository.find({ relations: ["author"], where: {event: event}, select: ["content", "author", "created_at"], order: {"created_at": "ASC"} });
+    const chatMessages = await this.messageRepository.find({ relations: ["author"], where: {event: event}, select: ["id", "content", "author", "created_at"], order: {"created_at": "ASC"} });
 
     return chatMessages;
   }

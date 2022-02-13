@@ -283,6 +283,12 @@ export class EventsService {
     return this.chatService.saveChatMessage(content, user, event[0]);
   }
 
+  async removeEventChatMessage(
+    messageId: string
+  ) {
+    return this.chatService.deleteChatMessage(messageId);
+  }
+
   async getAllEventChatMessages(eventId: string) {
     const event = await this.findEvent(eventId);
     return this.chatService.getEventChatMessages(event[0]);

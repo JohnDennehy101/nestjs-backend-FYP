@@ -39,13 +39,16 @@ export class AppGateway
       message.author,
       message.room,
     );
- 
-    const completeMessageInfo = {room: message.room, content: message.content, author: {
-      email: messageDb.author.email,
-      profileImageUrl: messageDb.author.profileImageUrl
-    },
-    created_at: messageDb.created_at
-  };
+
+    const completeMessageInfo = {
+      room: message.room,
+      content: message.content,
+      author: {
+        email: messageDb.author.email,
+        profileImageUrl: messageDb.author.profileImageUrl,
+      },
+      created_at: messageDb.created_at,
+    };
     this.wss.to(message.room).emit('messageToClient', completeMessageInfo);
   }
 
@@ -61,5 +64,17 @@ export class AppGateway
   handleRoomJoin(client: Socket, room: string) {
     client.join(room);
     client.emit('joinedRoom', room);
+  }
+
+  @SubscribeMessage('deleteChatMessage')
+  async handleMessageDeletion(
+    client: Socket,
+    message: { messageId: string; room: string },
+  ) {
+    const messageDb = await this.eventsService.removeEventChatMessage(
+      message.messageId,
+    );
+
+    this.wss.to(message.room).emit('chatMessageDeleted', message.messageId);
   }
 }
