@@ -34,12 +34,19 @@ export class AppGateway
     client: Socket,
     message: { author: string; room: string; content: string },
   ) {
-    await this.eventsService.addEventChatMessage(
+    const messageDb = await this.eventsService.addEventChatMessage(
       message.content,
       message.author,
       message.room,
     );
-    this.wss.to(message.room).emit('messageToClient', message);
+ 
+    const completeMessageInfo = {room: message.room, content: message.content, author: {
+      email: messageDb.author.email,
+      profileImageUrl: messageDb.author.profileImageUrl
+    },
+    created_at: messageDb.created_at
+  };
+    this.wss.to(message.room).emit('messageToClient', completeMessageInfo);
   }
 
   @SubscribeMessage('requestAllEventChatMessages')
