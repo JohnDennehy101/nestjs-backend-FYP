@@ -1,11 +1,11 @@
 import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PollsOptionsService } from 'src/polls-options/polls-options.service';
+import { PollsOptionsService } from '../polls-options/polls-options.service';
 import { PollsDto } from './dto/polls.dto';
 import { PollsRepository } from './polls.repository';
-import { Event } from "src/events/events.entity";
-import { PollsVotesService } from 'src/polls-votes/polls-votes.service';
-import { User } from 'src/users/user.entity';
+import { Event } from "../events/events.entity";
+import { PollsVotesService } from '../polls-votes/polls-votes.service';
+import { User } from '../users/user.entity';
 import { Poll } from './polls.entity';
 
 @Injectable()

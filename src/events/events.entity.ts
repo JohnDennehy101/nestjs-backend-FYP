@@ -1,5 +1,5 @@
-import { Poll } from 'src/polls/polls.entity';
-import { User } from 'src/users/user.entity';
+import { Poll } from '../polls/polls.entity';
+import { User } from '../users/user.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm'
 import { EventsType } from './events-type.enums';
 

@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from 'typeorm'
 import { Exclude } from 'class-transformer';
-import { Event } from 'src/events/events.entity';
-import { PollVote } from 'src/polls-votes/polls-votes.entity';
+import { Event } from '../events/events.entity';
+import { PollVote } from '../polls-votes/polls-votes.entity';
 
 @Entity()
 export class User {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Poll } from 'src/polls/polls.entity';
+import { Poll } from '../polls/polls.entity';
 import { PollsOptionDto } from './dto/polls-options.dto';
 import { PollsOptionsRepository } from './polls-options.repository';
 

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EmailsModule } from 'src/emails/emails.module';
+import { EmailsModule } from '../emails/emails.module';
 import { ItineraryAccommodationRepository } from './itinerary.accommodation.repository';
 import { ItineraryActivityRepository } from './itinerary.activity.repository';
 import { ItineraryFlightRepository } from './itinerary.flight.repository';

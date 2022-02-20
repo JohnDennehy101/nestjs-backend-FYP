@@ -1,6 +1,6 @@
-import { PollOption } from "src/polls-options/polls-options.entity";
-import { Poll } from "src/polls/polls.entity";
-import { User } from "src/users/user.entity";
+import { PollOption } from "../polls-options/polls-options.entity";
+import { Poll } from "../polls/polls.entity";
+import { User } from "../users/user.entity";
 import { Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 

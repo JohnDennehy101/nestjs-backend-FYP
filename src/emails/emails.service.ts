@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MailgunService } from '@nextnm/nestjs-mailgun';
-import { AuthService } from 'src/auth/auth.service';
-import { Event } from 'src/events/events.entity';
-import { ItineraryAccommodationDto } from 'src/itinerary/dto/itinerary.accommodation.dto';
-import { ItineraryFlightDto } from 'src/itinerary/dto/itinerary.flight.dto';
-import { PollOption } from 'src/polls-options/polls-options.entity';
-import { Poll } from 'src/polls/polls.entity';
-import { User } from 'src/users/user.entity';
+import { AuthService } from '../auth/auth.service';
+import { Event } from '../events/events.entity';
+import { ItineraryAccommodationDto } from '../itinerary/dto/itinerary.accommodation.dto';
+import { ItineraryFlightDto } from '../itinerary/dto/itinerary.flight.dto';
+import { PollOption } from '../polls-options/polls-options.entity';
+import { Poll } from '../polls/polls.entity';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class EmailsService {
@@ -21,7 +21,7 @@ export class EmailsService {
 
     async sendEmailConfirmationEmail(email: string) : Promise<any> {
        const jwtToken = await this.authService.createJwtToken(email);
-       const validationUrl = `${this.configService.get('EMAIL_CONFIRMATION_URL')}?token=${jwtToken.jwtToken}`
+       const validationUrl = `${this.configService.get('EMAIL_CONFIRMATION_URL')}?token=${jwtToken}`
 
        console.log(validationUrl);
 

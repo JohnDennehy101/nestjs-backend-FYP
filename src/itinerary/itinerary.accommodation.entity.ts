@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Event } from 'src/events/events.entity';
+import { Event } from '../events/events.entity';
 import { Itinerary } from "./itinerary.entity";
 
 @Entity()

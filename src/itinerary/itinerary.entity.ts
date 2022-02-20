@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Event } from 'src/events/events.entity';
+import { Event } from '../events/events.entity';
 import { ItineraryAccommodation } from "./itinerary.accommodation.entity";
 import { ItineraryFlight } from "./itinerary.flight.entity";
 import { ItineraryActivity } from "./itinerary.activity.entity";

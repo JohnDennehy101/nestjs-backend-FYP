@@ -1,5 +1,5 @@
-import { PollVote } from "src/polls-votes/polls-votes.entity";
-import { Poll } from "src/polls/polls.entity";
+import { PollVote } from "../polls-votes/polls-votes.entity";
+import { Poll } from "../polls/polls.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()

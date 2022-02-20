@@ -6,12 +6,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItineraryDto } from './dto/itinerary.dto';
 import { ItineraryRepository } from './itinerary.repository';
-import { Event } from 'src/events/events.entity';
+import { Event } from '../events/events.entity';
 import { ItineraryAccommodationRepository } from './itinerary.accommodation.repository';
 import { ItineraryFlightRepository } from './itinerary.flight.repository';
 import { Itinerary } from './itinerary.entity';
-import { EmailsService } from 'src/emails/emails.service';
-import { Poll } from 'src/polls/polls.entity';
+import { EmailsService } from '../emails/emails.service';
+import { Poll } from '../polls/polls.entity';
 import { ItineraryActivityRepository } from './itinerary.activity.repository';
 
 @Injectable()

@@ -3,7 +3,7 @@ import { EmailsService } from './emails.service';
 import { EmailsController } from './emails.controller';
 import { MailgunModule } from '@nextnm/nestjs-mailgun';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [

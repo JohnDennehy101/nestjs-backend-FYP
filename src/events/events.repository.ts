@@ -2,7 +2,7 @@ import { EntityRepository, Repository } from "typeorm";
 import { EventDto } from './dto/event.dto'
 import { Event } from './events.entity';
 import { ConflictException, InternalServerErrorException } from "@nestjs/common";
-import { User } from "src/users/user.entity";
+import { User } from "../users/user.entity";
 
 @EntityRepository(Event)
 export class EventsRepository extends Repository<Event> {

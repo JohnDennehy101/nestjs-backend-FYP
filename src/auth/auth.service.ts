@@ -10,10 +10,11 @@ export class AuthService {
     ) {}
 
 
-    async createJwtToken(email: string) : Promise<{jwtToken: string}> {
+    async createJwtToken(email: string) : Promise<string> {
         const jwtPayload : JWTTokenPayload = {email};
         const jwtToken : string  = await this.jwtTokenService.sign(jwtPayload)
-        return {jwtToken}
+        console.debug("token", jwtToken);
+        return jwtToken
     }
 
     async decodeJwtToken(jwtToken: string) : Promise<any> {

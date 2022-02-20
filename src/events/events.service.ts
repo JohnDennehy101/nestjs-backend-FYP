@@ -2,22 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventDto } from './dto/event.dto';
 import { EventsRepository } from './events.repository';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { Event } from './events.entity';
-import { ExternalApiRequestsService } from 'src/external-api-requests/external-api-requests.service';
-import { UsersRepository } from 'src/users/users.repository';
-import { PollsRepository } from 'src/polls/polls.repository';
-import { PollsDto } from 'src/polls/dto/polls.dto';
-import { PollsService } from 'src/polls/polls.service';
-import { UsersService } from 'src/users/users.service';
-import { PollsOptionsService } from 'src/polls-options/polls-options.service';
+import { ExternalApiRequestsService } from '../external-api-requests/external-api-requests.service';
+import { UsersRepository } from '../users/users.repository';
+import { PollsRepository } from '../polls/polls.repository';
+import { PollsDto } from '../polls/dto/polls.dto';
+import { PollsService } from '../polls/polls.service';
+import { UsersService } from '../users/users.service';
+import { PollsOptionsService } from '../polls-options/polls-options.service';
 import { lastValueFrom } from 'rxjs';
-import { EmailsService } from 'src/emails/emails.service';
-import { ItineraryService } from 'src/itinerary/itinerary.service';
-import { ItineraryDto } from 'src/itinerary/dto/itinerary.dto';
-import { Itinerary } from 'src/itinerary/itinerary.entity';
-import returnCityCoordinates from 'src/common/utils/locationData';
-import { ChatService } from 'src/chat/chat.service';
+import { EmailsService } from '../emails/emails.service';
+import { ItineraryService } from '../itinerary/itinerary.service';
+import { ItineraryDto } from '../itinerary/dto/itinerary.dto';
+import { Itinerary } from '../itinerary/itinerary.entity';
+import returnCityCoordinates from '../common/utils/locationData';
+import { ChatService } from '../chat/chat.service';
 
 @Injectable()
 export class EventsService {

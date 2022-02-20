@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, UseGuards, Param, ClassSerializerInterceptor, UseInterceptors, Patch, ParseUUIDPipe, UploadedFile, Req } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
-import { PayloadValidationPipe } from 'src/common/pipes/payload-validation.pipe';
+import { PayloadValidationPipe } from '../common/pipes/payload-validation.pipe';
 import { ConfirmUserDto } from './dto/confirm-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UserResponseDto } from './dto/user.response.dto';

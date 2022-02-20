@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Event } from 'src/events/events.entity';
-import { PollOption } from "src/polls-options/polls-options.entity";
-import { PollVote } from "src/polls-votes/polls-votes.entity";
+import { Event } from '../events/events.entity';
+import { PollOption } from "../polls-options/polls-options.entity";
+import { PollVote } from "../polls-votes/polls-votes.entity";
 
 
 @Entity()

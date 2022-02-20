@@ -5,12 +5,12 @@ import { PayloadValidationPipe } from '../common/pipes/payload-validation.pipe';
 import { EventsService } from './events.service';
 import { Event } from './events.entity';
 import { EventsType } from './events-type.enums';
-import { PollOptionDto } from 'src/polls/dto/polls-option.dto';
-import { PollsDto } from 'src/polls/dto/polls.dto';
-import { IsActivatedGuard } from 'src/users/guards/is-activated.guard';
-import { IsActivatedEventRequestsGuard } from 'src/users/guards/is-activated-event-requests.guard';
-import { ItineraryDto } from 'src/itinerary/dto/itinerary.dto';
-import { Itinerary } from 'src/itinerary/itinerary.entity';
+import { PollOptionDto } from '../polls/dto/polls-option.dto';
+import { PollsDto } from '../polls/dto/polls.dto';
+import { IsActivatedGuard } from '../users/guards/is-activated.guard';
+import { IsActivatedEventRequestsGuard } from '../users/guards/is-activated-event-requests.guard';
+import { ItineraryDto } from '../itinerary/dto/itinerary.dto';
+import { Itinerary } from '../itinerary/itinerary.entity';
 
 @Controller('events')
 export class EventsController {
