@@ -102,6 +102,7 @@ export class UsersService {
   async checkConfirmedUser(email: string) {
     return this.usersRepository.findOne({ email: email, emailConfirmed: true });
   }
+  
   async login(userDto: UserDto): Promise<UserResponseDto> {
     const { email, password } = userDto;
     const user = await this.usersRepository.findOne({ email }, {select: ['id','password', 'email']});
