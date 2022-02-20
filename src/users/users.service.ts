@@ -102,17 +102,24 @@ export class UsersService {
   async checkConfirmedUser(email: string) {
     return this.usersRepository.findOne({ email: email, emailConfirmed: true });
   }
-  
+
   async login(userDto: UserDto): Promise<UserResponseDto> {
     const { email, password } = userDto;
-    const user = await this.usersRepository.findOne({ email }, {select: ['id','password', 'email']});
+    const user = await this.usersRepository.findOne(
+      { email },
+      { select: ['id', 'password', 'email'] },
+    );
 
     if (
       user &&
       (await this.authService.validatePasswordLogin(password, user.password))
     ) {
       const jwtTokenResponse = await this.authService.createJwtToken(email);
-      return { jwtToken: jwtTokenResponse, userId: user.id, userEmail: user.email };
+      return {
+        jwtToken: jwtTokenResponse,
+        userId: user.id,
+        userEmail: user.email,
+      };
     } else {
       throw new UnauthorizedException(
         'No existing account found with these credentials',
@@ -148,24 +155,22 @@ export class UsersService {
     }
   }
 
-  async findOneUserById (userId: string) : Promise<User> {
+  async findOneUserById(userId: string): Promise<User> {
     const user = await this.usersRepository.findOne({ id: userId });
     if (user) {
       return user;
-    }
-    else {
+    } else {
       throw new UnauthorizedException(
         'No existing account found for that userId',
       );
     }
   }
 
-  async findOneUserByEmail (email: string) : Promise<User> {
+  async findOneUserByEmail(email: string): Promise<User> {
     const user = await this.usersRepository.findOne({ email: email });
     if (user) {
       return user;
-    }
-    else {
+    } else {
       throw new UnauthorizedException(
         'No existing account found for that email',
       );

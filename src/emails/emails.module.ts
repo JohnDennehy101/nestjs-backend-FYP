@@ -12,10 +12,10 @@ import { AuthModule } from '../auth/auth.module';
       username: process.env.MAILGUN_USERNAME,
       key: process.env.MAILGUN_API_KEY,
     }),
-    AuthModule
+    AuthModule,
   ],
   providers: [EmailsService],
   controllers: [EmailsController],
-  exports: [EmailsService]
+  exports: [EmailsService],
 })
 export class EmailsModule {}

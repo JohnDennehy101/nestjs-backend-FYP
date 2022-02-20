@@ -1,3 +1,3 @@
 export interface JWTTokenPayload {
-    email: string;
+  email: string;
 }

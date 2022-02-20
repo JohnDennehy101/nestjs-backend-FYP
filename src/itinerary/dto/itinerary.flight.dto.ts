@@ -1,37 +1,36 @@
-import { IsString } from "class-validator"
-
+import { IsString } from 'class-validator';
 
 export class ItineraryFlightDto {
-    @IsString()
-    departureTime: String
+  @IsString()
+  departureTime: String;
 
-    @IsString()
-    arrivalTime: String
+  @IsString()
+  arrivalTime: String;
 
-    @IsString()
-    departureCity: String
+  @IsString()
+  departureCity: String;
 
-    @IsString()
-    arrivalCity: String
+  @IsString()
+  arrivalCity: String;
 
-    @IsString()
-    airport: String
+  @IsString()
+  airport: String;
 
-    @IsString()
-    duration: String
+  @IsString()
+  duration: String;
 
-    @IsString()
-    directFlight: String
+  @IsString()
+  directFlight: String;
 
-    @IsString()
-    carrier: String
+  @IsString()
+  carrier: String;
 
-    @IsString()
-    pricePerPerson: String
-    
-    @IsString()
-    priceTotal: String
+  @IsString()
+  pricePerPerson: String;
 
-    @IsString()
-    flightUrl: String
+  @IsString()
+  priceTotal: String;
+
+  @IsString()
+  flightUrl: String;
 }

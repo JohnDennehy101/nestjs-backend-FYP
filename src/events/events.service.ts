@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventDto } from './dto/event.dto';
-import { EventsRepository } from './events.repository';
-import { AuthService } from '../auth/auth.service';
+import { EventsRepository } from './events.repository'; 
 import { Event } from './events.entity';
 import { ExternalApiRequestsService } from '../external-api-requests/external-api-requests.service';
 import { UsersRepository } from '../users/users.repository';
-import { PollsRepository } from '../polls/polls.repository';
 import { PollsDto } from '../polls/dto/polls.dto';
 import { PollsService } from '../polls/polls.service';
 import { UsersService } from '../users/users.service';
-import { PollsOptionsService } from '../polls-options/polls-options.service';
 import { lastValueFrom } from 'rxjs';
 import { EmailsService } from '../emails/emails.service';
 import { ItineraryService } from '../itinerary/itinerary.service';
@@ -26,17 +23,14 @@ export class EventsService {
     private eventsRepository: EventsRepository,
     private usersRepository: UsersRepository,
     private usersService: UsersService,
-    private pollsRepository: PollsRepository,
     private pollsService: PollsService,
-    private pollsOptionsService: PollsOptionsService,
-    private authService: AuthService,
     private externalApiRequestsService: ExternalApiRequestsService,
     private emailsService: EmailsService,
     private itineraryService: ItineraryService,
     private chatService: ChatService,
   ) {}
 
-  async createEvent(eventDto: EventDto, userId: string): Promise<void> {
+  async createEvent(eventDto: EventDto, userId: string): Promise<Event> {
     const cityCoordinates = await returnCityCoordinates(eventDto.city);
     const createEventUser = await this.usersRepository.findOne({ id: userId });
     const invitedUsers = await this.usersService.createAccountsForInvitedUsers(
@@ -283,9 +277,7 @@ export class EventsService {
     return this.chatService.saveChatMessage(content, user, event[0]);
   }
 
-  async removeEventChatMessage(
-    messageId: string
-  ) {
+  async removeEventChatMessage(messageId: string) {
     return this.chatService.deleteChatMessage(messageId);
   }
 

@@ -35,7 +35,6 @@ export class ItineraryService {
     try {
       const { accommodation, flight, activities } = itineraryDto;
 
-
       const newItinerary = await this.itineraryRepository.create({
         event: event,
       });
@@ -144,9 +143,9 @@ export class ItineraryService {
     }
     if (itineraryDto.activities.length > 0) {
       await this.itineraryActivityRepository.updateItineraryActivities(
-          itineraryDto.activities,
-          itinerary
-      )
+        itineraryDto.activities,
+        itinerary,
+      );
     }
     if (itineraryDto.flight.length > 0) {
       await this.itineraryFlightRepository.updateItineraryFlights(

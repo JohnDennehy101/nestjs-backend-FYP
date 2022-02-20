@@ -21,7 +21,7 @@ import { ChatModule } from '../chat/chat.module';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt'}),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     TypeOrmModule.forFeature([EventsRepository, UsersRepository]),
     ImagesModule,
     AuthModule,
@@ -32,10 +32,10 @@ import { ChatModule } from '../chat/chat.module';
     PollsOptionsModule,
     PollsVotesModule,
     ItineraryModule,
-    ChatModule
+    ChatModule,
   ],
   controllers: [EventsController],
   providers: [EventsService, UsersService, PollsService],
-  exports: [EventsService, TypeOrmModule]
+  exports: [EventsService, TypeOrmModule],
 })
 export class EventsModule {}

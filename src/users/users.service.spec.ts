@@ -81,7 +81,7 @@ describe('UsersService', () => {
       ],
     }).compile();
 
-    authService = module.get(AuthService)
+    authService = module.get(AuthService);
     usersService = module.get(UsersService);
     usersRepository = module.get(UsersRepository);
   });

@@ -1,109 +1,123 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PollsOptionsService } from '../polls-options/polls-options.service';
 import { PollsDto } from './dto/polls.dto';
 import { PollsRepository } from './polls.repository';
-import { Event } from "../events/events.entity";
+import { Event } from '../events/events.entity';
 import { PollsVotesService } from '../polls-votes/polls-votes.service';
 import { User } from '../users/user.entity';
 import { Poll } from './polls.entity';
 
 @Injectable()
 export class PollsService {
+  constructor(
+    @InjectRepository(PollsRepository)
+    private pollsRepository: PollsRepository,
+    private pollsOptionsService: PollsOptionsService,
+    private pollsVotesSerivce: PollsVotesService,
+  ) {}
 
-    constructor (
-        @InjectRepository(PollsRepository)
-        private pollsRepository: PollsRepository,
-        private pollsOptionsService : PollsOptionsService,
-        private pollsVotesSerivce: PollsVotesService
-        ) {}
+  async createEventPoll(pollsDto: PollsDto, event: Event): Promise<void> {
+    try {
+      const newPoll = await this.pollsRepository.create({
+        ...pollsDto,
+        event: event,
+      });
 
-    
-     async createEventPoll(pollsDto : PollsDto, event: Event) : Promise<void> {
+      await this.pollsRepository.save(newPoll);
+      for (let option in pollsDto.options) {
+        await this.pollsOptionsService.createPollOptions(
+          pollsDto.options[option],
+          newPoll,
+        );
+      }
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new ConflictException('Poll already exists with this title');
+      } else {
+        console.log(error);
+        throw new InternalServerErrorException();
+      }
+    }
+  }
 
-        try {
-            const newPoll = await this.pollsRepository.create({...pollsDto, event: event});
-          
-            await this.pollsRepository.save(newPoll);
-            for (let option in pollsDto.options) {
-                await this.pollsOptionsService.createPollOptions(pollsDto.options[option], newPoll)
-            }
-    
-          
-        } catch (error) {
-            if (error.code === '23505') {
-                throw new ConflictException('Poll already exists with this title');
-            }
-            else {
-                console.log(error)
-                throw new InternalServerErrorException();
-            }
-        }
-        
+  async updateEventPoll(pollDto: PollsDto, pollId): Promise<any> {
+    const priorPollOptions = await this.getEventPoll(pollId);
+    const poll = await this.pollsRepository.findOne({ id: pollId });
+    if (pollDto.title) {
+      await this.pollsRepository.update(pollId, {
+        ...(pollDto.title && { title: pollDto.title }),
+      });
+    }
+    await this.pollsOptionsService.updatePollOptions(
+      pollDto.options,
+      poll,
+      priorPollOptions.pollOptions,
+    );
+  }
+
+  async voteEventPoll(
+    poll: Poll,
+    event: Event,
+    pollVoteOptions: any[],
+    user: User,
+  ): Promise<any> {
+    await this.pollsVotesSerivce.updatePollVotes(poll, pollVoteOptions, user);
+
+    let eventUsers = [];
+
+    for (let user in event[0].invitedUsers) {
+      eventUsers.push(event[0].invitedUsers[user]);
     }
 
-    async updateEventPoll(pollDto : PollsDto, pollId) : Promise<any> {
-        const priorPollOptions = await this.getEventPoll(pollId)
-        const poll = await this.pollsRepository.findOne({id: pollId})
-         if (pollDto.title) {
-              await this.pollsRepository.update(pollId, {
-            ...(pollDto.title && {title: pollDto.title}),
-        })
-         }
-        await this.pollsOptionsService.updatePollOptions(pollDto.options, poll, priorPollOptions.pollOptions)
+    let pollCompletionCheck = await this.pollsVotesSerivce.pollCompletionCheck(
+      poll,
+      eventUsers,
+    );
+
+    if (pollCompletionCheck) {
+      await this.pollsRepository.update(poll.id, {
+        completed: true,
+      });
+      //Trigger next call to get web scraping info
     }
 
-    async voteEventPoll(poll: Poll,  event: Event, pollVoteOptions : any[], user : User) : Promise<any> {
+    return pollCompletionCheck;
+  }
 
-        await this.pollsVotesSerivce.updatePollVotes(poll, pollVoteOptions, user);
+  async getHighestVotedPollOptions(poll) {
+    return this.pollsOptionsService.getPollOptionsWithMostVotes(poll);
+  }
 
-        let eventUsers = []
+  async deleteEventPoll(uuid: string): Promise<any> {
+    return this.pollsRepository.delete({ id: uuid });
+  }
 
-        for (let user in event[0].invitedUsers) {
-            eventUsers.push(event[0].invitedUsers[user])
-       }
+  async getEventPoll(uuid: string): Promise<any> {
+    //Update query to only return user votes and hide certain fields like passworde
+    let poll = await this.pollsRepository.findPoll(uuid);
 
-       let pollCompletionCheck =  await this.pollsVotesSerivce.pollCompletionCheck(poll, eventUsers);
-
-       if (pollCompletionCheck) {
-           await this.pollsRepository.update(poll.id, {
-               completed: true
-           })
-           //Trigger next call to get web scraping info
-       }
-
-       return pollCompletionCheck;
+    for (let vote in poll.pollVote) {
+      poll.pollVote[vote] = {
+        id: poll.pollVote[vote].id,
+        userId: poll.pollVote[vote].user.id,
+        pollOptionId: poll.pollVote[vote].pollOption.id,
+      };
     }
 
-    async getHighestVotedPollOptions(poll) {
-        return this.pollsOptionsService.getPollOptionsWithMostVotes(poll)
+    for (let pollOption in poll.pollOptions) {
+      poll.pollOptions[pollOption]['votes'] = poll.pollVote.filter(
+        (vote) => vote.pollOptionId === poll.pollOptions[pollOption].id,
+      ).length;
     }
 
-    async deleteEventPoll(uuid: string) : Promise<any> {
-        return this.pollsRepository.delete({id: uuid})
-    }
-
-    async getEventPoll(uuid: string) : Promise<any> {
-        //Update query to only return user votes and hide certain fields like passworde
-        let poll = await this.pollsRepository.findPoll(uuid);
-
-        for (let vote in poll.pollVote) {
-            poll.pollVote[vote] = {
-                "id": poll.pollVote[vote].id,
-                "userId": poll.pollVote[vote].user.id,
-                "pollOptionId": poll.pollVote[vote].pollOption.id
-            }
-        }
-
-        for (let pollOption in poll.pollOptions) {
-            poll.pollOptions[pollOption]["votes"] = poll.pollVote.filter((vote) => vote.pollOptionId === poll.pollOptions[pollOption].id).length
-        }
-
-        return poll;
-    }
-    async returnIndividualPoll(uuid: string) : Promise<any> {
-       return this.pollsRepository.findOne({id: uuid});
-    }
-    
-
+    return poll;
+  }
+  async returnIndividualPoll(uuid: string): Promise<any> {
+    return this.pollsRepository.findOne({ id: uuid });
+  }
 }

@@ -7,9 +7,8 @@ import { MessageRepository } from './message.repository';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt'}),
-    TypeOrmModule.forFeature([MessageRepository,  UsersRepository ]),
- 
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    TypeOrmModule.forFeature([MessageRepository, UsersRepository]),
   ],
   providers: [ChatService],
   exports: [ChatService],

@@ -1,18 +1,18 @@
-import { IsArray, IsEmail, IsString } from "class-validator";
+import { IsArray, IsEmail, IsString } from 'class-validator';
 
 export class EventDto {
-    @IsString()
-    title: string;
+  @IsString()
+  title: string;
 
-    @IsString()
-    type: string;
+  @IsString()
+  type: string;
 
-    @IsEmail({}, {each: true})
-    userEmails: string[];
+  @IsEmail({}, { each: true })
+  userEmails: string[];
 
-    @IsString()
-    city: string;
+  @IsString()
+  city: string;
 
-    @IsString()
-    departureCity: string;
+  @IsString()
+  departureCity: string;
 }

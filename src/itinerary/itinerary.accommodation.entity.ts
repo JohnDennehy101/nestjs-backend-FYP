@@ -1,69 +1,82 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Event } from '../events/events.entity';
-import { Itinerary } from "./itinerary.entity";
+import { Itinerary } from './itinerary.entity';
 
 @Entity()
 export class ItineraryAccommodation {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @ManyToOne(() => Itinerary, (itinerary: Itinerary) => itinerary.accommodation, {onDelete: "CASCADE"})
-    itinerary: Itinerary;
+  @ManyToOne(
+    () => Itinerary,
+    (itinerary: Itinerary) => itinerary.accommodation,
+    { onDelete: 'CASCADE' },
+  )
+  itinerary: Itinerary;
 
-    @Column()
-    title: String
+  @Column()
+  title: String;
 
-    @Column()
-    startDate: String
+  @Column()
+  startDate: String;
 
-    @Column()
-    endDate: String
+  @Column()
+  endDate: String;
 
-    @Column()
-    locationTitle: String
+  @Column()
+  locationTitle: String;
 
-    @Column()
-    numberOfNightsAndGuests: String
+  @Column()
+  numberOfNightsAndGuests: String;
 
-    @Column()
-    numberOfRoomsRecommendedBooking: String
+  @Column()
+  numberOfRoomsRecommendedBooking: String;
 
-    @Column()
-    bookingPreviewLink: String
+  @Column()
+  bookingPreviewLink: String;
 
-    @Column()
-    bookingSiteDisplayLocationMapLink: String
+  @Column()
+  bookingSiteDisplayLocationMapLink: String;
 
-    @Column()
-    bookingSiteLink: String
+  @Column()
+  bookingSiteLink: String;
 
-    @Column()
-    freeCancellationText: String
+  @Column()
+  freeCancellationText: String;
 
-    @Column()
-    locationDistance: String
+  @Column()
+  locationDistance: String;
 
-    @Column()
-    numberOfBedsRecommendedBooking: String
+  @Column()
+  numberOfBedsRecommendedBooking: String;
 
-    @Column()
-    price: String
+  @Column()
+  price: String;
 
-    @Column()
-    ratingScore: String
+  @Column()
+  ratingScore: String;
 
-    @Column()
-    ratingScoreCategory: String
-    
-    @Column()
-    reviewQuantity: String
+  @Column()
+  ratingScoreCategory: String;
 
-    @Column()
-    roomTypeRecommendedBooking: String
+  @Column()
+  reviewQuantity: String;
 
-    @CreateDateColumn()
-    created_at: Date;
+  @Column()
+  roomTypeRecommendedBooking: String;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

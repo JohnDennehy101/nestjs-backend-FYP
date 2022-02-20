@@ -99,16 +99,23 @@ export class AppGateway
 
     this.roomId = message.room;
 
-    const onlineUserEmails : any[] = [...new Set(Object.values(this.onlineUsersSockets))]
+    const onlineUserEmails: any[] = [
+      ...new Set(Object.values(this.onlineUsersSockets)),
+    ];
 
     for (let i = 0; i < onlineUserEmails.length; i++) {
-      const user = await this.usersService.findOneUserByEmail(onlineUserEmails[i]);
+      const user = await this.usersService.findOneUserByEmail(
+        onlineUserEmails[i],
+      );
 
-      if (!this.onlineUsers.find((individualUser) => individualUser.email === user.email)) {
+      if (
+        !this.onlineUsers.find(
+          (individualUser) => individualUser.email === user.email,
+        )
+      ) {
         this.onlineUsers.push(user);
       }
     }
-
 
     this.wss
       .to(message.room)

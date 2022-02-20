@@ -1,38 +1,44 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Itinerary } from "./itinerary.entity";
-
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Itinerary } from './itinerary.entity';
 
 @Entity()
 export class ItineraryActivity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @ManyToOne(() => Itinerary, (itinerary: Itinerary) => itinerary.activities, {onDelete: "CASCADE"})
-    itinerary: Itinerary;
+  @ManyToOne(() => Itinerary, (itinerary: Itinerary) => itinerary.activities, {
+    onDelete: 'CASCADE',
+  })
+  itinerary: Itinerary;
 
-    @Column()
-    name: String
+  @Column()
+  name: String;
 
-    @Column()
-    vicinity: String
+  @Column()
+  vicinity: String;
 
-    @Column()
-    rating: String
+  @Column()
+  rating: String;
 
-    @Column()
-    user_ratings_total: String
+  @Column()
+  user_ratings_total: String;
 
-    @Column()
-    mapLink: String
+  @Column()
+  mapLink: String;
 
-    @Column()
-    placesId: String
+  @Column()
+  placesId: String;
 
-    @CreateDateColumn()
-    created_at: Date;
+  @CreateDateColumn()
+  created_at: Date;
 
-    @UpdateDateColumn()
-    updated_at: Date;
-
-
+  @UpdateDateColumn()
+  updated_at: Date;
 }

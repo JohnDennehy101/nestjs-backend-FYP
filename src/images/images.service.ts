@@ -4,7 +4,7 @@ import toStream = require('buffer-to-stream');
 
 @Injectable()
 export class ImagesService {
-    async uploadImage(
+  async uploadImage(
     file: Express.Multer.File,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return new Promise((resolve, reject) => {
@@ -16,7 +16,3 @@ export class ImagesService {
     });
   }
 }
-
-
-  
-

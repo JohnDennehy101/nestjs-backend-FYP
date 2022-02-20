@@ -6,7 +6,6 @@ import { ExternalApiRequestsService } from './external-api-requests.service';
 @Module({
   imports: [HttpModule, ConfigModule],
   providers: [ExternalApiRequestsService],
-  exports: [ExternalApiRequestsService]
+  exports: [ExternalApiRequestsService],
 })
 export class ExternalApiRequestsModule {}
-

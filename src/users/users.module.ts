@@ -8,17 +8,16 @@ import { PassportModule } from '@nestjs/passport';
 import { EmailsModule } from '../emails/emails.module';
 import { ImagesModule } from '../images/images.module';
 
-
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt'}),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     TypeOrmModule.forFeature([UsersRepository]),
     AuthModule,
     EmailsModule,
-    ImagesModule
+    ImagesModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
-  exports: [UsersService, TypeOrmModule]
+  exports: [UsersService, TypeOrmModule],
 })
 export class UsersModule {}

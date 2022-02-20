@@ -1,11 +1,9 @@
-import { IsDate } from "class-validator";
-
+import { IsDate } from 'class-validator';
 
 export class PollsOptionDto {
-    @IsDate()
-    startDate: string;
+  @IsDate()
+  startDate: string;
 
-    @IsDate()
-    endDate: string;
-
+  @IsDate()
+  endDate: string;
 }

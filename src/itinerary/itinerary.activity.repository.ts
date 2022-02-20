@@ -55,8 +55,6 @@ export class ItineraryActivityRepository extends Repository<ItineraryActivity> {
           itinerary: itinerary,
         });
 
-    
-
         await this.save(activitiesDbEntry);
       }
     }

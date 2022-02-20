@@ -1,50 +1,59 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Itinerary } from "./itinerary.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Itinerary } from './itinerary.entity';
 
 @Entity()
 export class ItineraryFlight {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @ManyToOne(() => Itinerary, (itinerary: Itinerary) => itinerary.flight, {onDelete: "CASCADE"})
-    itinerary: Itinerary;
+  @ManyToOne(() => Itinerary, (itinerary: Itinerary) => itinerary.flight, {
+    onDelete: 'CASCADE',
+  })
+  itinerary: Itinerary;
 
-    @Column()
-    departureTime: String
+  @Column()
+  departureTime: String;
 
-    @Column()
-    arrivalTime: String
+  @Column()
+  arrivalTime: String;
 
-    @Column()
-    departureCity: String
+  @Column()
+  departureCity: String;
 
-    @Column()
-    arrivalCity: String
+  @Column()
+  arrivalCity: String;
 
-    @Column()
-    airport: String
+  @Column()
+  airport: String;
 
-    @Column()
-    duration: String
+  @Column()
+  duration: String;
 
-    @Column()
-    directFlight: String
+  @Column()
+  directFlight: String;
 
-    @Column()
-    carrier: String
+  @Column()
+  carrier: String;
 
-    @Column()
-    pricePerPerson: String
-    
-    @Column()
-    priceTotal: String
+  @Column()
+  pricePerPerson: String;
 
-    @Column()
-    flightUrl: String
+  @Column()
+  priceTotal: String;
 
-    @CreateDateColumn()
-    created_at: Date;
+  @Column()
+  flightUrl: String;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

@@ -11,13 +11,15 @@ import { ItineraryService } from './itinerary.service';
 @Module({
   imports: [
     EmailsModule,
-    PassportModule.register({ defaultStrategy: 'jwt'}),
-    TypeOrmModule.forFeature([ItineraryRepository, ItineraryAccommodationRepository, ItineraryFlightRepository, ItineraryActivityRepository]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    TypeOrmModule.forFeature([
+      ItineraryRepository,
+      ItineraryAccommodationRepository,
+      ItineraryFlightRepository,
+      ItineraryActivityRepository,
+    ]),
   ],
   providers: [ItineraryService],
-  exports: [
-    TypeOrmModule,
-    ItineraryService
-  ]
+  exports: [TypeOrmModule, ItineraryService],
 })
 export class ItineraryModule {}

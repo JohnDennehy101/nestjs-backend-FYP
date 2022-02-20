@@ -5,9 +5,11 @@ import { PollsVotesRepository } from './polls-votes.repository';
 import { PollsVotesService } from './polls-votes.service';
 
 @Module({
-  imports: [PassportModule.register({ defaultStrategy: 'jwt'}),
-    TypeOrmModule.forFeature([PollsVotesRepository])],
+  imports: [
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    TypeOrmModule.forFeature([PollsVotesRepository]),
+  ],
   providers: [PollsVotesService],
-  exports: [PollsVotesService, TypeOrmModule]
+  exports: [PollsVotesService, TypeOrmModule],
 })
 export class PollsVotesModule {}

@@ -1,9 +1,5 @@
-import { EntityRepository, Repository } from "typeorm";
-import { PollVote } from "./polls-votes.entity";
-
+import { EntityRepository, Repository } from 'typeorm';
+import { PollVote } from './polls-votes.entity';
 
 @EntityRepository(PollVote)
-export class PollsVotesRepository extends Repository<PollVote> {
-
-
-}
+export class PollsVotesRepository extends Repository<PollVote> {}

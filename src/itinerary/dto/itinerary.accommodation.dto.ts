@@ -1,54 +1,53 @@
-import { IsString } from "class-validator"
-
+import { IsString } from 'class-validator';
 
 export class ItineraryAccommodationDto {
-    @IsString()
-    title: String
-    @IsString()
-    bookingPreviewLink: String
+  @IsString()
+  title: String;
+  @IsString()
+  bookingPreviewLink: String;
 
-    @IsString()
-    bookingSiteDisplayLocationMapLink: String
+  @IsString()
+  bookingSiteDisplayLocationMapLink: String;
 
-    @IsString()
-    bookingSiteLink: String
+  @IsString()
+  bookingSiteLink: String;
 
-    @IsString()
-    freeCancellationText: String
+  @IsString()
+  freeCancellationText: String;
 
-    @IsString()
-    locationDistance: String
+  @IsString()
+  locationDistance: String;
 
-    @IsString()
-    numberOfBedsRecommendedBooking: String
+  @IsString()
+  numberOfBedsRecommendedBooking: String;
 
-    @IsString()
-    price: String
+  @IsString()
+  price: String;
 
-    @IsString()
-    ratingScore: String
+  @IsString()
+  ratingScore: String;
 
-    @IsString()
-    ratingScoreCategory: String
-    
-    @IsString()
-    reviewQuantity: String
+  @IsString()
+  ratingScoreCategory: String;
 
-    @IsString()
-    roomTypeRecommendedBooking: String
+  @IsString()
+  reviewQuantity: String;
 
-    @IsString()
-    startDate: String
+  @IsString()
+  roomTypeRecommendedBooking: String;
 
-    @IsString()
-    endDate: String
+  @IsString()
+  startDate: String;
 
-    @IsString()
-    locationTitle: String
+  @IsString()
+  endDate: String;
 
-    @IsString()
-    numberOfNightsAndGuests: String
+  @IsString()
+  locationTitle: String;
 
-    @IsString()
-    numberOfRoomsRecommendedBooking
+  @IsString()
+  numberOfNightsAndGuests: String;
+
+  @IsString()
+  numberOfRoomsRecommendedBooking;
 }
