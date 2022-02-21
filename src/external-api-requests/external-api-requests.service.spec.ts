@@ -18,7 +18,7 @@ const mockEventOne = {
   polls: [],
 };
 
-describe('EmailsService', () => {
+describe('ExternalApiRequestsService', () => {
   let externalApiRequestsService: ExternalApiRequestsService;
 
   beforeEach(async () => {
