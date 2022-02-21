@@ -35,12 +35,12 @@ export class EmailsService {
       }),
     };
 
-    /*try {
+    try {
         const response = await this.mailgunService.createEmail('mg.groupactivityplanning.software',mailgunData);
         return response;
     } catch (error) {
         console.log(error)
-    } */
+    }
     console.log('Commenting out to save on email API calls');
   }
 
