@@ -304,6 +304,7 @@ describe('EventsService', () => {
 
   describe('Vote Event Poll', () => {
     it('calls ItineraryService.voteEventPoll to vote in event poll for event', async () => {
+      eventsRepository.findEventUsers.mockResolvedValue(mockEventOne);
       const result = await eventsService.voteEventPoll(
         mockPoll,
         mockEventOne.id,

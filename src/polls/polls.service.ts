@@ -70,8 +70,8 @@ export class PollsService {
 
     let eventUsers = [];
 
-    for (let user in event[0].invitedUsers) {
-      eventUsers.push(event[0].invitedUsers[user]);
+    for (let user in event.invitedUsers) {
+      eventUsers.push(event.invitedUsers[user]);
     }
 
     let pollCompletionCheck = await this.pollsVotesSerivce.pollCompletionCheck(

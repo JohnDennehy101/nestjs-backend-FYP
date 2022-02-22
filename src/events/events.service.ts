@@ -141,7 +141,7 @@ export class EventsService {
     let event = await this.eventsRepository.findEventUsers(eventId);
     let pollCompletionAfterSubmission = await this.pollsService.voteEventPoll(
       poll,
-      event,
+      event[0],
       pollDto.options,
       user,
     );
