@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Readable } from 'stream';
 import { AuthService } from '../auth/auth.service';
 import { EmailsService } from '../emails/emails.service';
 import { ImagesService } from '../images/images.service';
@@ -108,15 +109,122 @@ describe('UsersController', () => {
   describe('confirmEmail', () => {
     it('should confirm a user email', async () => {
       const result = {
-         emailConfirmed: true,
+        emailConfirmed: true,
         passwordProvided: true,
         email: mockUserOne.email,
         id: mockUserOne.id,
       };
       jest.spyOn(usersService, 'confirmUserEmail').mockResolvedValue(result);
 
-      expect(await usersController.confirmEmail({token: 'token'})).toBe(result);
+      expect(await usersController.confirmEmail({ token: 'token' })).toBe(
+        result,
+      );
       expect(result).toBeDefined;
+    });
+  });
+
+  describe('updateUser', () => {
+    it('should update a user', async () => {
+      const result = {
+        jwtToken: 'token',
+        userId: mockUserOne.id,
+        userEmail: mockUserOne.email,
+      };
+
+      jest.spyOn(usersService, 'updateUser').mockResolvedValue(result);
+
+      expect(
+        await usersController.updateUser(mockUserOne, mockUserOne.id),
+      ).toBe(result);
+      expect(result).toBeDefined;
+    });
+  });
+
+  describe('findOneUserById', () => {
+    it('should find a user by provided id', async () => {
+      jest
+        .spyOn(usersService, 'findOneUserById')
+        .mockResolvedValue(mockUserOne);
+
+      expect(await usersController.findOneUserById(mockUserOne.id)).toBe(
+        mockUserOne,
+      );
+    });
+  });
+
+  describe('findOneUserByJwt', () => {
+    it('should find a user by provided JWT', async () => {
+      jest.spyOn(usersService, 'findOne').mockResolvedValue(mockUserOne.id);
+
+      expect(await usersController.findOneUserByJwt('token')).toBe(
+        mockUserOne.id,
+      );
+    });
+  });
+
+  describe('uploadProfileImage', () => {
+    it('should upload profile image provided by user', async () => {
+      let file: Express.Multer.File = {
+        filename: '',
+        fieldname: '',
+        originalname: '',
+        encoding: '',
+        mimetype: '',
+        size: 1,
+        stream: new Readable(),
+        destination: '',
+        path: '',
+        buffer: new Buffer(''),
+      };
+
+      let sampleResponse = {
+        asset_id: 'b5e6d2b39ba3e0869d67141ba7dba6cf',
+        public_id: 'sample',
+        version: 1473599877,
+        version_id: '98f52566f43d8e516a486958a45c1eb9',
+        signature: 'abcdefghijklmnopqrstuvwxyz12345',
+        width: 864,
+        height: 576,
+        format: 'jpg',
+        resource_type: 'image',
+        created_at: '2017-08-11T13:17:57Z',
+        bytes: 109669,
+        type: 'upload',
+        message: 'ok',
+        name: 'allok',
+        http_code: 201,
+        placeholder: 'false',
+        url: 'http://res.cloudinary.com/demo/image/upload/v1473599877/sample.jpg',
+        secure_url:
+          'https://res.cloudinary.com/demo/image/upload/v1473599877/sample.jpg',
+        access_mode: 'public',
+        eager: [
+          {
+            transformation: 'c_crop,g_face,h_400,w_400',
+            width: 400,
+            height: 400,
+            url: 'http://res.cloudinary.com/demo/image/upload/c_crop,g_face,h_400,w_400/v1473599877/sample.jpg',
+            secure_url:
+              'https://res.cloudinary.com/demo/image/upload/c_crop,g_face,h_400,w_400/v1473599877/sample.jpg',
+          },
+          {
+            transformation: 'b_blue,c_pad,h_400,w_660',
+            width: 660,
+            height: 400,
+            url: 'http://res.cloudinary.com/demo/image/upload/b_blue,c_pad,h_400,w_660/v1473599877/sample.jpg',
+            secure_url:
+              'https://res.cloudinary.com/demo/image/upload/b_blue,c_pad,h_400,w_660/v1473599877/sample.jpg',
+          },
+        ],
+      };
+
+      jest
+        .spyOn(usersService, 'uploadImageToCloudinary')
+        .mockResolvedValue(sampleResponse);
+
+      expect(
+        await usersController.uploadProfileImage(file, mockUserOne.id),
+      ).toBe(sampleResponse);
     });
   });
 });
