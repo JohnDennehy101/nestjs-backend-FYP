@@ -103,6 +103,9 @@ describe('PollsService', () => {
           useValue: {
             createPollOptions: jest.fn(),
             updatePollOptions: jest.fn(),
+            getPollOptionsWithMostVotes: jest
+              .fn()
+              .mockResolvedValue(mockPollOption),
           },
         },
         {
@@ -159,6 +162,56 @@ describe('PollsService', () => {
         [mockPollOptionTwo],
         mockCreatedUser,
       );
+    });
+  });
+
+  describe('Getting Most Voted Poll Option', () => {
+    it('calls methods in PollOptionsService and returns the result', async () => {
+      const getHighestVotedPollOptionSpy = jest.spyOn(
+        pollsService,
+        'getHighestVotedPollOptions',
+      );
+      await pollsService.getHighestVotedPollOptions(mockPoll);
+      expect(getHighestVotedPollOptionSpy).toHaveBeenCalledWith(mockPoll);
+    });
+  });
+
+  describe('Deleting Event Poll', () => {
+    it('calls PollsRepository.delete and returns the result', async () => {
+      pollsRepository.delete.mockResolvedValue({ rowsAffected: 1 });
+
+      const deletePollSpy = jest.spyOn(pollsService, 'deleteEventPoll');
+      const result = await pollsService.deleteEventPoll(mockPoll.id);
+
+      expect(result).toEqual({ rowsAffected: 1 });
+      expect(deletePollSpy).toHaveBeenCalledWith(mockPoll.id);
+    });
+  });
+
+  describe('Get Event Poll', () => {
+    it('calls PollsRepository.findPoll and returns the result', async () => {
+      pollsRepository.findPoll.mockResolvedValue(mockPoll);
+
+      const getPollSpy = jest.spyOn(pollsService, 'getEventPoll');
+      const result = await pollsService.getEventPoll(mockPoll.id);
+
+      expect(result).toEqual(mockPoll);
+      expect(getPollSpy).toHaveBeenCalledWith(mockPoll.id);
+    });
+  });
+
+  describe('Find Individual Poll', () => {
+    it('calls PollsRepository.findOne and returns the result', async () => {
+      pollsRepository.findOne.mockResolvedValue(mockPoll);
+
+      const getIndividualPollSpy = jest.spyOn(
+        pollsService,
+        'returnIndividualPoll',
+      );
+      const result = await pollsService.returnIndividualPoll(mockPoll.id);
+
+      expect(result).toEqual(mockPoll);
+      expect(getIndividualPollSpy).toHaveBeenCalledWith(mockPoll.id);
     });
   });
 });

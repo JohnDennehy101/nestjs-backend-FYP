@@ -94,7 +94,9 @@
         ".module.ts",
         "<rootDir>/src/app/main.ts",
         ".mock.ts",
-        ".entity.ts"
+        ".entity.ts",
+        "jwt-strategy.ts",
+        "images.provider.ts"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
