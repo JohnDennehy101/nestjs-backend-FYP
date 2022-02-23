@@ -30,8 +30,7 @@ import { Itinerary } from '../itinerary/itinerary.entity';
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
-  @UseGuards(IsActivatedEventRequestsGuard)
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), IsActivatedEventRequestsGuard)
   @Post('/:userId')
   createEvent(
     @Body(new PayloadValidationPipe()) eventDto: EventDto,
@@ -40,8 +39,7 @@ export class EventsController {
     return this.eventsService.createEvent(eventDto, userId);
   }
 
-  @UseGuards(IsActivatedEventRequestsGuard)
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), IsActivatedEventRequestsGuard)
   @Post('/:id/poll')
   createEventPoll(
     @Body() pollsDto: PollsDto,
@@ -50,8 +48,7 @@ export class EventsController {
     return this.eventsService.createEventPoll(pollsDto, eventId);
   }
 
-  @UseGuards(IsActivatedEventRequestsGuard)
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), IsActivatedEventRequestsGuard)
   @Patch('/:id/poll/:pollId')
   updateEventPoll(
     @Body() pollsDto: PollsDto,
