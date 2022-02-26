@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventDto } from './dto/event.dto';
-import { EventsRepository } from './events.repository'; 
+import { EventsRepository } from './events.repository';
 import { Event } from './events.entity';
 import { ExternalApiRequestsService } from '../external-api-requests/external-api-requests.service';
 import { UsersRepository } from '../users/users.repository';

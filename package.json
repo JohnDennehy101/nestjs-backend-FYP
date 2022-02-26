@@ -45,6 +45,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "socket.io-client": "^4.4.1",
     "typeorm": "^0.2.41"
   },
   "devDependencies": {
@@ -86,17 +87,17 @@
       "**/*.(t|j)s"
     ],
     "coveragePathIgnorePatterns": [
-        "node_modules",
-        "test-config",
-        "dto",
-        "interfaces",
-        "jestGlobalMocks.ts",
-        ".module.ts",
-        "<rootDir>/src/app/main.ts",
-        ".mock.ts",
-        ".entity.ts",
-        "jwt-strategy.ts",
-        "images.provider.ts"
+      "node_modules",
+      "test-config",
+      "dto",
+      "interfaces",
+      "jestGlobalMocks.ts",
+      ".module.ts",
+      "<rootDir>/src/app/main.ts",
+      ".mock.ts",
+      ".entity.ts",
+      "jwt-strategy.ts",
+      "images.provider.ts"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

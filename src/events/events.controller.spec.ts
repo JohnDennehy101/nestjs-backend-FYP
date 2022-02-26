@@ -14,8 +14,11 @@ import { PollsRepository } from 'src/polls/polls.repository';
 import { of } from 'rxjs';
 import { EventsController } from './events.controller';
 import { IsActivatedEventRequestsGuard } from '../users/guards/is-activated-event-requests.guard';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard, PassportModule } from '@nestjs/passport';
 import { AuthService } from '../auth/auth.service';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from '../auth/constants';
+import { LocalStrategy } from '../auth/local.strategy';
 
 const mockEventsRepository = () => ({
   findAllUserCreatedEvents: jest.fn(),
@@ -214,7 +217,15 @@ describe('EventsController', () => {
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       controllers: [EventsController],
+      imports: [
+        PassportModule,
+        JwtModule.register({
+          secret: jwtConstants.secret,
+          signOptions: { expiresIn: '60s' },
+        }),
+      ],
       providers: [
+        LocalStrategy,
         EventsService,
         {
           provide: AuthService,
@@ -274,10 +285,7 @@ describe('EventsController', () => {
               .mockReturnValue(
                 of({ access_token: 'test' }).pipe((data) => data),
               ),
-            //getThirdPartyJwt: jest.fn().mockResolvedValue(Observable.create(observer => observer.complete())),
-            //getAccommodationInfo: jest
-            //  .fn().mockReturnValue(of(true))
-            //  .mockResolvedValue([{ title: 'test Accommodation' }]),
+
             getAccommodationInfo: jest
               .fn()
               .mockReturnValue(of([]).pipe((data) => data)),
