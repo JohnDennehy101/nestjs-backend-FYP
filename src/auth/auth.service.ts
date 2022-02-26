@@ -15,6 +15,8 @@ export class AuthService {
 
   async decodeJwtToken(jwtToken: string): Promise<any> {
     const userInfo = await this.jwtTokenService.decode(jwtToken);
+    console.log("HEREE")
+    console.log(userInfo)
     return userInfo;
   }
 
