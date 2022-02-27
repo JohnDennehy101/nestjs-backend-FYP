@@ -31,7 +31,7 @@ export class ItineraryService {
   async createEventItinerary(
     itineraryDto: ItineraryDto,
     event: Event,
-  ): Promise<void> {
+  ): Promise<Itinerary> {
     try {
       const { accommodation, flight, activities } = itineraryDto;
 
@@ -39,7 +39,7 @@ export class ItineraryService {
         event: event,
       });
 
-      await this.itineraryRepository.save(newItinerary);
+      const result = await this.itineraryRepository.save(newItinerary);
 
       for (let item in accommodation) {
         const accommodationDbEntry =
@@ -103,6 +103,8 @@ export class ItineraryService {
         });
 
         await this.itineraryActivityRepository.save(activityDbEntry);
+
+        return result;
       }
     } catch (error) {
       console.log(error);

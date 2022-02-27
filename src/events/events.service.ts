@@ -54,7 +54,7 @@ export class EventsService {
   async createEventItinerary(
     itineraryDto: ItineraryDto,
     eventId: string,
-  ): Promise<void> {
+  ): Promise<Itinerary> {
     const event = await this.eventsRepository.findOne({ id: eventId });
 
     return this.itineraryService.createEventItinerary(itineraryDto, event);

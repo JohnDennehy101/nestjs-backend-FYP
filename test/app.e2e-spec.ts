@@ -20,6 +20,7 @@ import { PollsModule } from '../src/polls/polls.module';
 import * as fs from 'fs';
 import { EventDto } from 'src/events/dto/event.dto';
 import { PollsDto } from 'src/polls/dto/polls.dto';
+import { ItineraryDto } from 'src/itinerary/dto/itinerary.dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -41,10 +42,60 @@ describe('AppController (e2e)', () => {
     title: 'Test Poll E2E',
     options: [
       {
-        startDate: '2022-02-11 00:00:00',
-        endDate: '2022-02-11 00:00:00',
+        startDate: '2022-04-11 00:00:00',
+        endDate: '2022-04-12 00:00:00',
       },
     ],
+  };
+
+  const mockEventItinerary: ItineraryDto = {
+    flight: [
+      {
+        departureTime: '04:30',
+        arrivalTime: '05:50',
+        departureCity: 'Dublin',
+        arrivalCity: 'London',
+        airport: 'Stansted',
+        duration: '1h 30 min',
+        directFlight: 'Direct',
+        carrier: 'Ryanair',
+        pricePerPerson: '€85',
+        priceTotal: '€170',
+        flightUrl: 'http:skycanner.ie',
+      },
+    ],
+    accommodation: [
+      {
+        title: 'Skylon',
+        bookingPreviewLink: 'http:booking.com',
+        bookingSiteDisplayLocationMapLink: 'http:booking.com',
+        bookingSiteLink: 'http://booking.com',
+        freeCancellationText: 'FREE Cancellation',
+        locationDistance: '6km from centre',
+        numberOfBedsRecommendedBooking: '2 beds',
+        price: '€150',
+        ratingScore: '8.6',
+        ratingScoreCategory: 'Superb',
+        reviewQuantity: '5001',
+        roomTypeRecommendedBooking: 'Double Room',
+        startDate: '12/12/21',
+        endDate: '14/12/21',
+        locationTitle: 'Cork',
+        numberOfNightsAndGuests: '2 nights, 2 guests',
+        numberOfRoomsRecommendedBooking: '1 Double Room',
+      },
+    ],
+    activities: [
+      {
+        name: 'Opera House',
+        vicinity: 'Main Street',
+        rating: '8.5',
+        user_ratings_total: '2000',
+        mapLink: 'http://googlemaps.ie',
+        placesId: '101219201029',
+      },
+    ],
+    completed: false,
   };
 
   beforeAll(async () => {
@@ -1075,6 +1126,1258 @@ describe('AppController (e2e)', () => {
       });
     });
 
-    ///'/:id/poll/:pollId
+    describe('Find All User Events', () => {
+      it('should return user events', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/user/$S{accountId}')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200);
+      });
+
+      it('no JWT should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/user/$S{accountId}')
+          .expectStatus(401);
+      });
+
+      it('if user has not confirmed email error should be thrown', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/user/$S{accountId}')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(403);
+      });
+    });
+
+    describe('Find Individual Event', () => {
+      it('should return individual event', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200);
+      });
+
+      it('no JWT should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum.spec().get('/events/$S{eventId}').expectStatus(401);
+      });
+
+      it('invalid eventId should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/1')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(400);
+      });
+    });
+
+    describe('Return accommodation info for event', () => {
+      it('should return accommodation info', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/accommodation')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .withQueryParams({
+            startDate: '2022-04-11 00:00:00',
+            endDate: '2022-04-12 00:00:00',
+          })
+          .inspect()
+          .expectStatus(200);
+      });
+
+      it('no JWT throws error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/accommodation')
+          .withQueryParams({
+            startDate: '2022-04-11 00:00:00',
+            endDate: '2022-04-12 00:00:00',
+          })
+          .inspect()
+          .expectStatus(401);
+      });
+
+      it('invalid query parameters throws error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/accommodation')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .withQueryParams({
+            endDates: '2022-04-12 00:00:00',
+          })
+          .inspect()
+          .expectStatus(404);
+      });
+    });
+
+    describe('Return flight info for event', () => {
+      it('should return flights info for event', async () => {
+        const foreignEventDto: EventDto = {
+          title: 'Test Event for E2E',
+          type: 'FOREIGN_OVERNIGHT',
+          userEmails: ['newEmail@gmail.com'],
+          city: 'London',
+          departureCity: 'Limerick',
+        };
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(foreignEventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .inspect()
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/flights')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .withQueryParams({
+            startDate: '2022-04-11 00:00:00',
+            endDate: '2022-04-12 00:00:00',
+          })
+          .inspect()
+          .expectStatus(200);
+      });
+
+      it('no query params should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/flights')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(500);
+      });
+
+      it('no JWT should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/flights')
+          .expectStatus(401);
+      });
+
+      it('invalid eventId should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/1/flights')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(400);
+      });
+    });
+
+    describe('Return Google Places Info for event', () => {
+      it('should return Google Places info for event location', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .inspect()
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/places')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .withQueryParams({
+            latitude: 52.6638,
+            longitude: -8.6267,
+          })
+          .inspect()
+          .expectStatus(200);
+      });
+
+      it('no JWT should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .inspect()
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/places')
+          .withQueryParams({
+            latitude: 52.6638,
+            longitude: -8.6267,
+          })
+          .inspect()
+          .expectStatus(401);
+      });
+
+      it('no query params should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .inspect()
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/places')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .inspect()
+          .expectStatus(500);
+      });
+    });
+
+    describe('Create Event Itinerary', () => {
+      it('should create itinerary', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .post('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .inspect()
+          .expectStatus(201);
+      });
+
+      it('no JWT should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .post('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .expectStatus(401);
+      });
+
+      it('invalid eventId query param should throw error', async () => {
+        const invalidItinerary = {
+          activities: null,
+          flights: null,
+        };
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .post('/events/1/itinerary')
+          .withBody(invalidItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(400);
+      });
+    });
+
+    describe('Get Event Itinerary', () => {
+      it('should get itinerary', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/itinerary')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200);
+      });
+
+      it('no JWT should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/itinerary')
+          .expectStatus(401);
+      });
+
+      it('invalid Event ID should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/1/itinerary')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(400);
+      });
+    });
+
+    describe('Delete Event Itinerary', () => {
+      it('should delete itinerary', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .delete('/events/$S{eventId}/itinerary')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200);
+      });
+
+      it('no JWT should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .delete('/events/$S{eventId}/itinerary')
+          .expectStatus(401);
+      });
+
+      it('invalid Event ID should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .delete('/events/1/itinerary')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(400);
+      });
+    });
+
+    describe('Update Event Itinerary', () => {
+      it('should update itinerary', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200);
+      });
+
+      it('no JWT should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/$S{eventId}/itinerary')
+          .expectStatus(401);
+      });
+
+      it('invalid Event ID should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/itinerary')
+          .withBody(mockEventItinerary)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/1/itinerary')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(400);
+      });
+    });
+
+    describe('Get All Events By Type', () => {
+      it('get all DOMESTIC_OVERNIGHT events', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/type/DOMESTIC_OVERNIGHT')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .inspect()
+          .expectStatus(200);
+      });
+
+      it('no JWT throws error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/type/DOMESTIC_OVERNIGHT')
+          .inspect()
+          .expectStatus(401);
+      });
+
+      it('invalid event type throws error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/type/DOMESTIC')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .inspect()
+          .expectStatus(400);
+      });
+    });
+
+    describe('Update Event', () => {
+      it('update event', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/$S{eventId}')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .withBody(eventDto)
+          .inspect()
+          .expectStatus(200);
+      });
+
+      it('no JWT throws error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/$S{eventId}')
+          .withBody(eventDto)
+          .expectStatus(401);
+      });
+
+      it('invalid event id throws error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/1')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .withBody(eventDto)
+          .inspect()
+          .expectStatus(400);
+      });
+    });
+
+    describe('Delete Event', () => {
+      it('delete event', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .delete('/events/$S{eventId}')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .inspect()
+          .expectStatus(200);
+      });
+
+      it('no JWT throws error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum.spec().delete('/events/$S{eventId}').expectStatus(401);
+      });
+
+      it('invalid event id throws error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .delete('/events/1')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .inspect()
+          .expectStatus(400);
+      });
+    });
+ 
   });
 });

@@ -151,7 +151,7 @@ export class EventsController {
   createEventItinerary(
     @Body() itineraryDto: ItineraryDto,
     @Param('id', new ParseUUIDPipe()) eventId: string,
-  ): Promise<void> {
+  ): Promise<Itinerary> {
     return this.eventsService.createEventItinerary(itineraryDto, eventId);
   }
 
