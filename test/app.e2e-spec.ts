@@ -18,10 +18,34 @@ import { PollsOptionsModule } from '../src/polls-options/polls-options.module';
 import { PollsVotesModule } from '../src/polls-votes/polls-votes.module';
 import { PollsModule } from '../src/polls/polls.module';
 import * as fs from 'fs';
+import { EventDto } from 'src/events/dto/event.dto';
+import { PollsDto } from 'src/polls/dto/polls.dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let queryRunner: QueryRunner;
+  const userDto: UserDto = {
+    email: 'newEmail@gmail.com',
+    password: 'ReallyLongPassword403%',
+  };
+
+  const eventDto: EventDto = {
+    title: 'Test Event for E2E',
+    type: 'DOMESTIC_OVERNIGHT',
+    userEmails: ['newEmail@gmail.com'],
+    city: 'Limerick',
+    departureCity: 'N/A',
+  };
+
+  const pollDto: PollsDto = {
+    title: 'Test Poll E2E',
+    options: [
+      {
+        startDate: '2022-02-11 00:00:00',
+        endDate: '2022-02-11 00:00:00',
+      },
+    ],
+  };
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
@@ -75,305 +99,982 @@ describe('AppController (e2e)', () => {
   describe('Users', () => {
     describe('Register', () => {
       it('should sign up a user', () => {
-        const dto: UserDto = {
-          email: 'newEmail@gmail.com',
-          password: 'ReallyLongPassword403%',
-        };
         return pactum
           .spec()
           .post('/users')
-          .withBody(dto)
+          .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .expectStatus(201);
       });
 
       it('should throw error if existing account with email', () => {
-        const dto: UserDto = {
+        const existingUserDto: UserDto = {
           email: 'test@gmail.com',
-          password: 'ReallyLongPassword403%',
+          password: 'ReallyLongPassword123%',
         };
-        return pactum.spec().post('/users').withBody(dto).expectStatus(409);
+
+        return pactum
+          .spec()
+          .post('/users')
+          .withBody(existingUserDto)
+          .expectStatus(409);
       });
 
       it('should throw error if invalid payload - no password', () => {
-        const dto = {
+        const invalidDto = {
           email: 'newSuperEmail@gmail.com',
         };
-        return pactum.spec().post('/users').withBody(dto).expectStatus(400);
+        return pactum
+          .spec()
+          .post('/users')
+          .withBody(invalidDto)
+          .expectStatus(400);
       });
 
       it('should throw error if invalid payload - no email', () => {
-        const dto = {
+        const invalidDto = {
           password: 'ReallyLongPassword403%',
         };
-        return pactum.spec().post('/users').withBody(dto).expectStatus(400);
+        return pactum
+          .spec()
+          .post('/users')
+          .withBody(invalidDto)
+          .expectStatus(400);
+      });
+    });
+
+    describe('Login', () => {
+      it('login user if valid payload, valid JWT and email has been confirmed', async () => {
+        await pactum.spec().post('/users').withBody(userDto).expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .post('/users/login')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .withBody(userDto)
+          .expectStatus(201);
+      });
+
+      it('should throw error if valid payload and valid JWT but user has not confirmed email', async () => {
+        await pactum.spec().post('/users').withBody(userDto).expectStatus(201);
+        return pactum
+          .spec()
+          .post('/users/login')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .withBody(userDto)
+          .expectStatus(403);
+      });
+      it('should throw error if invalid JWT provided', async () => {
+        await pactum.spec().post('/users').withBody(userDto).expectStatus(201);
+        return pactum
+          .spec()
+          .post('/users/login')
+          .withBody(userDto)
+          .expectStatus(403);
+      });
+
+      it('should throw error if no JWT provided', async () => {
+        const newUserResponse = await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .expectStatus(201);
+        return pactum
+          .spec()
+          .post('/users/login')
+          .withBody(userDto)
+          .expectStatus(403);
+      });
+    });
+
+    describe('Get User By Id', () => {
+      it('Return user record if valid id and JWT in request', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/users/$S{accountId}')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200);
+      });
+
+      it('Throws error if invalid id in request', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/users/1')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(400);
+      });
+
+      it('Throws error if no JWT in request', async () => {
+        return pactum.spec().get('/users/$S{accountId}').expectStatus(401);
+      });
+    });
+
+    describe('Update User', () => {
+      it('Updates user record if valid id, payload and JWT in request', async () => {
+        const updatedDto: UserDto = {
+          email: 'newEmail2@gmail.com',
+          password: 'ReallyLongPassword403%2',
+        };
+
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/users/$S{accountId}')
+          .withBody(updatedDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200);
+      });
+
+      it('Error if invalid id provided in request', async () => {
+        const updatedDto: UserDto = {
+          email: 'newEmail2@gmail.com',
+          password: 'ReallyLongPassword403%2',
+        };
+
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/users/1')
+          .withBody(updatedDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(400);
+      });
+
+      it('Error if invalid JWT provided in request', async () => {
+        const updatedDto: UserDto = {
+          email: 'newEmail2@gmail.com',
+          password: 'ReallyLongPassword403%2',
+        };
+
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/users/$S{accountId}')
+          .withBody(updatedDto)
+          .withHeaders({ Authorization: 'Bearer 101029190209' })
+          .expectStatus(401);
+      });
+    });
+
+    describe('Get User By JWT', () => {
+      it('Returns user if valid JWT in request', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/users/findOne/$S{accessToken}')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200);
+      });
+
+      it('Bad response if invalid JWT in request', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/users/findOne/1234')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(500);
+      });
+    });
+
+    describe('Add User Profile Image', () => {
+      it('Adds image if valid payload and JWT in request', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .post('/users/$S{accountId}/image')
+          .withMultiPartFormData(
+            'file',
+            fs.readFileSync('test/defaultUserImage.png'),
+            { filename: 'defaultUserImage.png' },
+          )
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
       });
     });
   });
 
-  describe('Login', () => {
-    it('login user if valid payload, valid JWT and email has been confirmed', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
+  describe('Events', () => {
+    describe('Create Event', () => {
+      it('should create Event', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
 
-      await pactum.spec().post('/users').withBody(dto).expectStatus(201);
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
 
-      await pactum
-        .spec()
-        .post('/users/confirm-email')
-        .withBody({ token: '$S{accessToken}' })
-        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-        .expectStatus(201);
+        return pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+      });
 
-      return pactum
-        .spec()
-        .post('/users/login')
-        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-        .withBody(dto)
-        .expectStatus(201);
+      it('invalid payload should throw error', async () => {
+        const invalidEventDto: EventDto = {
+          title: 'Test Event for E2E',
+          type: 'DOMESTIC_OVERNIGHT',
+          userEmails: ['newEmail@gmail.com'],
+          city: 'Limerick',
+          departureCity: null,
+        };
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(invalidEventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(400);
+      });
+
+      it('no JWT provided should throw error', async () => {
+        const userDto: UserDto = {
+          email: 'newEmail@gmail.com',
+          password: 'ReallyLongPassword403%',
+        };
+
+        const eventDto: EventDto = {
+          title: 'Test Event for E2E',
+          type: 'DOMESTIC_OVERNIGHT',
+          userEmails: ['newEmail@gmail.com'],
+          city: 'Limerick',
+          departureCity: 'N/A',
+        };
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .expectStatus(401);
+      });
+
+      it('if user has not confirmed email error should be thrown', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(403);
+      });
     });
 
-    it('should throw error if valid payload and valid JWT but user has not confirmed email', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
+    describe('Create Event Poll', () => {
+      it('should create Event Poll', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
 
-      await pactum.spec().post('/users').withBody(dto).expectStatus(201);
-      return pactum
-        .spec()
-        .post('/users/login')
-        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-        .withBody(dto)
-        .expectStatus(403);
-    });
-    it('should throw error if invalid JWT provided', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
-      await pactum.spec().post('/users').withBody(dto).expectStatus(201);
-      return pactum.spec().post('/users/login').withBody(dto).expectStatus(403);
-    });
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
 
-    it('should throw error if no JWT provided', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
-      const newUserResponse = await pactum
-        .spec()
-        .post('/users')
-        .withBody(dto)
-        .expectStatus(201);
-      return pactum.spec().post('/users/login').withBody(dto).expectStatus(403);
-    });
-  });
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
 
-  describe('Get User By Id', () => {
-    it('Return user record if valid id and JWT in request', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
+        return pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+      });
 
-      await pactum
-        .spec()
-        .post('/users')
-        .withBody(dto)
-        .stores('accountId', 'userId')
-        .expectStatus(201);
+      it('should throw error if invalid payload provided', async () => {
+        const invalidPollDto = {
+          options: [
+            {
+              startDate: '2022-02-11 00:00:00',
+              endDate: '2022-02-11 00:00:00',
+            },
+          ],
+        };
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
 
-      return pactum
-        .spec()
-        .get('/users/$S{accountId}')
-        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-        .expectStatus(200);
-    });
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
 
-    it('Throws error if invalid id in request', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
 
-      await pactum
-        .spec()
-        .post('/users')
-        .withBody(dto)
-        .stores('accountId', 'userId')
-        .expectStatus(201);
+        return pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(invalidPollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(500);
+      });
 
-      return pactum
-        .spec()
-        .get('/users/1')
-        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-        .expectStatus(400);
-    });
+      it('should throw error if user has not confirmed email', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
 
-    it('Throws error if no JWT in request', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
+        return pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(403);
+      });
 
-      return pactum.spec().get('/users/$S{accountId}').expectStatus(401);
-    });
-  });
+      it('should throw error if no JWT provided', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
 
-  describe('Update User', () => {
-    it('Updates user record if valid id, payload and JWT in request', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
 
-      const updatedDto: UserDto = {
-        email: 'newEmail2@gmail.com',
-        password: 'ReallyLongPassword403%2',
-      };
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
 
-      await pactum
-        .spec()
-        .post('/users')
-        .withBody(dto)
-        .stores('accountId', 'userId')
-        .expectStatus(201);
-
-      return pactum
-        .spec()
-        .patch('/users/$S{accountId}')
-        .withBody(updatedDto)
-        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-        .expectStatus(200);
-    });
-
-    it('Error if invalid id provided in request', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
-
-      const updatedDto: UserDto = {
-        email: 'newEmail2@gmail.com',
-        password: 'ReallyLongPassword403%2',
-      };
-
-      await pactum
-        .spec()
-        .post('/users')
-        .withBody(dto)
-        .stores('accountId', 'userId')
-        .expectStatus(201);
-
-      return pactum
-        .spec()
-        .patch('/users/1')
-        .withBody(updatedDto)
-        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-        .expectStatus(400);
+        return pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .expectStatus(401);
+      });
     });
 
-    it('Error if invalid JWT provided in request', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
+    describe('Update Event Poll', () => {
+      it('should update Event Poll', async () => {
+        const updatedPollDto: PollsDto = {
+          title: 'Test Poll E2E - Updated',
+          options: [
+            {
+              startDate: '2022-02-23 00:00:00',
+              endDate: '2022-02-25 00:00:00',
+            },
+            {
+              startDate: '2022-02-13 00:00:00',
+              endDate: '2022-02-14 00:00:00',
+            },
+          ],
+        };
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
 
-      const updatedDto: UserDto = {
-        email: 'newEmail2@gmail.com',
-        password: 'ReallyLongPassword403%2',
-      };
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
 
-      await pactum
-        .spec()
-        .post('/users')
-        .withBody(dto)
-        .stores('accountId', 'userId')
-        .expectStatus(201);
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
 
-      return pactum
-        .spec()
-        .patch('/users/$S{accountId}')
-        .withBody(updatedDto)
-        .withHeaders({ Authorization: 'Bearer 101029190209' })
-        .expectStatus(401);
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/$S{eventId}/poll/$S{pollId}')
+          .withBody(updatedPollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(200);
+      });
+
+      it('invalid payload should throw error', async () => {
+        const invalidUpdatedPollDto: PollsDto = {
+          title: null,
+          options: null,
+        };
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/$S{eventId}/poll/$S{pollId}')
+          .withBody(invalidUpdatedPollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(500);
+      });
+
+      it('should throw error if invalid eventId / pollID', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/1/poll/1')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(403);
+      });
+
+      it('should throw error if no JWT provided', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/$S{eventId}/poll/$S{pollId}')
+          .withBody(pollDto)
+          .stores('pollId', 'id')
+          .expectStatus(401);
+      });
     });
-  });
 
-  describe('Get User By JWT', () => {
-    it('Returns user if valid JWT in request', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
+    describe('Vote Event Poll', () => {
+      it('should add user votes in Event Poll', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
 
-      await pactum
-        .spec()
-        .post('/users')
-        .withBody(dto)
-        .stores('accountId', 'userId')
-        .expectStatus(201);
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
 
-      return pactum
-        .spec()
-        .get('/users/findOne/$S{accessToken}')
-        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-        .expectStatus(200);
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/$S{accountId}/$S{eventId}/poll/$S{pollId}/vote')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200);
+      });
+
+      it('no JWT should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/$S{accountId}/$S{eventId}/poll/$S{pollId}/vote')
+          .withBody(pollDto)
+          .expectStatus(401);
+      });
+
+      it('should throw error for unconfirmed users', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .patch('/events/1/1/poll/1/vote')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(403);
+      });
     });
 
-    it('Bad response if invalid JWT in request', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
+    describe('Get Event Poll', () => {
+      it('should return Event Poll', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
 
-      await pactum
-        .spec()
-        .post('/users')
-        .withBody(dto)
-        .stores('accountId', 'userId')
-        .expectStatus(201);
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
 
-      return pactum
-        .spec()
-        .get('/users/findOne/1234')
-        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-        .expectStatus(500);
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/poll/$S{pollId}')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200);
+      });
+
+      it('no JWT should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/poll/$S{pollId}')
+          .expectStatus(401);
+      });
+
+      it('invalid ID should return 404', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .get('/events/$S{eventId}/poll/11')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(400);
+      });
     });
-  });
 
-  describe('Add User Profile Image', () => {
-    it('Adds image if valid payload and JWT in request', async () => {
-      const dto: UserDto = {
-        email: 'newEmail@gmail.com',
-        password: 'ReallyLongPassword403%',
-      };
+    describe('Delete Event Poll', () => {
+      it('should delete Event Poll', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
 
-      const updatedDto: UserDto = {
-        email: 'newEmail2@gmail.com',
-        password: 'ReallyLongPassword403%2',
-      };
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
 
-      await pactum
-        .spec()
-        .post('/users')
-        .withBody(dto)
-        .stores('accountId', 'userId')
-        .expectStatus(201);
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
 
-      return pactum
-        .spec()
-        .post('/users/$S{accountId}/image')
-        .withMultiPartFormData(
-          'file',
-          fs.readFileSync('test/defaultUserImage.png'),
-          { filename: 'defaultUserImage.png' },
-        )
-        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-        .expectStatus(201);
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .delete('/events/$S{eventId}/poll/$S{pollId}')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200);
+      });
+
+      it('no JWT should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .delete('/events/$S{eventId}/poll/$S{pollId}')
+          .expectStatus(401);
+      });
+
+      it('invalid pollID should throw error', async () => {
+        await pactum
+          .spec()
+          .post('/users')
+          .withBody(userDto)
+          .stores('accessToken', 'jwtToken')
+          .stores('accountId', 'userId')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/users/confirm-email')
+          .withBody({ token: '$S{accessToken}' })
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{accountId}')
+          .withBody(eventDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('eventId', 'id')
+          .expectStatus(201);
+
+        await pactum
+          .spec()
+          .post('/events/$S{eventId}/poll')
+          .withBody(pollDto)
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .stores('pollId', 'id')
+          .expectStatus(201);
+
+        return pactum
+          .spec()
+          .delete('/events/$S{eventId}/poll/1')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(400);
+      });
     });
+
+    ///'/:id/poll/:pollId
   });
 });

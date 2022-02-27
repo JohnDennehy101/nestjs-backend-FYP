@@ -32,8 +32,9 @@ export class UsersService {
     const jwtTokenResponse = await this.authService.createJwtToken(email);
 
     if (user.email === email) {
-      const userConfirmationEmail =
-        await this.emailsService.sendEmailConfirmationEmail(user.email);
+      //Commenting out to save on API calls
+      //const userConfirmationEmail =
+       // await this.emailsService.sendEmailConfirmationEmail(user.email);
     }
 
     return { jwtToken: jwtTokenResponse, userId: user.id, userEmail: email };
@@ -55,8 +56,8 @@ export class UsersService {
           invitedUsers.push(newUser);
 
           //User confirmation email is sent here, commenting out to save on email calls
-          const userConfirmationEmail =
-            await this.emailsService.sendEmailConfirmationEmail(newUser.email);
+          //const userConfirmationEmail =
+           // await this.emailsService.sendEmailConfirmationEmail(newUser.email);
         }
       } else {
         invitedUsers.push(existingUserCheck);

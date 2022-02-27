@@ -21,20 +21,22 @@ export class PollsService {
     private pollsVotesSerivce: PollsVotesService,
   ) {}
 
-  async createEventPoll(pollsDto: PollsDto, event: Event): Promise<void> {
+  async createEventPoll(pollsDto: PollsDto, event: Event): Promise<Poll> {
     try {
       const newPoll = await this.pollsRepository.create({
         ...pollsDto,
         event: event,
       });
 
-      await this.pollsRepository.save(newPoll);
+    const result = await this.pollsRepository.save(newPoll);
       for (let option in pollsDto.options) {
         await this.pollsOptionsService.createPollOptions(
           pollsDto.options[option],
           newPoll,
         );
       }
+
+      return result;
     } catch (error) {
       if (error.code === '23505') {
         throw new ConflictException('Poll already exists with this title');
@@ -45,11 +47,12 @@ export class PollsService {
     }
   }
 
-  async updateEventPoll(pollDto: PollsDto, pollId): Promise<any> {
+  async updateEventPoll(pollDto: PollsDto, pollId): Promise<Poll> {
+    let result;
     const priorPollOptions = await this.getEventPoll(pollId);
     const poll = await this.pollsRepository.findOne({ id: pollId });
     if (pollDto.title) {
-      await this.pollsRepository.update(pollId, {
+      result = await this.pollsRepository.update(pollId, {
         ...(pollDto.title && { title: pollDto.title }),
       });
     }
@@ -58,6 +61,8 @@ export class PollsService {
       poll,
       priorPollOptions.pollOptions,
     );
+
+    return result
   }
 
   async voteEventPoll(

@@ -15,6 +15,7 @@ import { ItineraryDto } from '../itinerary/dto/itinerary.dto';
 import { Itinerary } from '../itinerary/itinerary.entity';
 import returnCityCoordinates from '../common/utils/locationData';
 import { ChatService } from '../chat/chat.service';
+import { Poll } from 'src/polls/polls.entity';
 
 @Injectable()
 export class EventsService {
@@ -44,7 +45,7 @@ export class EventsService {
     );
   }
 
-  async createEventPoll(pollsDto: PollsDto, eventId: string): Promise<void> {
+  async createEventPoll(pollsDto: PollsDto, eventId: string): Promise<Poll> {
     const event = await this.eventsRepository.findOne({ id: eventId });
 
     return this.pollsService.createEventPoll(pollsDto, event);
@@ -126,7 +127,7 @@ export class EventsService {
     });
   }
 
-  async updateEventPoll(pollDto: PollsDto, pollId): Promise<any> {
+  async updateEventPoll(pollDto: PollsDto, pollId): Promise<Poll> {
     return this.pollsService.updateEventPoll(pollDto, pollId);
   }
 

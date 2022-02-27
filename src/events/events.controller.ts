@@ -25,6 +25,7 @@ import { IsActivatedGuard } from '../users/guards/is-activated.guard';
 import { IsActivatedEventRequestsGuard } from '../users/guards/is-activated-event-requests.guard';
 import { ItineraryDto } from '../itinerary/dto/itinerary.dto';
 import { Itinerary } from '../itinerary/itinerary.entity';
+import { Poll } from 'src/polls/polls.entity';
 
 @Controller('events')
 export class EventsController {
@@ -44,7 +45,7 @@ export class EventsController {
   createEventPoll(
     @Body() pollsDto: PollsDto,
     @Param('id', new ParseUUIDPipe()) eventId: string,
-  ): Promise<void> {
+  ): Promise<Poll> {
     return this.eventsService.createEventPoll(pollsDto, eventId);
   }
 
@@ -53,7 +54,7 @@ export class EventsController {
   updateEventPoll(
     @Body() pollsDto: PollsDto,
     @Param('pollId', new ParseUUIDPipe()) pollId: string,
-  ): Promise<void> {
+  ): Promise<Poll> {
     return this.eventsService.updateEventPoll(pollsDto, pollId);
   }
 
