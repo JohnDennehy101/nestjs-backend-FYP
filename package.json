@@ -100,7 +100,9 @@
       "jwt-strategy.ts",
       "images.provider.ts",
       "payload-validation.pipe.ts",
-      ".repository.ts"
+      ".repository.ts",
+      "main.ts",
+      "app.gateway.ts"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

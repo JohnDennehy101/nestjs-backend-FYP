@@ -1,5 +1,5 @@
 import * as request from 'supertest';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from './../src/app.module';
 import { INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -21,6 +21,8 @@ import * as fs from 'fs';
 import { EventDto } from 'src/events/dto/event.dto';
 import { PollsDto } from 'src/polls/dto/polls.dto';
 import { ItineraryDto } from 'src/itinerary/dto/itinerary.dto';
+import * as io from 'socket.io-client';
+import { EventsService } from '../src/events/events.service';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -2379,5 +2381,319 @@ describe('AppController (e2e)', () => {
       });
     });
  
+  });
+});
+
+describe('AppGateway (e2e)', () => {
+  let app: INestApplication;
+  let connectToSocketIO: (email) => any;
+  let queryRunner: QueryRunner;
+
+  const eventDto: EventDto = {
+    title: 'Test Event for E2E',
+    type: 'DOMESTIC_OVERNIGHT',
+    userEmails: ['newEmail@gmail.com'],
+    city: 'Limerick',
+    departureCity: 'N/A',
+  };
+
+  const userDto: UserDto = {
+    email: 'newEmail@gmail.com',
+    password: 'ReallyLongPassword403%',
+  };
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+      providers: [
+        {
+          provide: EventsService,
+          useValue: {
+            findEvent: jest.fn().mockResolvedValue(eventDto),
+          },
+        },
+      ],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+    await app.listen(0);
+
+    const dbConnection = moduleFixture.get(Connection);
+    const manager = moduleFixture.get(EntityManager);
+    // @ts-ignore
+    queryRunner = manager.queryRunner =
+      dbConnection.createQueryRunner('master');
+    const httpServer = app.getHttpServer();
+    pactum.request.setBaseUrl(`http://127.0.0.1:${httpServer.address().port}`);
+    connectToSocketIO = (email) =>
+      io.connect(`http://127.0.0.1:${httpServer.address().port}`, {
+        transports: ['websocket'],
+        forceNew: true,
+        query: {
+          userEmail: email,
+        },
+      });
+    await queryRunner.startTransaction();
+  });
+
+  afterEach(async () => {
+    await queryRunner.rollbackTransaction();
+    await app.close();
+  });
+
+  describe('Connection and Disconnection', () => {
+    it('should connect and disconnect', (done) => {
+      const socket = connectToSocketIO('test@gmail.com');
+
+      socket.on('connect', () => {
+        socket.disconnect();
+      });
+
+      socket.on('disconnect', (reason) => {
+        expect(reason).toBe('io client disconnect');
+        done();
+      });
+      socket.on('error', done);
+    });
+  });
+
+  describe('Join Chat Room', () => {
+    it('should join room', (done) => {
+      const socket = connectToSocketIO('test@gmail.com');
+
+      socket.emit('joinChatRoom', {
+        room: '1',
+        user: 'test@gmail.com',
+      });
+
+      socket.on('userChange', (message) => {
+        expect(message.onlineUsers).toHaveLength(1);
+        socket.disconnect();
+      });
+
+      socket.on('disconnect', (reason) => {
+        done();
+      });
+      socket.on('error', done);
+    });
+  });
+
+  describe('Request all event chat messages', () => {
+    it('should add message to chat', async () => {
+      await pactum
+        .spec()
+        .post('/users')
+        .withBody(userDto)
+        .stores('accessToken', 'jwtToken')
+        .stores('accountId', 'userId')
+        .expectStatus(201);
+
+      const testUser = await pactum
+        .spec()
+        .post('/users/confirm-email')
+        .withBody({ token: '$S{accessToken}' })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .returns((data) => {
+          return data.res.json;
+        });
+
+      const socket = connectToSocketIO(testUser['email']);
+
+      const testEvent = await pactum
+        .spec()
+        .post('/events/$S{accountId}')
+        .withBody(eventDto)
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .returns((data) => {
+          return data.res.json;
+        });
+
+      socket.emit('joinChatRoom', {
+        room: testEvent['id'],
+        user: 'test@gmail.com',
+      });
+
+      socket.emit('requestAllEventChatMessages', {
+        room: testEvent['id'],
+      });
+
+      await new Promise<void>((resolve) =>
+        socket.on('allEventChatMessages', (message) => {
+          expect(message).toBeDefined();
+          resolve();
+        }),
+      );
+    }, 30000);
+  });
+
+  describe('Request all online users', () => {
+    it('should request all online users', async () => {
+      await pactum
+        .spec()
+        .post('/users')
+        .withBody(userDto)
+        .stores('accessToken', 'jwtToken')
+        .stores('accountId', 'userId')
+        .expectStatus(201);
+
+      const testUser = await pactum
+        .spec()
+        .post('/users/confirm-email')
+        .withBody({ token: '$S{accessToken}' })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .returns((data) => {
+          return data.res.json;
+        });
+
+      const socket = connectToSocketIO(testUser['email']);
+
+      const testEvent = await pactum
+        .spec()
+        .post('/events/$S{accountId}')
+        .withBody(eventDto)
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .returns((data) => {
+          return data.res.json;
+        });
+
+      socket.emit('joinChatRoom', {
+        room: testEvent['id'],
+        user: 'test@gmail.com',
+      });
+
+      socket.emit('requestAllEventOnlineUsers', {
+        room: testEvent['id'],
+      });
+
+      await new Promise<void>((resolve) =>
+        socket.on('allEventOnlineUsers', (message) => {
+          expect(message).toBeDefined();
+          resolve();
+        }),
+      );
+    }, 30000);
+  });
+
+  describe('Add Message In Chat Room', () => {
+    it('should add message to chat', async () => {
+      jest.setTimeout(30000);
+
+      await pactum
+        .spec()
+        .post('/users')
+        .withBody(userDto)
+        .stores('accessToken', 'jwtToken')
+        .stores('accountId', 'userId')
+        .expectStatus(201);
+
+      const testUser = await pactum
+        .spec()
+        .post('/users/confirm-email')
+        .withBody({ token: '$S{accessToken}' })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .returns((data) => {
+          return data.res.json;
+        });
+
+      const socket = connectToSocketIO(testUser['email']);
+
+      const testEvent = await pactum
+        .spec()
+        .post('/events/$S{accountId}')
+        .withBody(eventDto)
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .returns((data) => {
+          return data.res.json;
+        });
+
+      socket.emit('joinChatRoom', {
+        room: testEvent['id'],
+        user: 'test@gmail.com',
+      });
+
+      socket.emit('messageToServer', {
+        room: testEvent['id'],
+        author: 'test@gmail.com',
+        content: 'Test Message',
+      });
+
+      await new Promise<void>((resolve) =>
+        socket.on('messageToClient', (message) => {
+          expect(message.author.email).toEqual('test@gmail.com');
+          expect(message.room).toEqual(testEvent['id']);
+          resolve();
+        }),
+      );
+    }, 30000);
+  });
+
+  describe('Delete Message In Chat Room', () => {
+    it('should remove message from chat', async () => {
+      jest.setTimeout(30000);
+
+      await pactum
+        .spec()
+        .post('/users')
+        .withBody(userDto)
+        .stores('accessToken', 'jwtToken')
+        .stores('accountId', 'userId')
+        .expectStatus(201);
+
+      const testUser = await pactum
+        .spec()
+        .post('/users/confirm-email')
+        .withBody({ token: '$S{accessToken}' })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .returns((data) => {
+          return data.res.json;
+        });
+
+      const socket = connectToSocketIO(testUser['email']);
+
+      const testEvent = await pactum
+        .spec()
+        .post('/events/$S{accountId}')
+        .withBody(eventDto)
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .returns((data) => {
+          return data.res.json;
+        });
+
+      socket.emit('joinChatRoom', {
+        room: testEvent['id'],
+        user: testUser['email'],
+      });
+
+      socket.emit('messageToServer', {
+        room: testEvent['id'],
+        author: testUser['email'],
+        content: 'Test Message',
+      });
+
+      let messageId;
+
+      await new Promise<void>((resolve) =>
+        socket.on('messageToClient', (message) => {
+          messageId = message.room;
+          expect(message.author.email).toEqual(testUser['email']);
+          expect(message.room).toEqual(testEvent['id']);
+
+          resolve();
+        }),
+      );
+
+      socket.emit('deleteChatMessage', {
+        messageId: messageId,
+        room: testEvent['id'],
+      });
+
+      await new Promise<void>((resolve) =>
+        socket.on('chatMessageDeleted', (message) => {
+          expect(message).toEqual(messageId);
+          resolve();
+        }),
+      );
+    }, 10000);
   });
 });
