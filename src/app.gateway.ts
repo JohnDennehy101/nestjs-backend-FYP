@@ -42,8 +42,6 @@ export class AppGateway
     );
     delete this.onlineUsersSockets[client.id];
 
-    console.log('LIST AFTER DELETION');
-    console.log(this.onlineUsersSockets);
     this.wss
       .to(this.roomId)
       .emit('userChange', { onlineUsers: this.onlineUsers });
@@ -52,8 +50,6 @@ export class AppGateway
     this.logger.log(`Client connected: ${client.id}`);
 
     this.onlineUsersSockets[client.id] = client.handshake.query.userEmail;
-    console.log('LIST ON ADDITION');
-    console.log(this.onlineUsersSockets);
   }
 
   @SubscribeMessage('messageToServer')

@@ -18,6 +18,7 @@ export class EmailsService {
   ) {}
 
   async sendEmailConfirmationEmail(email: string): Promise<any> {
+    console.log(email);
     const jwtToken = await this.authService.createJwtToken(email);
     const validationUrl = `${this.configService.get(
       'EMAIL_CONFIRMATION_URL',
@@ -36,11 +37,11 @@ export class EmailsService {
     };
 
     try {
-      const response = await this.mailgunService.createEmail(
-        'mg.groupactivityplanning.software',
-        mailgunData,
-      );
-      return response;
+      //const response = await this.mailgunService.createEmail(
+       // 'mg.groupactivityplanning.software',
+      //  mailgunData,
+     // );
+      //return response;
     } catch (error) {
       console.log(error);
     }

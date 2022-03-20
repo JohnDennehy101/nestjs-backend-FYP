@@ -33,8 +33,7 @@ export class UsersService {
 
     if (user.email === email) {
       //Commenting out to save on API calls
-      //const userConfirmationEmail =
-       // await this.emailsService.sendEmailConfirmationEmail(user.email);
+      const userConfirmationEmail = await this.emailsService.sendEmailConfirmationEmail(user.email);
     }
 
     return { jwtToken: jwtTokenResponse, userId: user.id, userEmail: email };
@@ -57,7 +56,7 @@ export class UsersService {
 
           //User confirmation email is sent here, commenting out to save on email calls
           //const userConfirmationEmail =
-           // await this.emailsService.sendEmailConfirmationEmail(newUser.email);
+           await this.emailsService.sendEmailConfirmationEmail(newUser.email);
         }
       } else {
         invitedUsers.push(existingUserCheck);
@@ -75,7 +74,8 @@ export class UsersService {
       let updatedUser = await this.usersRepository.findUserByEmail(
         tokenCheckUserInfo.email,
       );
-      if (updatedUser.password === null) {
+      console.log(updatedUser);
+      if (!updatedUser.passwordProvided) {
         passwordProvided = false;
       }
       return {
@@ -138,6 +138,7 @@ export class UsersService {
     await this.usersRepository.update(userId, {
       ...(email && { email: email }),
       ...(password && { password: hashedPassword }),
+      passwordProvided: true
     });
 
     const jwtTokenResponse = await this.authService.createJwtToken(email);
