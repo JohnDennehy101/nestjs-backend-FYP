@@ -19,6 +19,7 @@ const mockCreatedUser = {
   email: 'test@gmail.com',
   password: '5434fe34',
   emailConfirmed: false,
+  passwordProvided: false,
   profileImageUrl: null,
   createdEvents: [],
   pollVotes: [],
