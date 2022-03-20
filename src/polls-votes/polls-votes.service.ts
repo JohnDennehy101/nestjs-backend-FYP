@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PollOption } from '../polls-options/polls-options.entity';
 import { Poll } from '../polls/polls.entity';
@@ -11,6 +11,8 @@ export class PollsVotesService {
     @InjectRepository(PollsVotesRepository)
     private pollsVotesRepository: PollsVotesRepository,
   ) {}
+
+  private logger: Logger = new Logger('PollsVotesService');
 
   async updatePollVotes(poll: Poll, pollOptions: PollOption[], user: User) {
     let previousPollOptionVoteIdList = [];
@@ -46,6 +48,8 @@ export class PollsVotesService {
             user: user,
             poll: poll,
           });
+
+          this.logger.log(`Creating new poll vote - id: ${newRecord.id}`)
           newPolloptionVoteIdList.push(newRecord.id);
           await this.pollsVotesRepository.save(newRecord);
         } else {
@@ -61,6 +65,8 @@ export class PollsVotesService {
         await this.pollsVotesRepository.delete({
           id: previousPollOptionVoteIdList[id],
         });
+
+        this.logger.log(`Deleting poll vote record as no longer in use - id: ${previousPollOptionVoteIdList[id]}`)
       }
     }
   }
@@ -76,10 +82,12 @@ export class PollsVotesService {
 
       if (userSubmissionCheck.length === 0) {
         allUserSubmissions = false;
+        this.logger.log(`All users have not yet voted, poll is not completed yet.`)
         break;
       }
     }
 
+    this.logger.log(`All users have voted, poll is completed`)
     return allUserSubmissions;
   }
 }

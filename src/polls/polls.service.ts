@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PollsOptionsService } from '../polls-options/polls-options.service';
@@ -21,6 +22,8 @@ export class PollsService {
     private pollsVotesSerivce: PollsVotesService,
   ) {}
 
+  private logger: Logger = new Logger('PollsService');
+
   async createEventPoll(pollsDto: PollsDto, event: Event): Promise<Poll> {
     try {
       const newPoll = await this.pollsRepository.create({
@@ -29,6 +32,7 @@ export class PollsService {
       });
 
     const result = await this.pollsRepository.save(newPoll);
+    this.logger.log(`Poll created for event - pollId: ${result.id}`)
       for (let option in pollsDto.options) {
         await this.pollsOptionsService.createPollOptions(
           pollsDto.options[option],
@@ -39,9 +43,10 @@ export class PollsService {
       return result;
     } catch (error) {
       if (error.code === '23505') {
+        this.logger.error('Poll already exists with this title')
         throw new ConflictException('Poll already exists with this title');
       } else {
-        console.log(error);
+        this.logger.error(error);
         throw new InternalServerErrorException();
       }
     }
@@ -55,6 +60,8 @@ export class PollsService {
       result = await this.pollsRepository.update(pollId, {
         ...(pollDto.title && { title: pollDto.title }),
       });
+
+      this.logger.log(`Poll updated for event - pollId: ${result.id}`)
     }
     await this.pollsOptionsService.updatePollOptions(
       pollDto.options,
@@ -88,7 +95,8 @@ export class PollsService {
       await this.pollsRepository.update(poll.id, {
         completed: true,
       });
-      //Trigger next call to get web scraping info
+
+      this.logger.log(`Marking poll completed - pollId: ${poll.id}`)
     }
 
     return pollCompletionCheck;
@@ -99,12 +107,15 @@ export class PollsService {
   }
 
   async deleteEventPoll(uuid: string): Promise<any> {
+    this.logger.log(`Deleting poll - id: ${uuid}`);
     return this.pollsRepository.delete({ id: uuid });
   }
 
   async getEventPoll(uuid: string): Promise<any> {
     //Update query to only return user votes and hide certain fields like passworde
     let poll = await this.pollsRepository.findPoll(uuid);
+
+    this.logger.log(`Finding poll - id: ${uuid}`);
 
     for (let vote in poll.pollVote) {
       poll.pollVote[vote] = {
@@ -123,6 +134,7 @@ export class PollsService {
     return poll;
   }
   async returnIndividualPoll(uuid: string): Promise<any> {
+    this.logger.log(`Finding individual poll - id: ${uuid}`)
     return this.pollsRepository.findOne({ id: uuid });
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventDto } from './dto/event.dto';
 import { EventsRepository } from './events.repository';
@@ -31,12 +31,15 @@ export class EventsService {
     private chatService: ChatService,
   ) {}
 
+  private logger: Logger = new Logger('EventsService');
+
   async createEvent(eventDto: EventDto, userId: string): Promise<Event> {
     const cityCoordinates = await returnCityCoordinates(eventDto.city);
     const createEventUser = await this.usersRepository.findOne({ id: userId });
     const invitedUsers = await this.usersService.createAccountsForInvitedUsers(
       eventDto.userEmails,
     );
+    this.logger.log(`Creating event`);
     return this.eventsRepository.createEvent(
       eventDto,
       createEventUser,
@@ -91,6 +94,8 @@ export class EventsService {
     let userInvitedEvents =
       await this.eventsRepository.findAllUserInvitedEvents(user);
 
+      this.logger.log(`Created and invited events search completed for user - id: ${userId}`)
+
     for (let item in userInvitedEvents) {
       if (
         userCreatedEvents.filter(
@@ -108,6 +113,7 @@ export class EventsService {
   }
 
   async findEvent(uuid: string): Promise<Event> {
+    this.logger.log(`Searching for event - id: ${uuid}`)
     return this.eventsRepository.findEvent(uuid);
   }
 
@@ -117,6 +123,7 @@ export class EventsService {
 
   async updateEvent(eventDto: EventDto, eventId: string): Promise<any> {
     const cityCoordinates = await returnCityCoordinates(eventDto.city);
+    this.logger.log(`Updating event - id: ${eventId}`)
     return this.eventsRepository.update(eventId, {
       ...(eventDto.title && { title: eventDto.title }),
       ...(eventDto.type && { type: eventDto.type }),

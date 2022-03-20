@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Poll } from '../polls/polls.entity';
 import { PollsOptionDto } from './dto/polls-options.dto';
@@ -11,18 +11,22 @@ export class PollsOptionsService {
     private pollsOptionsRepository: PollsOptionsRepository,
   ) {}
 
+  private logger: Logger = new Logger('PollsOptionsService');
+
   async createPollOptions(pollsOptionDto: PollsOptionDto, poll: Poll) {
     const pollOption = await this.pollsOptionsRepository.create({
       ...pollsOptionDto,
       poll: poll,
     });
     let result = await this.pollsOptionsRepository.save(pollOption);
+    this.logger.log(`Creating Poll Option - id: ${result.id}`)
     return result;
   }
 
   async getPollOptions(poll: Poll) {
     try {
       let pollOptions = await this.pollsOptionsRepository.find({ poll: poll });
+      this.logger.log(`Getting poll options for poll - id: ${poll.id}`)
       return pollOptions;
     } catch (error) {
       console.log(error);
@@ -55,6 +59,8 @@ export class PollsOptionsService {
         let updatedOption = await this.pollsOptionsRepository.findOne({
           id: pollOption.id,
         });
+
+        this.logger.log(`Updating existing poll option - id: ${pollOption.id}`)
         listOfPollOptions.push(updatedOption);
       } else {
         let newOption = await this.createPollOptions(individualOption, poll);
@@ -79,6 +85,8 @@ export class PollsOptionsService {
             endDate: priorOptions[option].endDate,
             poll: poll,
           });
+
+          this.logger.log(`Deleting poll option as no longer in use - startDate: ${priorOptions[option].startDate}, endDate: ${priorOptions[option].endDate}, pollId: ${poll.id}`)
         }
       }
     }
@@ -87,6 +95,7 @@ export class PollsOptionsService {
   }
 
   async getPollOptionsWithMostVotes(poll: Poll) {
+    this.logger.log(`Getting most voted poll options for poll - id: ${poll.id}`)
     return this.pollsOptionsRepository.getPollOptionsWithMostVotes(poll.id);
   }
 }

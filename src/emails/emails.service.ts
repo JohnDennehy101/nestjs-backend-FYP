@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MailgunService } from '@nextnm/nestjs-mailgun';
 import { AuthService } from '../auth/auth.service';
@@ -11,6 +11,7 @@ import { User } from '../users/user.entity';
 
 @Injectable()
 export class EmailsService {
+  private logger: Logger = new Logger('EmailsService');
   constructor(
     private mailgunService: MailgunService,
     private authService: AuthService,
@@ -24,7 +25,7 @@ export class EmailsService {
       'EMAIL_CONFIRMATION_URL',
     )}?token=${jwtToken}`;
 
-    console.log(validationUrl);
+    this.logger.log(`Email Validation URL generated: ${validationUrl}`)
 
     const mailgunData = {
       from: 'contact@mg.groupactivityplanning.software',
@@ -41,9 +42,10 @@ export class EmailsService {
        // 'mg.groupactivityplanning.software',
       //  mailgunData,
      // );
+     //this.logger.log(`Confirmation email sent to: ${email}`)
       //return response;
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
     }
     console.log('Commenting out to save on email API calls');
   }
@@ -78,9 +80,10 @@ export class EmailsService {
         'mg.groupactivityplanning.software',
         mailgunData,
       );
+      this.logger.log(`Poll completion email sent to ${user.email}`)
       return response;
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
     }
   }
 
@@ -108,9 +111,11 @@ export class EmailsService {
         mailgunData,
       );
 
+      this.logger.log(`Sent link to poll to ${email}`)
+
       return response;
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
     }
   }
 
@@ -144,9 +149,11 @@ export class EmailsService {
         mailgunData,
       );
 
+      this.logger.log(`Sent completed itinerary email to ${email}`);
+
       return response;
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
     }
   }
 }
