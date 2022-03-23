@@ -84,6 +84,11 @@ export class UsersController {
     status: 400,
     description: 'Bad request. Valid payload must be provided.',
   })
+  @ApiResponse({
+    status: 403,
+    description:
+      'Unauthorized request. User must confirm email before access is provided to events API routes.',
+  })
   @UseGuards(IsActivatedGuard)
   @Post('/login')
   login(
