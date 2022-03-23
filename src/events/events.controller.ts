@@ -26,7 +26,9 @@ import { IsActivatedEventRequestsGuard } from '../users/guards/is-activated-even
 import { ItineraryDto } from '../itinerary/dto/itinerary.dto';
 import { Itinerary } from '../itinerary/itinerary.entity';
 import { Poll } from 'src/polls/polls.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Events")
 @Controller('events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
