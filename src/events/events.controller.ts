@@ -36,7 +36,7 @@ import {
 } from '@nestjs/swagger';
 
 @ApiTags('Events')
-@Controller('events')
+@Controller('api/v1/events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 

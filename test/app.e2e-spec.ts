@@ -154,7 +154,7 @@ describe('AppController (e2e)', () => {
       it('should sign up a user', () => {
         return pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .expectStatus(201);
@@ -168,7 +168,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(existingUserDto)
           .expectStatus(409);
       });
@@ -179,7 +179,7 @@ describe('AppController (e2e)', () => {
         };
         return pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(invalidDto)
           .expectStatus(400);
       });
@@ -190,7 +190,7 @@ describe('AppController (e2e)', () => {
         };
         return pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(invalidDto)
           .expectStatus(400);
       });
@@ -198,37 +198,37 @@ describe('AppController (e2e)', () => {
 
     describe('Login', () => {
       it('login user if valid payload, valid JWT and email has been confirmed', async () => {
-        await pactum.spec().post('/users').withBody(userDto).expectStatus(201);
+        await pactum.spec().post('api/v1/users').withBody(userDto).expectStatus(201);
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .post('/users/login')
+          .post('api/v1/users/login')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withBody(userDto)
           .expectStatus(201);
       });
 
       it('should throw error if valid payload and valid JWT but user has not confirmed email', async () => {
-        await pactum.spec().post('/users').withBody(userDto).expectStatus(201);
+        await pactum.spec().post('api/v1/users').withBody(userDto).expectStatus(201);
         return pactum
           .spec()
-          .post('/users/login')
+          .post('api/v1/users/login')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withBody(userDto)
           .expectStatus(403);
       });
       it('should throw error if invalid JWT provided', async () => {
-        await pactum.spec().post('/users').withBody(userDto).expectStatus(201);
+        await pactum.spec().post('api/v1/users').withBody(userDto).expectStatus(201);
         return pactum
           .spec()
-          .post('/users/login')
+          .post('api/v1/users/login')
           .withBody(userDto)
           .expectStatus(403);
       });
@@ -236,12 +236,12 @@ describe('AppController (e2e)', () => {
       it('should throw error if no JWT provided', async () => {
         const newUserResponse = await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .expectStatus(201);
         return pactum
           .spec()
-          .post('/users/login')
+          .post('api/v1/users/login')
           .withBody(userDto)
           .expectStatus(403);
       });
@@ -251,14 +251,14 @@ describe('AppController (e2e)', () => {
       it('Return user record if valid id and JWT in request', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accountId', 'userId')
           .expectStatus(201);
 
         return pactum
           .spec()
-          .get('/users/$S{accountId}')
+          .get('api/v1/users/$S{accountId}')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(200);
       });
@@ -266,20 +266,20 @@ describe('AppController (e2e)', () => {
       it('Throws error if invalid id in request', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accountId', 'userId')
           .expectStatus(201);
 
         return pactum
           .spec()
-          .get('/users/1')
+          .get('api/v1/users/1')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
       });
 
       it('Throws error if no JWT in request', async () => {
-        return pactum.spec().get('/users/$S{accountId}').expectStatus(401);
+        return pactum.spec().get('api/v1/users/$S{accountId}').expectStatus(401);
       });
     });
 
@@ -292,14 +292,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accountId', 'userId')
           .expectStatus(201);
 
         return pactum
           .spec()
-          .patch('/users/$S{accountId}')
+          .patch('api/v1/users/$S{accountId}')
           .withBody(updatedDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(200);
@@ -313,14 +313,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accountId', 'userId')
           .expectStatus(201);
 
         return pactum
           .spec()
-          .patch('/users/1')
+          .patch('api/v1/users/1')
           .withBody(updatedDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
@@ -334,14 +334,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accountId', 'userId')
           .expectStatus(201);
 
         return pactum
           .spec()
-          .patch('/users/$S{accountId}')
+          .patch('api/v1/users/$S{accountId}')
           .withBody(updatedDto)
           .withHeaders({ Authorization: 'Bearer 101029190209' })
           .expectStatus(401);
@@ -352,14 +352,14 @@ describe('AppController (e2e)', () => {
       it('Returns user if valid JWT in request', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accountId', 'userId')
           .expectStatus(201);
 
         return pactum
           .spec()
-          .get('/users/findOne/$S{accessToken}')
+          .get('api/v1/users/findOne/$S{accessToken}')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(200);
       });
@@ -367,14 +367,14 @@ describe('AppController (e2e)', () => {
       it('Bad response if invalid JWT in request', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accountId', 'userId')
           .expectStatus(201);
 
         return pactum
           .spec()
-          .get('/users/findOne/1234')
+          .get('api/v1/users/findOne/1234')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(500);
       });
@@ -384,14 +384,14 @@ describe('AppController (e2e)', () => {
       it('Adds image if valid payload and JWT in request', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accountId', 'userId')
           .expectStatus(201);
 
         return pactum
           .spec()
-          .post('/users/$S{accountId}/image')
+          .post('api/v1/users/$S{accountId}/image')
           .withMultiPartFormData(
             'file',
             fs.readFileSync('test/defaultUserImage.png'),
@@ -408,7 +408,7 @@ describe('AppController (e2e)', () => {
       it('should create Event', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -416,14 +416,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
@@ -439,7 +439,7 @@ describe('AppController (e2e)', () => {
         };
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -447,14 +447,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1api/v1/events/$S{accountId}')
           .withBody(invalidEventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
@@ -475,7 +475,7 @@ describe('AppController (e2e)', () => {
         };
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -483,14 +483,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .expectStatus(401);
       });
@@ -498,7 +498,7 @@ describe('AppController (e2e)', () => {
       it('if user has not confirmed email error should be thrown', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -506,7 +506,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(403);
@@ -517,7 +517,7 @@ describe('AppController (e2e)', () => {
       it('should create Event Poll', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -525,14 +525,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -540,7 +540,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
@@ -557,7 +557,7 @@ describe('AppController (e2e)', () => {
         };
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -565,14 +565,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -580,7 +580,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(invalidPollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(500);
@@ -589,7 +589,7 @@ describe('AppController (e2e)', () => {
       it('should throw error if user has not confirmed email', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -597,7 +597,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(403);
@@ -606,7 +606,7 @@ describe('AppController (e2e)', () => {
       it('should throw error if no JWT provided', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -614,14 +614,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -629,7 +629,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .expectStatus(401);
       });
@@ -652,7 +652,7 @@ describe('AppController (e2e)', () => {
         };
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -660,14 +660,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -675,7 +675,7 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -683,7 +683,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .patch('/events/$S{eventId}/poll/$S{pollId}')
+          .patch('api/v1/events/$S{eventId}/poll/$S{pollId}')
           .withBody(updatedPollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -697,7 +697,7 @@ describe('AppController (e2e)', () => {
         };
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -705,14 +705,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -720,7 +720,7 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -728,7 +728,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .patch('/events/$S{eventId}/poll/$S{pollId}')
+          .patch('api/v1/events/$S{eventId}/poll/$S{pollId}')
           .withBody(invalidUpdatedPollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -738,7 +738,7 @@ describe('AppController (e2e)', () => {
       it('should throw error if invalid eventId / pollID', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -746,7 +746,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .patch('/events/1/poll/1')
+          .patch('api/v1/events/1/poll/1')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -756,7 +756,7 @@ describe('AppController (e2e)', () => {
       it('should throw error if no JWT provided', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -764,14 +764,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -779,7 +779,7 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -787,7 +787,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .patch('/events/$S{eventId}/poll/$S{pollId}')
+          .patch('api/v1/events/$S{eventId}/poll/$S{pollId}')
           .withBody(pollDto)
           .stores('pollId', 'id')
           .expectStatus(401);
@@ -798,7 +798,7 @@ describe('AppController (e2e)', () => {
       it('should add user votes in Event Poll', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -806,14 +806,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -821,7 +821,7 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -829,7 +829,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .patch('/events/$S{accountId}/$S{eventId}/poll/$S{pollId}/vote')
+          .patch('api/v1/events/$S{accountId}/$S{eventId}/poll/$S{pollId}/vote')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(200);
@@ -838,7 +838,7 @@ describe('AppController (e2e)', () => {
       it('no JWT should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -846,14 +846,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -861,7 +861,7 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -869,7 +869,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .patch('/events/$S{accountId}/$S{eventId}/poll/$S{pollId}/vote')
+          .patch('api/v1/events/$S{accountId}/$S{eventId}/poll/$S{pollId}/vote')
           .withBody(pollDto)
           .expectStatus(401);
       });
@@ -877,7 +877,7 @@ describe('AppController (e2e)', () => {
       it('should throw error for unconfirmed users', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -885,7 +885,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .patch('/events/1/1/poll/1/vote')
+          .patch('api/v1/events/1/1/poll/1/vote')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(403);
@@ -896,7 +896,7 @@ describe('AppController (e2e)', () => {
       it('should return Event Poll', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -904,14 +904,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -919,7 +919,7 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -927,7 +927,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/poll/$S{pollId}')
+          .get('api/v1/events/$S{eventId}/poll/$S{pollId}')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(200);
       });
@@ -935,7 +935,7 @@ describe('AppController (e2e)', () => {
       it('no JWT should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -943,14 +943,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -958,7 +958,7 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -966,14 +966,14 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/poll/$S{pollId}')
+          .get('api/v1/events/$S{eventId}/poll/$S{pollId}')
           .expectStatus(401);
       });
 
       it('invalid ID should return 404', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -981,14 +981,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -996,7 +996,7 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -1004,7 +1004,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/poll/11')
+          .get('api/v1/events/$S{eventId}/poll/11')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
       });
@@ -1014,7 +1014,7 @@ describe('AppController (e2e)', () => {
       it('should delete Event Poll', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1022,14 +1022,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1037,7 +1037,7 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -1045,7 +1045,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .delete('/events/$S{eventId}/poll/$S{pollId}')
+          .delete('api/v1/events/$S{eventId}/poll/$S{pollId}')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(200);
       });
@@ -1053,7 +1053,7 @@ describe('AppController (e2e)', () => {
       it('no JWT should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1061,14 +1061,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1076,7 +1076,7 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -1084,14 +1084,14 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .delete('/events/$S{eventId}/poll/$S{pollId}')
+          .delete('api/v1/events/$S{eventId}/poll/$S{pollId}')
           .expectStatus(401);
       });
 
       it('invalid pollID should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1099,14 +1099,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1114,7 +1114,7 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/poll')
+          .post('api/v1/events/$S{eventId}/poll')
           .withBody(pollDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('pollId', 'id')
@@ -1122,7 +1122,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .delete('/events/$S{eventId}/poll/1')
+          .delete('api/v1/events/$S{eventId}/poll/1')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
       });
@@ -1132,7 +1132,7 @@ describe('AppController (e2e)', () => {
       it('should return user events', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1140,14 +1140,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1155,7 +1155,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/user/$S{accountId}')
+          .get('api/v1/events/user/$S{accountId}')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(200);
       });
@@ -1163,7 +1163,7 @@ describe('AppController (e2e)', () => {
       it('no JWT should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1171,14 +1171,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1186,14 +1186,14 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/user/$S{accountId}')
+          .get('api/v1/events/user/$S{accountId}')
           .expectStatus(401);
       });
 
       it('if user has not confirmed email error should be thrown', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1201,7 +1201,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/user/$S{accountId}')
+          .get('api/v1/events/user/$S{accountId}')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(403);
       });
@@ -1211,7 +1211,7 @@ describe('AppController (e2e)', () => {
       it('should return individual event', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1219,14 +1219,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1234,7 +1234,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}')
+          .get('api/v1/events/$S{eventId}')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(200);
       });
@@ -1242,7 +1242,7 @@ describe('AppController (e2e)', () => {
       it('no JWT should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1250,26 +1250,26 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
           .expectStatus(201);
 
-        return pactum.spec().get('/events/$S{eventId}').expectStatus(401);
+        return pactum.spec().get('api/v1/events/$S{eventId}').expectStatus(401);
       });
 
       it('invalid eventId should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1277,14 +1277,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .get('/events/1')
+          .get('api/v1/events/1')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
       });
@@ -1294,7 +1294,7 @@ describe('AppController (e2e)', () => {
       it('should return accommodation info', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1302,14 +1302,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1317,7 +1317,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/accommodation')
+          .get('api/v1/events/$S{eventId}/accommodation')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withQueryParams({
             startDate: '2022-04-11 00:00:00',
@@ -1330,7 +1330,7 @@ describe('AppController (e2e)', () => {
       it('no JWT throws error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1338,14 +1338,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1353,7 +1353,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/accommodation')
+          .get('api/v1/events/$S{eventId}/accommodation')
           .withQueryParams({
             startDate: '2022-04-11 00:00:00',
             endDate: '2022-04-12 00:00:00',
@@ -1365,7 +1365,7 @@ describe('AppController (e2e)', () => {
       it('invalid query parameters throws error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1373,14 +1373,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1388,7 +1388,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/accommodation')
+          .get('api/v1/events/$S{eventId}/accommodation')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withQueryParams({
             endDates: '2022-04-12 00:00:00',
@@ -1409,7 +1409,7 @@ describe('AppController (e2e)', () => {
         };
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1417,14 +1417,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(foreignEventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1433,7 +1433,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/flights')
+          .get('api/v1/events/$S{eventId}/flights')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withQueryParams({
             startDate: '2022-04-11 00:00:00',
@@ -1446,7 +1446,7 @@ describe('AppController (e2e)', () => {
       it('no query params should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1454,14 +1454,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1469,7 +1469,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/flights')
+          .get('api/v1/events/$S{eventId}/flights')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(500);
       });
@@ -1477,7 +1477,7 @@ describe('AppController (e2e)', () => {
       it('no JWT should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1485,14 +1485,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1500,14 +1500,14 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/flights')
+          .get('api/v1/events/$S{eventId}/flights')
           .expectStatus(401);
       });
 
       it('invalid eventId should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1515,14 +1515,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1530,7 +1530,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/1/flights')
+          .get('api/v1/events/1/flights')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
       });
@@ -1540,7 +1540,7 @@ describe('AppController (e2e)', () => {
       it('should return Google Places info for event location', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1548,14 +1548,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1564,7 +1564,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/places')
+          .get('api/v1/events/$S{eventId}/places')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withQueryParams({
             latitude: 52.6638,
@@ -1577,7 +1577,7 @@ describe('AppController (e2e)', () => {
       it('no JWT should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1585,14 +1585,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1601,7 +1601,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/places')
+          .get('api/v1/events/$S{eventId}/places')
           .withQueryParams({
             latitude: 52.6638,
             longitude: -8.6267,
@@ -1613,7 +1613,7 @@ describe('AppController (e2e)', () => {
       it('no query params should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1621,14 +1621,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1637,7 +1637,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/places')
+          .get('api/v1/events/$S{eventId}/places')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .inspect()
           .expectStatus(500);
@@ -1648,7 +1648,7 @@ describe('AppController (e2e)', () => {
       it('should create itinerary', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1656,14 +1656,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1671,7 +1671,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .post('/events/$S{eventId}/itinerary')
+          .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .inspect()
@@ -1681,7 +1681,7 @@ describe('AppController (e2e)', () => {
       it('no JWT should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1689,14 +1689,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1704,7 +1704,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .post('/events/$S{eventId}/itinerary')
+          .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .expectStatus(401);
       });
@@ -1716,7 +1716,7 @@ describe('AppController (e2e)', () => {
         };
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1724,14 +1724,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1739,7 +1739,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .post('/events/1/itinerary')
+          .post('api/v1/events/1/itinerary')
           .withBody(invalidItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
@@ -1750,7 +1750,7 @@ describe('AppController (e2e)', () => {
       it('should get itinerary', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1758,14 +1758,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1773,14 +1773,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/itinerary')
+          .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/itinerary')
+          .get('api/v1/events/$S{eventId}/itinerary')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(200);
       });
@@ -1788,7 +1788,7 @@ describe('AppController (e2e)', () => {
       it('no JWT should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1796,14 +1796,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1811,21 +1811,21 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/itinerary')
+          .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .get('/events/$S{eventId}/itinerary')
+          .get('api/v1/events/$S{eventId}/itinerary')
           .expectStatus(401);
       });
 
       it('invalid Event ID should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1833,14 +1833,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1848,14 +1848,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/itinerary')
+          .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .get('/events/1/itinerary')
+          .get('api/v1/events/1/itinerary')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
       });
@@ -1865,7 +1865,7 @@ describe('AppController (e2e)', () => {
       it('should delete itinerary', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1873,14 +1873,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1888,14 +1888,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/itinerary')
+          .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .delete('/events/$S{eventId}/itinerary')
+          .delete('api/v1/events/$S{eventId}/itinerary')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(200);
       });
@@ -1903,7 +1903,7 @@ describe('AppController (e2e)', () => {
       it('no JWT should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1911,14 +1911,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1926,21 +1926,21 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/itinerary')
+          .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .delete('/events/$S{eventId}/itinerary')
+          .delete('api/v1/events/$S{eventId}/itinerary')
           .expectStatus(401);
       });
 
       it('invalid Event ID should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1948,14 +1948,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -1963,14 +1963,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/itinerary')
+          .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .delete('/events/1/itinerary')
+          .delete('api/v1/events/1/itinerary')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
       });
@@ -1980,7 +1980,7 @@ describe('AppController (e2e)', () => {
       it('should update itinerary', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -1988,14 +1988,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -2003,14 +2003,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/itinerary')
+          .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .patch('/events/$S{eventId}/itinerary')
+          .patch('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(200);
@@ -2019,7 +2019,7 @@ describe('AppController (e2e)', () => {
       it('no JWT should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -2027,14 +2027,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -2042,21 +2042,21 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/itinerary')
+          .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .patch('/events/$S{eventId}/itinerary')
+          .patch('api/v1/events/$S{eventId}/itinerary')
           .expectStatus(401);
       });
 
       it('invalid Event ID should throw error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -2064,14 +2064,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -2079,14 +2079,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/events/$S{eventId}/itinerary')
+          .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         return pactum
           .spec()
-          .patch('/events/1/itinerary')
+          .patch('api/v1/events/1/itinerary')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
       });
@@ -2096,7 +2096,7 @@ describe('AppController (e2e)', () => {
       it('get all DOMESTIC_OVERNIGHT events', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -2104,14 +2104,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -2119,7 +2119,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/type/DOMESTIC_OVERNIGHT')
+          .get('api/v1/events/type/DOMESTIC_OVERNIGHT')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .inspect()
           .expectStatus(200);
@@ -2128,7 +2128,7 @@ describe('AppController (e2e)', () => {
       it('no JWT throws error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -2136,14 +2136,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -2151,7 +2151,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/type/DOMESTIC_OVERNIGHT')
+          .get('api/v1/events/type/DOMESTIC_OVERNIGHT')
           .inspect()
           .expectStatus(401);
       });
@@ -2159,7 +2159,7 @@ describe('AppController (e2e)', () => {
       it('invalid event type throws error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -2167,14 +2167,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -2182,7 +2182,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .get('/events/type/DOMESTIC')
+          .get('api/v1/events/type/DOMESTIC')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .inspect()
           .expectStatus(400);
@@ -2193,7 +2193,7 @@ describe('AppController (e2e)', () => {
       it('update event', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -2201,14 +2201,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -2216,7 +2216,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .patch('/events/$S{eventId}')
+          .patch('api/v1/events/$S{eventId}')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withBody(eventDto)
           .inspect()
@@ -2226,7 +2226,7 @@ describe('AppController (e2e)', () => {
       it('no JWT throws error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -2234,14 +2234,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -2249,7 +2249,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .patch('/events/$S{eventId}')
+          .patch('api/v1/events/$S{eventId}')
           .withBody(eventDto)
           .expectStatus(401);
       });
@@ -2257,7 +2257,7 @@ describe('AppController (e2e)', () => {
       it('invalid event id throws error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -2265,14 +2265,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -2280,7 +2280,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .patch('/events/1')
+          .patch('api/v1/events/1')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withBody(eventDto)
           .inspect()
@@ -2292,7 +2292,7 @@ describe('AppController (e2e)', () => {
       it('delete event', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -2300,14 +2300,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -2315,7 +2315,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .delete('/events/$S{eventId}')
+          .delete('api/v1/events/$S{eventId}')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .inspect()
           .expectStatus(200);
@@ -2324,7 +2324,7 @@ describe('AppController (e2e)', () => {
       it('no JWT throws error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -2332,26 +2332,26 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
           .expectStatus(201);
 
-        return pactum.spec().delete('/events/$S{eventId}').expectStatus(401);
+        return pactum.spec().delete('api/v1/events/$S{eventId}').expectStatus(401);
       });
 
       it('invalid event id throws error', async () => {
         await pactum
           .spec()
-          .post('/users')
+          .post('api/v1/users')
           .withBody(userDto)
           .stores('accessToken', 'jwtToken')
           .stores('accountId', 'userId')
@@ -2359,14 +2359,14 @@ describe('AppController (e2e)', () => {
 
         await pactum
           .spec()
-          .post('/users/confirm-email')
+          .post('api/v1/users/confirm-email')
           .withBody({ token: '$S{accessToken}' })
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
 
         await pactum
           .spec()
-          .post('/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
@@ -2374,7 +2374,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .delete('/events/1')
+          .delete('api/v1/events/1')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .inspect()
           .expectStatus(400);
@@ -2483,7 +2483,7 @@ describe('AppGateway (e2e)', () => {
     it('should add message to chat', async () => {
       await pactum
         .spec()
-        .post('/users')
+        .post('api/v1/users')
         .withBody(userDto)
         .stores('accessToken', 'jwtToken')
         .stores('accountId', 'userId')
@@ -2491,7 +2491,7 @@ describe('AppGateway (e2e)', () => {
 
       const testUser = await pactum
         .spec()
-        .post('/users/confirm-email')
+        .post('api/v1/users/confirm-email')
         .withBody({ token: '$S{accessToken}' })
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2502,7 +2502,7 @@ describe('AppGateway (e2e)', () => {
 
       const testEvent = await pactum
         .spec()
-        .post('/events/$S{accountId}')
+        .post('api/v1/events/$S{accountId}')
         .withBody(eventDto)
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2531,7 +2531,7 @@ describe('AppGateway (e2e)', () => {
     it('should request all online users', async () => {
       await pactum
         .spec()
-        .post('/users')
+        .post('api/v1/users')
         .withBody(userDto)
         .stores('accessToken', 'jwtToken')
         .stores('accountId', 'userId')
@@ -2539,7 +2539,7 @@ describe('AppGateway (e2e)', () => {
 
       const testUser = await pactum
         .spec()
-        .post('/users/confirm-email')
+        .post('api/v1/users/confirm-email')
         .withBody({ token: '$S{accessToken}' })
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2550,7 +2550,7 @@ describe('AppGateway (e2e)', () => {
 
       const testEvent = await pactum
         .spec()
-        .post('/events/$S{accountId}')
+        .post('api/v1/events/$S{accountId}')
         .withBody(eventDto)
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2581,7 +2581,7 @@ describe('AppGateway (e2e)', () => {
 
       await pactum
         .spec()
-        .post('/users')
+        .post('api/v1/users')
         .withBody(userDto)
         .stores('accessToken', 'jwtToken')
         .stores('accountId', 'userId')
@@ -2589,7 +2589,7 @@ describe('AppGateway (e2e)', () => {
 
       const testUser = await pactum
         .spec()
-        .post('/users/confirm-email')
+        .post('api/v1/users/confirm-email')
         .withBody({ token: '$S{accessToken}' })
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2600,7 +2600,7 @@ describe('AppGateway (e2e)', () => {
 
       const testEvent = await pactum
         .spec()
-        .post('/events/$S{accountId}')
+        .post('api/v1/events/$S{accountId}')
         .withBody(eventDto)
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2634,7 +2634,7 @@ describe('AppGateway (e2e)', () => {
 
       await pactum
         .spec()
-        .post('/users')
+        .post('api/v1/users')
         .withBody(userDto)
         .stores('accessToken', 'jwtToken')
         .stores('accountId', 'userId')
@@ -2642,7 +2642,7 @@ describe('AppGateway (e2e)', () => {
 
       const testUser = await pactum
         .spec()
-        .post('/users/confirm-email')
+        .post('api/v1/users/confirm-email')
         .withBody({ token: '$S{accessToken}' })
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2653,7 +2653,7 @@ describe('AppGateway (e2e)', () => {
 
       const testEvent = await pactum
         .spec()
-        .post('/events/$S{accountId}')
+        .post('api/v1/events/$S{accountId}')
         .withBody(eventDto)
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
