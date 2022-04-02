@@ -1,73 +1,60 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Group Activity Planning - Nest.js Back-End Repo
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Name: John Dennehy (20091408)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Overview.
 
-## Description
+A Nest.js server that accepts requests from the client and manages interactions with the Postgres database and Python Flask web-scraping API.
+Client interacts with server via requests to routes defined on the REST API (see link to Swagger documentation below for full overview).
+Socket.io gateway also implemented for instant chat functionality between client and server (WebSockets).
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Live Site Url
 
-## Installation
+The server is deployed at the following URL: https://group-activity-planning.netlify.app/
 
-```bash
-$ npm install
-```
+## Swagger Documentation
 
-## Running the app
+Can be found at https://group-activity-planning-nest.herokuapp.com/api/v1/docs
 
-```bash
-# development
-$ npm run start
+## Setup requirements.
 
-# watch mode
-$ npm run start:dev
+- Open the command line
+- Enter the following command in the terminal -
+  `git clone https://github.com/JohnDennehy101/nestjs-backend-FYP`
+- Locate the the downloaded folder in the terminal and enter using the following command -
+  `cd nestjs-backend-FYP`
+- Now project dependencies need to be installed, enter the following command in the terminal - `npm install`
+- API keys need to be created for Mailgun, Google Places and Cloudinary.
+  - A guide on how to create an account and obtain API key for Mailgun can be found at - https://help.mailgun.com/hc/en-us/articles/203380100-Where-Can-I-Find-My-API-Key-and-SMTP-Credentials-
+  - A guide on how to create an account and obtain API key for Google Places can be found at - https://developers.google.com/maps/documentation/places/web-service/get-api-key
+  - A guide on how to create an account and obtain API key for Cloudinary can be found at - https://cloudinary.com/documentation/how_to_integrate_cloudinary
+- You need to have a Postgres database running locally for the API to function locally. For more information on how to do this, please follow the instructions at this site https://www.codecademy.com/article/installing-and-using-postgresql-locally
+- To get the app functional, a .env file needs to be added to the project. To do this, enter the following command - `touch .env`
+- The .env file should now be created. To edit this file, enter the following - `nano .env`
+- A nano editor should now be displayed in terminal with the .env file open. This now needs to be populated with the relevant environment variables list below.
 
-# production mode
-$ npm run start:prod
-```
+  - DATABASE_PASSWORD={Put your Postgres db password here}
+  - DATABASE_USERNAME=postgres
+  - DATABASE_HOST=localhost
+  - JWT_SECRET={Put a secret password for the JWT here}
+  - WEBSCRAPE_SERVER_ACCESS_USERNAME={This needs to match the value used in the ACCESS_USERNAME variable in the .env file in the Flask API - see README at https://github.com/JohnDennehy101/web-scraper-FYP}
+  - WEBSCRAPE_SERVER_ACCESS_PASSWORD={This needs to match the value used in the ACCESS_PASSWORD variable in the .env file in the Flask API - see README at https://github.com/JohnDennehy101/web-scraper-FYP}
+  - WEBSCRAPE_SERVER_URL=http://127.0.0.1:5000/api/v1
+  - MAILGUN_API_KEY={Put your Mailgun API key here}
+  - MAILGUN_USERNAME={Put the email you signed up to with Mailgun here}
+  - JWT_EMAIL_VERIFICATION_TOKEN_SECRET={Put a secret password for the JWT here}
+  - JWT_VERIFICATION_TOKEN_EXPIRATION_TIME=21600
+  - EMAIL_CONFIRMATION_URL=http://localhost:8080/user/account-verification
+  - NODE_ENV=staging
+  - GOOGLE_PLACES_API_KEY={Put your Google Places API key here}
+  - CLOUDINARY_CLOUD_NAME={Put your Cloudinary cloud name here}
+  - CLOUDINARY_API_KEY={Put your Cloudinary API key here}
+  - CLOUDINARY_API_SECRET={Put your Cloudinary API Secret here}
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- Save the .env file `(Ctrl + O)`
+- To exit the file enter `(Ctrl + X)`
+- You need to have the Python Flask web-scraping API running locally also for all routes on the Nest.js Server to function.
+  For instructions on how to get this running locally, please see README.md document at https://github.com/JohnDennehy101/web-scraper-FYP
+- Once you have the Python Flask web-scraping API running locally, enter `npm run start` to get the project running locally on localhost.
+- You can then navigate to the swagger documentation locally at `http://localhost:3000/api/v1/docs` to see the full list of API routes available for use
+- To stop the Nest.js server, hit CTRL and C in the terminal to kill the process.

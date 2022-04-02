@@ -30,6 +30,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { CloudinaryUserImageDto } from './dto/cloudinary-user-image.dto';
 
 @ApiTags('Users')
 @Controller('api/v1/users')
@@ -76,11 +77,6 @@ export class UsersController {
     description: 'User structure',
   })
   @ApiResponse({
-    type: UserResponseDto,
-    status: 200,
-    description: 'User logged in',
-  })
-  @ApiResponse({
     status: 400,
     description: 'Bad request. Valid payload must be provided.',
   })
@@ -108,7 +104,7 @@ export class UsersController {
   })
   @ApiResponse({
     type: UserResponseDto,
-    status: 200,
+    status: 201,
     description: 'User Record returned',
   })
   @ApiResponse({
@@ -132,7 +128,7 @@ export class UsersController {
   })
   @ApiResponse({
     type: UserResponseDto,
-    status: 200,
+    status: 201,
     description: 'User updated',
   })
   @ApiResponse({
@@ -159,7 +155,7 @@ export class UsersController {
   })
   @ApiResponse({
     type: User,
-    status: 200,
+    status: 201,
     description: 'User returned',
   })
   @ApiResponse({
@@ -207,8 +203,8 @@ export class UsersController {
     schema: { oneOf: [{ type: 'string' }] },
   })
   @ApiResponse({
-    type: Object,
-    status: 200,
+    type: CloudinaryUserImageDto,
+    status: 201,
     description: 'User image updated',
   })
   @ApiResponse({
