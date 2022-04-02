@@ -25,7 +25,7 @@ export class EmailsService {
       'EMAIL_CONFIRMATION_URL',
     )}?token=${jwtToken}`;
 
-    this.logger.log(`Email Validation URL generated: ${validationUrl}`)
+    this.logger.log(`Email Validation URL generated: ${validationUrl}`);
 
     const mailgunData = {
       from: 'contact@mg.groupactivityplanning.software',
@@ -38,12 +38,12 @@ export class EmailsService {
     };
 
     try {
-      //const response = await this.mailgunService.createEmail(
-       // 'mg.groupactivityplanning.software',
-      //  mailgunData,
-     // );
-     //this.logger.log(`Confirmation email sent to: ${email}`)
-      //return response;
+      const response = await this.mailgunService.createEmail(
+        'mg.groupactivityplanning.software',
+        mailgunData,
+      );
+      this.logger.log(`Confirmation email sent to: ${email}`);
+      return response;
     } catch (error) {
       this.logger.error(error);
     }
@@ -80,7 +80,7 @@ export class EmailsService {
         'mg.groupactivityplanning.software',
         mailgunData,
       );
-      this.logger.log(`Poll completion email sent to ${user.email}`)
+      this.logger.log(`Poll completion email sent to ${user.email}`);
       return response;
     } catch (error) {
       this.logger.error(error);
@@ -111,7 +111,7 @@ export class EmailsService {
         mailgunData,
       );
 
-      this.logger.log(`Sent link to poll to ${email}`)
+      this.logger.log(`Sent link to poll to ${email}`);
 
       return response;
     } catch (error) {

@@ -11,7 +11,7 @@ export class ImagesService {
     return new Promise((resolve, reject) => {
       const upload = v2.uploader.upload_stream((error, result) => {
         if (error) return reject(error);
-        this.logger.log('Uploading User Image')
+        this.logger.log('Uploading User Image');
         resolve(result);
       });
       toStream(file.buffer).pipe(upload);

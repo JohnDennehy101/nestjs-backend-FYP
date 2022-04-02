@@ -19,7 +19,7 @@ export class ChatService {
       author: user,
     });
     await this.messageRepository.save(newMessage);
-    this.logger.log(`New message created - id: ${newMessage.id}`)
+    this.logger.log(`New message created - id: ${newMessage.id}`);
     return newMessage;
   }
 
@@ -35,7 +35,7 @@ export class ChatService {
       order: { created_at: 'ASC' },
     });
 
-    this.logger.log(`Getting event chat messages - eventId: ${event.id}`)
+    this.logger.log(`Getting event chat messages - eventId: ${event.id}`);
 
     return chatMessages;
   }

@@ -19,14 +19,14 @@ export class PollsOptionsService {
       poll: poll,
     });
     let result = await this.pollsOptionsRepository.save(pollOption);
-    this.logger.log(`Creating Poll Option - id: ${result.id}`)
+    this.logger.log(`Creating Poll Option - id: ${result.id}`);
     return result;
   }
 
   async getPollOptions(poll: Poll) {
     try {
       let pollOptions = await this.pollsOptionsRepository.find({ poll: poll });
-      this.logger.log(`Getting poll options for poll - id: ${poll.id}`)
+      this.logger.log(`Getting poll options for poll - id: ${poll.id}`);
       return pollOptions;
     } catch (error) {
       console.log(error);
@@ -60,7 +60,7 @@ export class PollsOptionsService {
           id: pollOption.id,
         });
 
-        this.logger.log(`Updating existing poll option - id: ${pollOption.id}`)
+        this.logger.log(`Updating existing poll option - id: ${pollOption.id}`);
         listOfPollOptions.push(updatedOption);
       } else {
         let newOption = await this.createPollOptions(individualOption, poll);
@@ -86,7 +86,9 @@ export class PollsOptionsService {
             poll: poll,
           });
 
-          this.logger.log(`Deleting poll option as no longer in use - startDate: ${priorOptions[option].startDate}, endDate: ${priorOptions[option].endDate}, pollId: ${poll.id}`)
+          this.logger.log(
+            `Deleting poll option as no longer in use - startDate: ${priorOptions[option].startDate}, endDate: ${priorOptions[option].endDate}, pollId: ${poll.id}`,
+          );
         }
       }
     }
@@ -95,7 +97,9 @@ export class PollsOptionsService {
   }
 
   async getPollOptionsWithMostVotes(poll: Poll) {
-    this.logger.log(`Getting most voted poll options for poll - id: ${poll.id}`)
+    this.logger.log(
+      `Getting most voted poll options for poll - id: ${poll.id}`,
+    );
     return this.pollsOptionsRepository.getPollOptionsWithMostVotes(poll.id);
   }
 }

@@ -32,13 +32,13 @@ export class UsersService {
     );
     const user = await this.usersRepository.createUser(userDto, hashedPassword);
 
-    this.logger.log(`Creating new user - id: ${user.id}`)
+    this.logger.log(`Creating new user - id: ${user.id}`);
 
     const jwtTokenResponse = await this.authService.createJwtToken(email);
 
     if (user.email === email) {
-      //Commenting out to save on API calls
-      const userConfirmationEmail = await this.emailsService.sendEmailConfirmationEmail(user.email);
+      const userConfirmationEmail =
+        await this.emailsService.sendEmailConfirmationEmail(user.email);
     }
 
     return { jwtToken: jwtTokenResponse, userId: user.id, userEmail: email };
@@ -56,14 +56,14 @@ export class UsersService {
           userEmails[email],
         );
 
-        this.logger.log(`Creating account for event invited user - id: ${newUser.id}`)
+        this.logger.log(
+          `Creating account for event invited user - id: ${newUser.id}`,
+        );
 
         if (newUser) {
           invitedUsers.push(newUser);
 
-          //User confirmation email is sent here, commenting out to save on email calls
-          //const userConfirmationEmail =
-           await this.emailsService.sendEmailConfirmationEmail(newUser.email);
+          await this.emailsService.sendEmailConfirmationEmail(newUser.email);
         }
       } else {
         invitedUsers.push(existingUserCheck);
@@ -78,12 +78,12 @@ export class UsersService {
     if (tokenCheckUserInfo) {
       let passwordProvided = true;
       await this.setConfirmedUser(tokenCheckUserInfo.email);
-      this.logger.log(`User has confirmed email`)
+      this.logger.log(`User has confirmed email`);
       let updatedUser = await this.usersRepository.findUserByEmail(
         tokenCheckUserInfo.email,
       );
       if (!updatedUser.passwordProvided) {
-        this.logger.log(`User has not yet provided password`)
+        this.logger.log(`User has not yet provided password`);
         passwordProvided = false;
       }
       return {
@@ -93,7 +93,7 @@ export class UsersService {
         id: updatedUser.id,
       };
     } else {
-      this.logger.log(`User has not yet confirmed their email`)
+      this.logger.log(`User has not yet confirmed their email`);
       return {
         emailConfirmed: false,
       };
@@ -125,7 +125,7 @@ export class UsersService {
       (await this.authService.validatePasswordLogin(password, user.password))
     ) {
       const jwtTokenResponse = await this.authService.createJwtToken(email);
-      this.logger.log(`Successful login for user - id: ${user.id}`)
+      this.logger.log(`Successful login for user - id: ${user.id}`);
       return {
         jwtToken: jwtTokenResponse,
         userId: user.id,
@@ -148,10 +148,10 @@ export class UsersService {
     await this.usersRepository.update(userId, {
       ...(email && { email: email }),
       ...(password && { password: hashedPassword }),
-      passwordProvided: true
+      passwordProvided: true,
     });
 
-    this.logger.log(`Updated user - id: ${userId}`)
+    this.logger.log(`Updated user - id: ${userId}`);
 
     const jwtTokenResponse = await this.authService.createJwtToken(email);
     return { jwtToken: jwtTokenResponse, userId: userId, userEmail: email };
@@ -161,7 +161,7 @@ export class UsersService {
     const userInfo = await this.authService.decodeJwtToken(jwtToken);
     const user = await this.usersRepository.findOne({ email: userInfo.email });
     if (user) {
-      this.logger.log(`Individual user found - ${user.id}`)
+      this.logger.log(`Individual user found - ${user.id}`);
       return user.id;
     } else {
       throw new UnauthorizedException(
@@ -173,7 +173,7 @@ export class UsersService {
   async findOneUserById(userId: string): Promise<User> {
     const user = await this.usersRepository.findOne({ id: userId });
     if (user) {
-      this.logger.log(`Individual user found by id, userId : ${user.id}`)
+      this.logger.log(`Individual user found by id, userId : ${user.id}`);
       return user;
     } else {
       throw new UnauthorizedException(
@@ -185,7 +185,7 @@ export class UsersService {
   async findOneUserByEmail(email: string): Promise<User> {
     const user = await this.usersRepository.findOne({ email: email });
     if (user) {
-      this.logger.log(`Individual user found by email, id: ${user.id}`)
+      this.logger.log(`Individual user found by email, id: ${user.id}`);
       return user;
     } else {
       throw new UnauthorizedException(
@@ -200,7 +200,7 @@ export class UsersService {
 
     if (response) {
       await this.usersRepository.setProfileImage(response.secure_url, userId);
-      this.logger.log(`Setting profile image for user - id: ${userId}`)
+      this.logger.log(`Setting profile image for user - id: ${userId}`);
     }
 
     return response;

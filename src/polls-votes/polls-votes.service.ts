@@ -49,7 +49,7 @@ export class PollsVotesService {
             poll: poll,
           });
 
-          this.logger.log(`Creating new poll vote - id: ${newRecord.id}`)
+          this.logger.log(`Creating new poll vote - id: ${newRecord.id}`);
           newPolloptionVoteIdList.push(newRecord.id);
           await this.pollsVotesRepository.save(newRecord);
         } else {
@@ -66,7 +66,9 @@ export class PollsVotesService {
           id: previousPollOptionVoteIdList[id],
         });
 
-        this.logger.log(`Deleting poll vote record as no longer in use - id: ${previousPollOptionVoteIdList[id]}`)
+        this.logger.log(
+          `Deleting poll vote record as no longer in use - id: ${previousPollOptionVoteIdList[id]}`,
+        );
       }
     }
   }
@@ -82,12 +84,14 @@ export class PollsVotesService {
 
       if (userSubmissionCheck.length === 0) {
         allUserSubmissions = false;
-        this.logger.log(`All users have not yet voted, poll is not completed yet.`)
+        this.logger.log(
+          `All users have not yet voted, poll is not completed yet.`,
+        );
         break;
       }
     }
 
-    this.logger.log(`All users have voted, poll is completed`)
+    this.logger.log(`All users have voted, poll is completed`);
     return allUserSubmissions;
   }
 }

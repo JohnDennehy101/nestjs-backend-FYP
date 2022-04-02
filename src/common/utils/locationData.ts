@@ -7,7 +7,7 @@ export default function returnCityCoordinates(city: string) {
     Waterford: [52.2593, -7.1101],
     Kilkenny: [52.6541, -7.2448],
     London: [51.5072, -0.1276],
-    Manchester: [53.483959, -2.244644]
+    Manchester: [53.483959, -2.244644],
   };
 
   return cityCoordinates[city];

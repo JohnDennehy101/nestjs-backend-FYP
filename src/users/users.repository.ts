@@ -20,7 +20,11 @@ export class UsersRepository extends Repository<User> {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const user = this.create({ email, password: hashedPassword, passwordProvided: true });
+    const user = this.create({
+      email,
+      password: hashedPassword,
+      passwordProvided: true,
+    });
 
     try {
       await this.save(user);

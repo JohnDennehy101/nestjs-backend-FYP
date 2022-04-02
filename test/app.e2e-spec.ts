@@ -198,7 +198,11 @@ describe('AppController (e2e)', () => {
 
     describe('Login', () => {
       it('login user if valid payload, valid JWT and email has been confirmed', async () => {
-        await pactum.spec().post('api/v1/users').withBody(userDto).expectStatus(201);
+        await pactum
+          .spec()
+          .post('api/v1/users')
+          .withBody(userDto)
+          .expectStatus(201);
 
         await pactum
           .spec()
@@ -216,7 +220,11 @@ describe('AppController (e2e)', () => {
       });
 
       it('should throw error if valid payload and valid JWT but user has not confirmed email', async () => {
-        await pactum.spec().post('api/v1/users').withBody(userDto).expectStatus(201);
+        await pactum
+          .spec()
+          .post('api/v1/users')
+          .withBody(userDto)
+          .expectStatus(201);
         return pactum
           .spec()
           .post('api/v1/users/login')
@@ -225,7 +233,11 @@ describe('AppController (e2e)', () => {
           .expectStatus(403);
       });
       it('should throw error if invalid JWT provided', async () => {
-        await pactum.spec().post('api/v1/users').withBody(userDto).expectStatus(201);
+        await pactum
+          .spec()
+          .post('api/v1/users')
+          .withBody(userDto)
+          .expectStatus(201);
         return pactum
           .spec()
           .post('api/v1/users/login')
@@ -279,7 +291,10 @@ describe('AppController (e2e)', () => {
       });
 
       it('Throws error if no JWT in request', async () => {
-        return pactum.spec().get('api/v1/users/$S{accountId}').expectStatus(401);
+        return pactum
+          .spec()
+          .get('api/v1/users/$S{accountId}')
+          .expectStatus(401);
       });
     });
 
@@ -2345,7 +2360,10 @@ describe('AppController (e2e)', () => {
           .stores('eventId', 'id')
           .expectStatus(201);
 
-        return pactum.spec().delete('api/v1/events/$S{eventId}').expectStatus(401);
+        return pactum
+          .spec()
+          .delete('api/v1/events/$S{eventId}')
+          .expectStatus(401);
       });
 
       it('invalid event id throws error', async () => {
@@ -2380,7 +2398,6 @@ describe('AppController (e2e)', () => {
           .expectStatus(400);
       });
     });
- 
   });
 });
 

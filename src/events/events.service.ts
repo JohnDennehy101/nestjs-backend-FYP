@@ -94,7 +94,9 @@ export class EventsService {
     let userInvitedEvents =
       await this.eventsRepository.findAllUserInvitedEvents(user);
 
-      this.logger.log(`Created and invited events search completed for user - id: ${userId}`)
+    this.logger.log(
+      `Created and invited events search completed for user - id: ${userId}`,
+    );
 
     for (let item in userInvitedEvents) {
       if (
@@ -113,7 +115,7 @@ export class EventsService {
   }
 
   async findEvent(uuid: string): Promise<Event> {
-    this.logger.log(`Searching for event - id: ${uuid}`)
+    this.logger.log(`Searching for event - id: ${uuid}`);
     return this.eventsRepository.findEvent(uuid);
   }
 
@@ -123,7 +125,7 @@ export class EventsService {
 
   async updateEvent(eventDto: EventDto, eventId: string): Promise<any> {
     const cityCoordinates = await returnCityCoordinates(eventDto.city);
-    this.logger.log(`Updating event - id: ${eventId}`)
+    this.logger.log(`Updating event - id: ${eventId}`);
     return this.eventsRepository.update(eventId, {
       ...(eventDto.title && { title: eventDto.title }),
       ...(eventDto.type && { type: eventDto.type }),
@@ -159,8 +161,13 @@ export class EventsService {
         await this.pollsService.getHighestVotedPollOptions(poll);
 
       for (let user in event[0].invitedUsers) {
-        //Commenting out to save on email API calls
-        //await this.emailsService.sendPollCompletionEmail(event[0].invitedUsers[user], poll,highestPollVoteOptions[0], event[0],highestPollVoteOptions[0].votes.length)
+        await this.emailsService.sendPollCompletionEmail(
+          event[0].invitedUsers[user],
+          poll,
+          highestPollVoteOptions[0],
+          event[0],
+          highestPollVoteOptions[0].votes.length,
+        );
       }
 
       const externalWebScrapingJwtResponse = await lastValueFrom(

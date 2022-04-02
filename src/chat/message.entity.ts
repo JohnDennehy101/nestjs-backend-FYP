@@ -18,7 +18,7 @@ export class Message {
   @ManyToOne(() => User)
   author: User;
 
-  @ManyToOne(() => Event, {onDelete: 'CASCADE'})
+  @ManyToOne(() => Event, { onDelete: 'CASCADE' })
   event: Event;
 
   @CreateDateColumn()

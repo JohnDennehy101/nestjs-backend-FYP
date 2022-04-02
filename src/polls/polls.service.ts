@@ -31,8 +31,8 @@ export class PollsService {
         event: event,
       });
 
-    const result = await this.pollsRepository.save(newPoll);
-    this.logger.log(`Poll created for event - pollId: ${result.id}`)
+      const result = await this.pollsRepository.save(newPoll);
+      this.logger.log(`Poll created for event - pollId: ${result.id}`);
       for (let option in pollsDto.options) {
         await this.pollsOptionsService.createPollOptions(
           pollsDto.options[option],
@@ -43,7 +43,7 @@ export class PollsService {
       return result;
     } catch (error) {
       if (error.code === '23505') {
-        this.logger.error('Poll already exists with this title')
+        this.logger.error('Poll already exists with this title');
         throw new ConflictException('Poll already exists with this title');
       } else {
         this.logger.error(error);
@@ -61,7 +61,7 @@ export class PollsService {
         ...(pollDto.title && { title: pollDto.title }),
       });
 
-      this.logger.log(`Poll updated for event - pollId: ${result.id}`)
+      this.logger.log(`Poll updated for event - pollId: ${result.id}`);
     }
     await this.pollsOptionsService.updatePollOptions(
       pollDto.options,
@@ -69,7 +69,7 @@ export class PollsService {
       priorPollOptions.pollOptions,
     );
 
-    return result
+    return result;
   }
 
   async voteEventPoll(
@@ -96,7 +96,7 @@ export class PollsService {
         completed: true,
       });
 
-      this.logger.log(`Marking poll completed - pollId: ${poll.id}`)
+      this.logger.log(`Marking poll completed - pollId: ${poll.id}`);
     }
 
     return pollCompletionCheck;
@@ -134,7 +134,7 @@ export class PollsService {
     return poll;
   }
   async returnIndividualPoll(uuid: string): Promise<any> {
-    this.logger.log(`Finding individual poll - id: ${uuid}`)
+    this.logger.log(`Finding individual poll - id: ${uuid}`);
     return this.pollsRepository.findOne({ id: uuid });
   }
 }

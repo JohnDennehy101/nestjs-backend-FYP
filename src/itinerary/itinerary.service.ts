@@ -44,7 +44,7 @@ export class ItineraryService {
 
       const result = await this.itineraryRepository.save(newItinerary);
 
-      this.logger.log(`Itinerary created - id: ${newItinerary.id}`)
+      this.logger.log(`Itinerary created - id: ${newItinerary.id}`);
 
       for (let item in accommodation) {
         const accommodationDbEntry =
@@ -76,7 +76,9 @@ export class ItineraryService {
 
         await this.itineraryAccommodationRepository.save(accommodationDbEntry);
 
-        this.logger.log(`Adding new itinerary accommmodation item - id: ${accommodationDbEntry.id}`)
+        this.logger.log(
+          `Adding new itinerary accommmodation item - id: ${accommodationDbEntry.id}`,
+        );
       }
 
       for (let item in flight) {
@@ -97,7 +99,9 @@ export class ItineraryService {
 
         await this.itineraryFlightRepository.save(flightDbEntry);
 
-        this.logger.log(`Adding new itinerary flight item - id: ${flightDbEntry.id}`)
+        this.logger.log(
+          `Adding new itinerary flight item - id: ${flightDbEntry.id}`,
+        );
       }
 
       for (let item in activities) {
@@ -113,12 +117,14 @@ export class ItineraryService {
 
         await this.itineraryActivityRepository.save(activityDbEntry);
 
-        this.logger.log(`Adding new itinerary activity item - id: ${activityDbEntry.id}`)
+        this.logger.log(
+          `Adding new itinerary activity item - id: ${activityDbEntry.id}`,
+        );
 
         return result;
       }
     } catch (error) {
-      this.logger.log(error)
+      this.logger.log(error);
       throw new InternalServerErrorException();
     }
   }
@@ -129,7 +135,7 @@ export class ItineraryService {
         { event: event },
         { relations: ['accommodation', 'flight', 'activities'] },
       );
-      this.logger.log(`Searching for event itinerary - event id: ${event.id}`)
+      this.logger.log(`Searching for event itinerary - event id: ${event.id}`);
       return itinerary;
     } catch (error) {
       this.logger.error(error);
@@ -138,7 +144,7 @@ export class ItineraryService {
   }
 
   async deleteEventItinerary(event: Event): Promise<any> {
-    this.logger.log(`Deleting event itinerary for event - ${event.id}`)
+    this.logger.log(`Deleting event itinerary for event - ${event.id}`);
     return this.itineraryRepository.delete({ event: event });
   }
 
@@ -151,13 +157,15 @@ export class ItineraryService {
       ...(itineraryDto.completed && { completed: itineraryDto.completed }),
     });
 
-    this.logger.log(`Itinerary Updated - ${itinerary.id}`)
+    this.logger.log(`Itinerary Updated - ${itinerary.id}`);
     if (itineraryDto.accommodation.length > 0) {
       await this.itineraryAccommodationRepository.updateItineraryAccommodation(
         itineraryDto.accommodation,
         itinerary,
       );
-      this.logger.log(`Itinerary accommodation items updated for itinerary - ${itinerary.id}`)
+      this.logger.log(
+        `Itinerary accommodation items updated for itinerary - ${itinerary.id}`,
+      );
     }
     if (itineraryDto.activities.length > 0) {
       await this.itineraryActivityRepository.updateItineraryActivities(
@@ -165,7 +173,9 @@ export class ItineraryService {
         itinerary,
       );
 
-      this.logger.log(`Itinerary activity items updated for itinerary - ${itinerary.id}`)
+      this.logger.log(
+        `Itinerary activity items updated for itinerary - ${itinerary.id}`,
+      );
     }
     if (itineraryDto.flight.length > 0) {
       await this.itineraryFlightRepository.updateItineraryFlights(
@@ -173,13 +183,19 @@ export class ItineraryService {
         itinerary,
       );
 
-      this.logger.log(`Itinerary flight items updated for itinerary - ${itinerary.id}`)
+      this.logger.log(
+        `Itinerary flight items updated for itinerary - ${itinerary.id}`,
+      );
     }
 
     if (itineraryDto.completed) {
       for (let user in event.invitedUsers) {
-        //commenting out to save on email API calls
-        //await this.emailsService.sendCompletedItineraryEmail(event.title, event.invitedUsers[user].email, itineraryDto.accommodation, itineraryDto.flight);
+        await this.emailsService.sendCompletedItineraryEmail(
+          event.title,
+          event.invitedUsers[user].email,
+          itineraryDto.accommodation,
+          itineraryDto.flight,
+        );
       }
     }
   }
