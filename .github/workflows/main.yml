@@ -7,13 +7,61 @@ on:
     branches: [main]
 
   workflow_dispatch:
-
 jobs:
-  test:
+  build:
+    # Container must run in Linux-based operating systems
     runs-on: ubuntu-latest
+    # Image from Docker hub
+    container: node:16.3.0-alpine3.13
+    # ...
+    strategy:
+      matrix:
+        # ...
+        database-name:
+          - e2e-testing-db
+        database-user:
+          - username
+        database-password:
+          - password
+        database-host:
+          - postgres
+        database-port:
+          - 5432
+        redis-host:
+          - redis
+        redis-port:
+          - 6379
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: ${{ matrix.database-name }}
+          POSTGRES_USER: ${{ matrix.database-user }}
+          POSTGRES_PASSWORD: ${{ matrix.database-password }}
+        ports:
+          - ${{ matrix.database-port }}:${{ matrix.database-port }}
+        # Set health checks to wait until postgres has started
+        options: --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
+      # ...
+      - run: npm run test:e2e
+        env:
+          DATABASE_URL: postgres://${{ matrix.database-user }}:${{ matrix.database-password }}@${{ matrix.database-host }}:${{ matrix.database-port }}/${{ matrix.database-name }}
+          REDIS_URL: redis://${{ matrix.redis-host }}:${{ matrix.redis-port }}
       - uses: actions/checkout@v2
-      - name: Setup Node.js
+      - name: E2E Tests
         uses: actions/setup-node@v1
         with:
           node-version: '12'
@@ -39,5 +87,3 @@ jobs:
       # Finally, run our tests
       - name: Run Unit Tests
         run: npm run test:cov
-      - name: Run E2E Tests
-        run: npm run test:e2e
