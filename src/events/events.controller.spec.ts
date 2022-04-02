@@ -10,7 +10,7 @@ import { PollsService } from '../polls/polls.service';
 import { ExternalApiRequestsService } from '../external-api-requests/external-api-requests.service';
 import { ItineraryService } from '../itinerary/itinerary.service';
 import { ChatService } from '../chat/chat.service';
-import { PollsRepository } from 'src/polls/polls.repository';
+import { PollsRepository } from '../polls/polls.repository';
 import { of } from 'rxjs';
 import { EventsController } from './events.controller';
 import { IsActivatedEventRequestsGuard } from '../users/guards/is-activated-event-requests.guard';

@@ -128,6 +128,8 @@ describe('PollsService', () => {
     it('calls PollsRepository.create and returns the result', async () => {
       pollsRepository.create.mockResolvedValue(mockPoll);
 
+      pollsRepository.save.mockResolvedValue(mockPoll);
+
       const createPollSpy = jest.spyOn(pollsService, 'createEventPoll');
       await pollsService.createEventPoll(mockPoll, mockEventOne);
       expect(createPollSpy).toHaveBeenCalledWith(mockPoll, mockEventOne);

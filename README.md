@@ -10,7 +10,7 @@ Socket.io gateway also implemented for instant chat functionality between client
 
 ## Live Site Url
 
-The server is deployed at the following URL: https://group-activity-planning.netlify.app/
+The server is deployed at the following URL: https://group-activity-planning-nest.herokuapp.com
 
 ## Swagger Documentation
 

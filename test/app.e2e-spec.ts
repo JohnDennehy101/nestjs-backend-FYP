@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from './../src/app.module';
 import { INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserDto } from 'src/users/dto/user.dto';
+import { UserDto } from '../src/users/dto/user.dto';
 import * as pactum from 'pactum';
 import { Connection, EntityManager, getConnection, QueryRunner } from 'typeorm';
 import { UsersModule } from '../src/users/users.module';
@@ -18,9 +18,9 @@ import { PollsOptionsModule } from '../src/polls-options/polls-options.module';
 import { PollsVotesModule } from '../src/polls-votes/polls-votes.module';
 import { PollsModule } from '../src/polls/polls.module';
 import * as fs from 'fs';
-import { EventDto } from 'src/events/dto/event.dto';
-import { PollsDto } from 'src/polls/dto/polls.dto';
-import { ItineraryDto } from 'src/itinerary/dto/itinerary.dto';
+import { EventDto } from '../src/events/dto/event.dto';
+import { PollsDto } from '../src/polls/dto/polls.dto';
+import { ItineraryDto } from '../src/itinerary/dto/itinerary.dto';
 import * as io from 'socket.io-client';
 import { EventsService } from '../src/events/events.service';
 
@@ -28,14 +28,14 @@ describe('AppController (e2e)', () => {
   let app: INestApplication;
   let queryRunner: QueryRunner;
   const userDto: UserDto = {
-    email: 'newEmail@gmail.com',
+    email: 'newEmail2@gmail.com',
     password: 'ReallyLongPassword403%',
   };
 
   const eventDto: EventDto = {
     title: 'Test Event for E2E',
     type: 'DOMESTIC_OVERNIGHT',
-    userEmails: ['newEmail@gmail.com'],
+    userEmails: ['newEmail2@gmail.com'],
     city: 'Limerick',
     departureCity: 'N/A',
   };
@@ -134,7 +134,7 @@ describe('AppController (e2e)', () => {
     queryRunner = manager.queryRunner =
       dbConnection.createQueryRunner('master');
 
-    pactum.request.setBaseUrl('http://localhost:3333');
+    pactum.request.setBaseUrl('https://group-activity-planning-nest.herokuapp.com/');
   });
 
   beforeEach(async () => {
@@ -448,7 +448,7 @@ describe('AppController (e2e)', () => {
         const invalidEventDto: EventDto = {
           title: 'Test Event for E2E',
           type: 'DOMESTIC_OVERNIGHT',
-          userEmails: ['newEmail@gmail.com'],
+          userEmails: ['newEmail2@gmail.com'],
           city: 'Limerick',
           departureCity: null,
         };
@@ -477,14 +477,14 @@ describe('AppController (e2e)', () => {
 
       it('no JWT provided should throw error', async () => {
         const userDto: UserDto = {
-          email: 'newEmail@gmail.com',
+          email: 'newEmail2@gmail.com',
           password: 'ReallyLongPassword403%',
         };
 
         const eventDto: EventDto = {
           title: 'Test Event for E2E',
           type: 'DOMESTIC_OVERNIGHT',
-          userEmails: ['newEmail@gmail.com'],
+          userEmails: ['newEmail2@gmail.com'],
           city: 'Limerick',
           departureCity: 'N/A',
         };
@@ -1418,7 +1418,7 @@ describe('AppController (e2e)', () => {
         const foreignEventDto: EventDto = {
           title: 'Test Event for E2E',
           type: 'FOREIGN_OVERNIGHT',
-          userEmails: ['newEmail@gmail.com'],
+          userEmails: ['newEmail2@gmail.com'],
           city: 'London',
           departureCity: 'Limerick',
         };
@@ -2409,13 +2409,13 @@ describe('AppGateway (e2e)', () => {
   const eventDto: EventDto = {
     title: 'Test Event for E2E',
     type: 'DOMESTIC_OVERNIGHT',
-    userEmails: ['newEmail@gmail.com'],
+    userEmails: ['newEmail2@gmail.com'],
     city: 'Limerick',
     departureCity: 'N/A',
   };
 
   const userDto: UserDto = {
-    email: 'newEmail@gmail.com',
+    email: 'newEmail2@gmail.com',
     password: 'ReallyLongPassword403%',
   };
 

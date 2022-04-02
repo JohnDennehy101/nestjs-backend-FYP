@@ -159,7 +159,23 @@ describe('ItineraryService', () => {
         completed: false,
         created_at: '2022-02-05 13:18:36.930376',
         eventId: '1fea9404-49e8-49cc-ad31-d363b911e92a',
+        id: '101'
       });
+
+       itineraryRepository.save.mockResolvedValue({
+        completed: false,
+        created_at: '2022-02-05 13:18:36.930376',
+        eventId: '1fea9404-49e8-49cc-ad31-d363b911e92a',
+        id: '101'
+      });
+
+      itineraryAccommodationRepository.create.mockResolvedValue(mockEventItinerary.accommodation[0]);
+      itineraryFlightRepository.create.mockResolvedValue(mockEventItinerary.flight[0]);
+      itineraryActivityRepository.create.mockResolvedValue(mockEventItinerary.activities[0])
+
+      itineraryAccommodationRepository.save.mockResolvedValue(mockEventItinerary.accommodation[0]);
+      itineraryFlightRepository.save.mockResolvedValue(mockEventItinerary.flight[0]);
+      itineraryActivityRepository.save.mockResolvedValue(mockEventItinerary.activities[0])
 
       const createItinerarySpy = jest.spyOn(
         itineraryService,

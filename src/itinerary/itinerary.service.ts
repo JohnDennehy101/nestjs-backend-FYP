@@ -51,27 +51,22 @@ export class ItineraryService {
           await this.itineraryAccommodationRepository.create({
             title: accommodation[item].title,
             bookingPreviewLink: accommodation[item].bookingPreviewLink,
-            bookingSiteDisplayLocationMapLink:
-              accommodation[item].bookingSiteDisplayLocationMapLink,
+            bookingSiteDisplayLocationMapLink: accommodation[item].bookingSiteDisplayLocationMapLink,
             bookingSiteLink: accommodation[item].bookingSiteLink,
             freeCancellationText: accommodation[item].freeCancellationText,
             locationDistance: accommodation[item].locationDistance,
-            numberOfBedsRecommendedBooking:
-              accommodation[item].numberOfBedsRecommendedBooking,
+            numberOfBedsRecommendedBooking: accommodation[item].numberOfBedsRecommendedBooking,
             price: accommodation[item].price,
             ratingScore: accommodation[item].ratingScore,
             ratingScoreCategory: accommodation[item].ratingScoreCategory,
             reviewQuantity: accommodation[item].reviewQuantity,
-            roomTypeRecommendedBooking:
-              accommodation[item].roomTypeRecommendedBooking,
+            roomTypeRecommendedBooking: accommodation[item].roomTypeRecommendedBooking,
             itinerary: newItinerary,
             startDate: accommodation[item].startDate,
             endDate: accommodation[item].endDate,
             locationTitle: accommodation[item].locationTitle,
-            numberOfNightsAndGuests:
-              accommodation[item].numberOfNightsAndGuests,
-            numberOfRoomsRecommendedBooking:
-              accommodation[item].numberOfRoomsRecommendedBooking,
+            numberOfNightsAndGuests: accommodation[item].numberOfNightsAndGuests,
+            numberOfRoomsRecommendedBooking: accommodation[item].numberOfRoomsRecommendedBooking,
           });
 
         await this.itineraryAccommodationRepository.save(accommodationDbEntry);

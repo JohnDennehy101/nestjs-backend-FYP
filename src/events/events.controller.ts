@@ -25,7 +25,7 @@ import { IsActivatedGuard } from '../users/guards/is-activated.guard';
 import { IsActivatedEventRequestsGuard } from '../users/guards/is-activated-event-requests.guard';
 import { ItineraryDto } from '../itinerary/dto/itinerary.dto';
 import { Itinerary } from '../itinerary/itinerary.entity';
-import { Poll } from 'src/polls/polls.entity';
+import { Poll } from '../polls/polls.entity';
 import {
   ApiBearerAuth,
   ApiBody,
