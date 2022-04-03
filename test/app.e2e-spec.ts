@@ -134,6 +134,7 @@ describe('AppController (e2e)', () => {
     queryRunner = manager.queryRunner =
       dbConnection.createQueryRunner('master');
 
+    //Use http://localhost:3333/ for running locally, https://group-activity-planning-nest.herokuapp.com/ for prod
     pactum.request.setBaseUrl('https://group-activity-planning-nest.herokuapp.com/');
   });
 
@@ -438,7 +439,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .post('api/v1api/v1/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(201);
@@ -469,7 +470,7 @@ describe('AppController (e2e)', () => {
 
         return pactum
           .spec()
-          .post('api/v1api/v1/events/$S{accountId}')
+          .post('api/v1/events/$S{accountId}')
           .withBody(invalidEventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .expectStatus(400);
@@ -1335,10 +1336,9 @@ describe('AppController (e2e)', () => {
           .get('api/v1/events/$S{eventId}/accommodation')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withQueryParams({
-            startDate: '2022-04-11 00:00:00',
-            endDate: '2022-04-12 00:00:00',
+            startDate: '2022-05-11 00:00:00',
+            endDate: '2022-05-12 00:00:00',
           })
-          .inspect()
           .expectStatus(200);
       });
 
@@ -1373,7 +1373,6 @@ describe('AppController (e2e)', () => {
             startDate: '2022-04-11 00:00:00',
             endDate: '2022-04-12 00:00:00',
           })
-          .inspect()
           .expectStatus(401);
       });
 
@@ -1409,7 +1408,7 @@ describe('AppController (e2e)', () => {
             endDates: '2022-04-12 00:00:00',
           })
           .inspect()
-          .expectStatus(404);
+          .expectStatus(500);
       });
     });
 
@@ -1420,7 +1419,7 @@ describe('AppController (e2e)', () => {
           type: 'FOREIGN_OVERNIGHT',
           userEmails: ['newEmail2@gmail.com'],
           city: 'London',
-          departureCity: 'Limerick',
+          departureCity: 'Cork',
         };
         await pactum
           .spec()
@@ -1443,7 +1442,6 @@ describe('AppController (e2e)', () => {
           .withBody(foreignEventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
-          .inspect()
           .expectStatus(201);
 
         return pactum
@@ -1451,12 +1449,13 @@ describe('AppController (e2e)', () => {
           .get('api/v1/events/$S{eventId}/flights')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withQueryParams({
-            startDate: '2022-04-11 00:00:00',
-            endDate: '2022-04-12 00:00:00',
+            startDate: '2022-05-11 00:00:00',
+            endDate: '2022-05-12 00:00:00',
           })
+          .withRequestTimeout(40000)
           .inspect()
           .expectStatus(200);
-      });
+      }, 40000);
 
       it('no query params should throw error', async () => {
         await pactum
@@ -1574,7 +1573,6 @@ describe('AppController (e2e)', () => {
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
-          .inspect()
           .expectStatus(201);
 
         return pactum
@@ -1585,7 +1583,6 @@ describe('AppController (e2e)', () => {
             latitude: 52.6638,
             longitude: -8.6267,
           })
-          .inspect()
           .expectStatus(200);
       });
 
@@ -1611,7 +1608,6 @@ describe('AppController (e2e)', () => {
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
-          .inspect()
           .expectStatus(201);
 
         return pactum
@@ -1621,7 +1617,6 @@ describe('AppController (e2e)', () => {
             latitude: 52.6638,
             longitude: -8.6267,
           })
-          .inspect()
           .expectStatus(401);
       });
 
@@ -1647,15 +1642,18 @@ describe('AppController (e2e)', () => {
           .withBody(eventDto)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .stores('eventId', 'id')
-          .inspect()
           .expectStatus(201);
 
-        return pactum
+        const test = await pactum
           .spec()
           .get('api/v1/events/$S{eventId}/places')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .inspect()
-          .expectStatus(500);
+          .expectJsonLike({
+            "html_attributions": [],
+            "results": [],
+            "status": "INVALID_REQUEST"
+          })
       });
     });
 
@@ -1689,7 +1687,6 @@ describe('AppController (e2e)', () => {
           .post('api/v1/events/$S{eventId}/itinerary')
           .withBody(mockEventItinerary)
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-          .inspect()
           .expectStatus(201);
       });
 
@@ -2136,7 +2133,6 @@ describe('AppController (e2e)', () => {
           .spec()
           .get('api/v1/events/type/DOMESTIC_OVERNIGHT')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-          .inspect()
           .expectStatus(200);
       });
 
@@ -2167,7 +2163,6 @@ describe('AppController (e2e)', () => {
         return pactum
           .spec()
           .get('api/v1/events/type/DOMESTIC_OVERNIGHT')
-          .inspect()
           .expectStatus(401);
       });
 
@@ -2199,7 +2194,6 @@ describe('AppController (e2e)', () => {
           .spec()
           .get('api/v1/events/type/DOMESTIC')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-          .inspect()
           .expectStatus(400);
       });
     });
@@ -2234,7 +2228,6 @@ describe('AppController (e2e)', () => {
           .patch('api/v1/events/$S{eventId}')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withBody(eventDto)
-          .inspect()
           .expectStatus(200);
       });
 
@@ -2298,7 +2291,6 @@ describe('AppController (e2e)', () => {
           .patch('api/v1/events/1')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
           .withBody(eventDto)
-          .inspect()
           .expectStatus(400);
       });
     });
@@ -2332,7 +2324,6 @@ describe('AppController (e2e)', () => {
           .spec()
           .delete('api/v1/events/$S{eventId}')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-          .inspect()
           .expectStatus(200);
       });
 
@@ -2394,7 +2385,6 @@ describe('AppController (e2e)', () => {
           .spec()
           .delete('api/v1/events/1')
           .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-          .inspect()
           .expectStatus(400);
       });
     });
@@ -2500,7 +2490,7 @@ describe('AppGateway (e2e)', () => {
     it('should add message to chat', async () => {
       await pactum
         .spec()
-        .post('api/v1/users')
+        .post('/api/v1/users')
         .withBody(userDto)
         .stores('accessToken', 'jwtToken')
         .stores('accountId', 'userId')
@@ -2508,7 +2498,7 @@ describe('AppGateway (e2e)', () => {
 
       const testUser = await pactum
         .spec()
-        .post('api/v1/users/confirm-email')
+        .post('/api/v1/users/confirm-email')
         .withBody({ token: '$S{accessToken}' })
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2519,7 +2509,7 @@ describe('AppGateway (e2e)', () => {
 
       const testEvent = await pactum
         .spec()
-        .post('api/v1/events/$S{accountId}')
+        .post('/api/v1/events/$S{accountId}')
         .withBody(eventDto)
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2548,7 +2538,7 @@ describe('AppGateway (e2e)', () => {
     it('should request all online users', async () => {
       await pactum
         .spec()
-        .post('api/v1/users')
+        .post('/api/v1/users')
         .withBody(userDto)
         .stores('accessToken', 'jwtToken')
         .stores('accountId', 'userId')
@@ -2556,7 +2546,7 @@ describe('AppGateway (e2e)', () => {
 
       const testUser = await pactum
         .spec()
-        .post('api/v1/users/confirm-email')
+        .post('/api/v1/users/confirm-email')
         .withBody({ token: '$S{accessToken}' })
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2567,7 +2557,7 @@ describe('AppGateway (e2e)', () => {
 
       const testEvent = await pactum
         .spec()
-        .post('api/v1/events/$S{accountId}')
+        .post('/api/v1/events/$S{accountId}')
         .withBody(eventDto)
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2598,7 +2588,7 @@ describe('AppGateway (e2e)', () => {
 
       await pactum
         .spec()
-        .post('api/v1/users')
+        .post('/api/v1/users')
         .withBody(userDto)
         .stores('accessToken', 'jwtToken')
         .stores('accountId', 'userId')
@@ -2606,7 +2596,7 @@ describe('AppGateway (e2e)', () => {
 
       const testUser = await pactum
         .spec()
-        .post('api/v1/users/confirm-email')
+        .post('/api/v1/users/confirm-email')
         .withBody({ token: '$S{accessToken}' })
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2617,7 +2607,7 @@ describe('AppGateway (e2e)', () => {
 
       const testEvent = await pactum
         .spec()
-        .post('api/v1/events/$S{accountId}')
+        .post('/api/v1/events/$S{accountId}')
         .withBody(eventDto)
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2651,7 +2641,7 @@ describe('AppGateway (e2e)', () => {
 
       await pactum
         .spec()
-        .post('api/v1/users')
+        .post('/api/v1/users')
         .withBody(userDto)
         .stores('accessToken', 'jwtToken')
         .stores('accountId', 'userId')
@@ -2659,7 +2649,7 @@ describe('AppGateway (e2e)', () => {
 
       const testUser = await pactum
         .spec()
-        .post('api/v1/users/confirm-email')
+        .post('/api/v1/users/confirm-email')
         .withBody({ token: '$S{accessToken}' })
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
@@ -2670,7 +2660,7 @@ describe('AppGateway (e2e)', () => {
 
       const testEvent = await pactum
         .spec()
-        .post('api/v1/events/$S{accountId}')
+        .post('/api/v1/events/$S{accountId}')
         .withBody(eventDto)
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .returns((data) => {
