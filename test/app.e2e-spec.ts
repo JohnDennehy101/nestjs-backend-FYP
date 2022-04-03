@@ -34,6 +34,7 @@ describe('AppController (e2e)', () => {
 
   const eventDto: EventDto = {
     title: 'Test Event for E2E',
+    description: 'Test Event Description',
     type: 'DOMESTIC_OVERNIGHT',
     userEmails: ['newEmail2@gmail.com'],
     city: 'Limerick',
@@ -448,6 +449,7 @@ describe('AppController (e2e)', () => {
       it('invalid payload should throw error', async () => {
         const invalidEventDto: EventDto = {
           title: 'Test Event for E2E',
+          description: 'Test Event Description',
           type: 'DOMESTIC_OVERNIGHT',
           userEmails: ['newEmail2@gmail.com'],
           city: 'Limerick',
@@ -484,6 +486,7 @@ describe('AppController (e2e)', () => {
 
         const eventDto: EventDto = {
           title: 'Test Event for E2E',
+          description: 'Test Event Description',
           type: 'DOMESTIC_OVERNIGHT',
           userEmails: ['newEmail2@gmail.com'],
           city: 'Limerick',
@@ -1416,6 +1419,7 @@ describe('AppController (e2e)', () => {
       it('should return flights info for event', async () => {
         const foreignEventDto: EventDto = {
           title: 'Test Event for E2E',
+          description: 'Test Event Description',
           type: 'FOREIGN_OVERNIGHT',
           userEmails: ['newEmail2@gmail.com'],
           city: 'London',
@@ -2398,6 +2402,7 @@ describe('AppGateway (e2e)', () => {
 
   const eventDto: EventDto = {
     title: 'Test Event for E2E',
+    description: 'Test Event Description',
     type: 'DOMESTIC_OVERNIGHT',
     userEmails: ['newEmail2@gmail.com'],
     city: 'Limerick',

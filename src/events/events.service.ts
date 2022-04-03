@@ -128,6 +128,7 @@ export class EventsService {
     this.logger.log(`Updating event - id: ${eventId}`);
     await this.eventsRepository.update(eventId, {
       ...(eventDto.title && { title: eventDto.title }),
+      ...(eventDto.description && { description: eventDto.description}),
       ...(eventDto.type && { type: eventDto.type }),
       ...(eventDto.city && { city: eventDto.city }),
       ...(eventDto.departureCity && { departureCity: eventDto.departureCity }),

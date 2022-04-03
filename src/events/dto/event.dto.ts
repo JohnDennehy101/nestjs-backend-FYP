@@ -8,6 +8,10 @@ export class EventDto {
 
   @ApiProperty()
   @IsString()
+  description: string;
+
+  @ApiProperty()
+  @IsString()
   type: string;
 
   @ApiProperty()

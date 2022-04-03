@@ -23,6 +23,10 @@ export class Event {
   title: string;
 
   @ApiProperty()
+  @Column()
+  description: string;
+
+  @ApiProperty()
   @Column({
     type: 'enum',
     enum: EventsType,

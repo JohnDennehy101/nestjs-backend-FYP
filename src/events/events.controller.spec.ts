@@ -57,6 +57,7 @@ const mockCreatedUser = {
 const mockEventOne = {
   id: '4040403f34u3f3j03',
   title: 'Test Event',
+  description: 'Test Event Description',
   type: 'DOMESTIC_DAY',
   userEmails: ['testuser1@gmail.com', 'testuser2@gmail.com'],
   city: 'Cork',
@@ -66,6 +67,7 @@ const mockEventOne = {
 const mockEventTwo = {
   id: '4040403f34u3f3j03',
   title: 'Test Event 2',
+  description: 'Test Event Description',
   type: 'DOMESTIC_OVERNIGHT',
   userEmails: ['testuser3@gmail.com', 'testuser4@gmail.com'],
   city: 'Limerick',
