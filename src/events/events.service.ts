@@ -123,17 +123,18 @@ export class EventsService {
     return this.eventsRepository.findEventsByType(type);
   }
 
-  async updateEvent(eventDto: EventDto, eventId: string): Promise<any> {
+  async updateEvent(eventDto: EventDto, eventId: string): Promise<Event> {
     const cityCoordinates = await returnCityCoordinates(eventDto.city);
     this.logger.log(`Updating event - id: ${eventId}`);
-    return this.eventsRepository.update(eventId, {
+    await this.eventsRepository.update(eventId, {
       ...(eventDto.title && { title: eventDto.title }),
       ...(eventDto.type && { type: eventDto.type }),
       ...(eventDto.city && { city: eventDto.city }),
       ...(eventDto.departureCity && { departureCity: eventDto.departureCity }),
       ...(eventDto.city && { cityLatitude: cityCoordinates[0] }),
       ...(eventDto.city && { cityLongitude: cityCoordinates[1] }),
-    });
+    })
+    return this.eventsRepository.findOneOrFail(eventId)
   }
 
   async updateEventPoll(pollDto: PollsDto, pollId): Promise<Poll> {

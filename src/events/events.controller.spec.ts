@@ -30,6 +30,7 @@ const mockEventsRepository = () => ({
   findEventUsers: jest.fn(),
   delete: jest.fn(),
   createEvent: jest.fn(),
+  findOneOrFail: jest.fn()
 });
 
 const mockUsersRepository = () => ({

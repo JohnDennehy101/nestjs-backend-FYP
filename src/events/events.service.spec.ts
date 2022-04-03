@@ -34,6 +34,7 @@ const mockEventsRepository = () => ({
   findEventUsers: jest.fn(),
   delete: jest.fn(),
   createEvent: jest.fn(),
+  findOneOrFail: jest.fn()
 });
 
 const mockUsersRepository = () => ({
@@ -256,6 +257,7 @@ describe('EventsService', () => {
   describe('Update Event', () => {
     it('calls EventsRepository.update and returns the result', async () => {
       eventsRepository.update.mockResolvedValue(mockEventOne);
+      eventsRepository.findOneOrFail.mockResolvedValue(mockEventOne);
 
       const result = await eventsService.updateEvent(
         mockEventOne,

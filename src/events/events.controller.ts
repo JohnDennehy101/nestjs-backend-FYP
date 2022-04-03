@@ -733,6 +733,7 @@ export class EventsController {
     schema: { oneOf: [{ type: 'string' }] },
   })
   @ApiResponse({
+    type: EventDto,
     status: 200,
     description: 'Event updated',
   })
@@ -756,7 +757,7 @@ export class EventsController {
   updatedEvent(
     @Body(new PayloadValidationPipe()) eventDto: EventDto,
     @Param('id', new ParseUUIDPipe()) eventId: string,
-  ): Promise<void> {
+  ): Promise<Event> {
     return this.eventsService.updateEvent(eventDto, eventId);
   }
 
