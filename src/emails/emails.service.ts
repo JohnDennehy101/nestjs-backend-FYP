@@ -19,7 +19,6 @@ export class EmailsService {
   ) {}
 
   async sendEmailConfirmationEmail(email: string): Promise<any> {
-    console.log(email);
     const jwtToken = await this.authService.createJwtToken(email);
     const validationUrl = `${this.configService.get(
       'EMAIL_CONFIRMATION_URL',
@@ -47,7 +46,6 @@ export class EmailsService {
     } catch (error) {
       this.logger.error(error);
     }
-    console.log('Commenting out to save on email API calls');
   }
 
   async sendPollCompletionEmail(
