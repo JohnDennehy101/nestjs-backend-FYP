@@ -32,6 +32,7 @@ const mockMessage = {
   event: {
     id: '4040403f34u3f3j03',
     title: 'Test Event 2',
+    description: 'Test Description',
     type: 'DOMESTIC_OVERNIGHT',
     userEmails: ['testuser3@gmail.com', 'testuser4@gmail.com'],
     city: 'Limerick',
