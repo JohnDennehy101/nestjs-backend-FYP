@@ -98,13 +98,13 @@ export class EventsService {
       `Created and invited events search completed for user - id: ${userId}`,
     );
 
-    for (let item in userInvitedEvents) {
+    for (let i = userInvitedEvents.length - 1; i >= 0; i--) {
       if (
         userCreatedEvents.filter(
-          (event) => event.title === userInvitedEvents[item].title,
+          (event) => event.title === userInvitedEvents[i].title,
         ).length > 0
       ) {
-        userInvitedEvents.splice(Number(item), 1);
+        userInvitedEvents.splice(Number(i), 1);
       }
     }
 
