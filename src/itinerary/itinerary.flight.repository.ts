@@ -15,8 +15,8 @@ export class ItineraryFlightRepository extends Repository<ItineraryFlight> {
       if (
         flights.filter(
           (individualFlight) =>
-            individualFlight.airport === previousFlights[item].airport ||
-            individualFlight.carrier === previousFlights[item].carrier ||
+            individualFlight.airport === previousFlights[item].airport &&
+            individualFlight.carrier === previousFlights[item].carrier &&
             individualFlight.duration === previousFlights[item].duration,
         ).length === 0
       ) {
